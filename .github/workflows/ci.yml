@@ -1,0 +1,21 @@
+name: ci
+
+on:
+  push: { branches: [main, master] }
+  pull_request: {}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet restore TicketMaster.slnx
+      - run: dotnet build TicketMaster.slnx --no-restore -c Release
+      - run: dotnet test tests/TicketMaster.UnitTests --no-build -c Release
+      - run: dotnet test tests/TicketMaster.ArchitectureTests --no-build -c Release
+      # ubuntu-latest ships with Docker; Testcontainers spins up Postgres + Kafka + Debezium Connect.
+      - run: dotnet test tests/TicketMaster.IntegrationTests --no-build -c Release
