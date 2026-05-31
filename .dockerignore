@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/.git/
+**/*.user
+infra/logs/*
+!infra/logs/.gitkeep
+ruvector.db
+.claude/
+.claude-flow/
+.swarm/
+docs/
