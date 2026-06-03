@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Host/">
+    <Project Path="src/Host/TicketMaster.AppHost/TicketMaster.AppHost.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/TicketMaster.ServiceDefaults/TicketMaster.ServiceDefaults.csproj" />
+    <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.Application/TicketMaster.BuildingBlocks.Application.csproj" />
+    <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.Domain/TicketMaster.BuildingBlocks.Domain.csproj" />
+    <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.Infrastructure/TicketMaster.BuildingBlocks.Infrastructure.csproj" />
+    <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.Caching/TicketMaster.BuildingBlocks.Caching.csproj" />
+    <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.RateLimiting/TicketMaster.BuildingBlocks.RateLimiting.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Platform/">
+    <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform.Contracts/TicketMaster.Modules.Platform.Contracts.csproj" />
+    <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform/TicketMaster.Modules.Platform.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TicketMaster.ArchitectureTests/TicketMaster.ArchitectureTests.csproj" />
+    <Project Path="tests/TicketMaster.IntegrationTests/TicketMaster.IntegrationTests.csproj" />
+    <Project Path="tests/TicketMaster.UnitTests/TicketMaster.UnitTests.csproj" />
+  </Folder>
+</Solution>
