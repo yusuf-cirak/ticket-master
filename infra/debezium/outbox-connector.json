@@ -1,0 +1,35 @@
+{
+  "name": "tm-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "tm",
+    "database.password": "tm",
+    "database.dbname": "ticketmaster",
+    "topic.prefix": "tm",
+    "plugin.name": "pgoutput",
+
+    "slot.name": "tm_outbox_slot",
+    "publication.name": "tm_outbox_pub",
+    "publication.autocreate.mode": "filtered",
+    "snapshot.mode": "never",
+    "table.include.list": "platform.outbox",
+
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.table.field.event.id": "id",
+    "transforms.outbox.table.field.event.key": "aggregate_id",
+    "transforms.outbox.table.field.event.type": "event_type",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.table.expand.json.payload": "true",
+    "transforms.outbox.route.by.field": "aggregate_type",
+    "transforms.outbox.route.topic.replacement": "tm.${routedByValue}.events",
+    "transforms.outbox.table.fields.additional.placement": "event_type:header:eventType,id:header:MessageId,correlation_id:header:CorrelationId,causation_id:header:causationId,trace_parent:header:traceparent",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}
