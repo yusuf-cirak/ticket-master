@@ -1,0 +1,159 @@
+include:
+  - ${SIGNOZ_DOCKER_COMPOSE:-../../signoz/deploy/docker/docker-compose.yaml}
+
+services:
+  postgres:
+    image: postgres:latest
+    command: ["postgres", "-c", "wal_level=logical"]
+    environment:
+      POSTGRES_DB: ticketmaster
+      POSTGRES_USER: tm
+      POSTGRES_PASSWORD: tm
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tm -d ticketmaster"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  kafka:
+    image: apache/kafka:latest
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:9093,EXTERNAL://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: "tm-local-cluster-0001"
+    ports: ["9092:9092"]
+    healthcheck:
+      # Dependents wait for this so they don't race Kafka's DNS/broker at boot (Debezium Connect
+      # does not retry its initial cluster-id lookup and would crash).
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 20s
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on: [kafka]
+    ports: ["8081:8080"]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+
+  # The real precondition for Debezium is that platform.outbox EXISTS (the filtered publication is built from it;
+  # otherwise the task FAILs with "No table filters found"). That table is created by EF migrations — whether the
+  # app runs in a container (profile "app") or locally against this Postgres. So the CDC pipeline gates on the
+  # TABLE, not on the app-host container. One-shot: polls until the table appears, then exits.
+  # Profiles: "app" (full containerized stack) and "cdc" (run the pipeline alongside a locally-run app:
+  #   docker compose -f infra/docker-compose.yml --profile cdc up -d   then run the app locally).
+  schema-ready:
+    image: postgres:latest
+    profiles: ["app", "cdc"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      PGPASSWORD: tm
+    restart: "no"
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        until [ "$$(psql -h postgres -U tm -d ticketmaster -tAc "SELECT to_regclass('platform.outbox') IS NOT NULL")" = "t" ]; do
+          echo 'waiting for platform.outbox (run EF migrations / start the app)...'; sleep 3
+        done
+        echo 'platform.outbox exists — CDC may start'
+
+  # Debezium starts once Kafka is healthy and the outbox table exists (schema-ready). No dependency on app-host,
+  # so it works with a locally-run app too.
+  debezium-connect:
+    image: debezium/connect:3.0.0.Final
+    profiles: ["app", "cdc"]
+    depends_on:
+      kafka: { condition: service_healthy }
+      schema-ready: { condition: service_completed_successfully }
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:29092"
+      GROUP_ID: "tm-connect"
+      CONFIG_STORAGE_TOPIC: "_connect_configs"
+      OFFSET_STORAGE_TOPIC: "_connect_offsets"
+      STATUS_STORAGE_TOPIC: "_connect_status"
+    ports: ["8083:8083"]
+
+  # One-shot: registers the Outbox Event Router connector once Connect is up. Without this the live
+  # stack runs Connect but no connector, so nothing is captured from the outbox -> nothing reaches Kafka.
+  # Idempotent (409 if it already exists). Re-run any time: docker compose ... up -d debezium-connector-init
+  debezium-connector-init:
+    image: curlimages/curl:latest
+    profiles: ["app", "cdc"]
+    depends_on:
+      debezium-connect: { condition: service_started }
+    restart: "no"
+    volumes:
+      - ./debezium/outbox-connector.json:/connector.json:ro
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        until curl -sf http://debezium-connect:8083/ >/dev/null; do echo 'waiting for connect...'; sleep 3; done
+        echo "registering connector:"
+        curl -s -o /dev/null -w 'HTTP %{http_code}\n' -X POST http://debezium-connect:8083/connectors \
+          -H 'Content-Type: application/json' -d @/connector.json
+
+  # Single Redis node (FusionCache L2 + rate-limit counter store). The app code is sentinel-aware, but local
+  # dev runs one standalone node for simplicity; HA (Sentinel/Cluster) is a prod/k8s concern.
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "no", "--save", ""]
+    ports: ["6379:6379"]
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    environment:
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  # The modular monolith itself, containerized. Opt-in (profile "app"). Runs the EF migrations at startup, which
+  # create platform.outbox; the CDC pipeline gates on that table via schema-ready (not on this container), so the
+  # two come up without a cycle. Its /health/startup healthcheck still reports migration completion for ops.
+  # Full stack:  docker compose -f infra/docker-compose.yml --profile app up -d --build
+  # Local app + CDC:  docker compose -f infra/docker-compose.yml --profile cdc up -d   (then run the app locally)
+  app-host:
+    profiles: ["app"]
+    build:
+      context: ..
+      dockerfile: src/Host/TicketMaster.AppHost/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Debug
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+      kafka: { condition: service_healthy }
+    ports: ["5001:8080"]
+    networks: [default, signoz-net]   # signoz-net so OTLP reaches the collector by name
+    healthcheck:
+      # /health/startup = EF migrations applied (deterministic "schema exists" signal that gates Debezium).
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/startup || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      TZ: Etc/UTC
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=ticketmaster;Username=tm;Password=tm"
+      Redis__Mode: "Standalone"
+      Redis__ConnectionString: "redis:6379,abortConnect=false"
+      Kafka__BootstrapServers: "kafka:29092"
+      Kafka__PlatformTopic: "tm.platform.events"
+      Debezium__ConnectUrl: "http://debezium-connect:8083/"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://signoz-otel-collector:4317"
