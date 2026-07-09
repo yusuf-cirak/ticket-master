@@ -95,30 +95,17 @@ public class SecretConfigurationTests
     [Fact]
     public void Derive_same_passphrase_and_salt_round_trips()
     {
-        var salt = System.Text.Encoding.UTF8.GetBytes("app-salt");
-        var encryptor = AesGcmEncryptionProvider.Derive("passphrase", salt);
-        var decryptor = AesGcmEncryptionProvider.Derive("passphrase", salt);
+        var encryptor = AesGcmEncryptionProvider.Derive("passphrase");
+        var decryptor = AesGcmEncryptionProvider.Derive("passphrase");
 
         decryptor.Decrypt(encryptor.Encrypt("value")).Should().Be("value");
     }
 
     [Fact]
-    public void Derive_with_different_salt_cannot_decrypt()
-    {
-        var a = AesGcmEncryptionProvider.Derive("passphrase", System.Text.Encoding.UTF8.GetBytes("salt-A"));
-        var b = AesGcmEncryptionProvider.Derive("passphrase", System.Text.Encoding.UTF8.GetBytes("salt-B"));
-
-        var act = () => b.Decrypt(a.Encrypt("value"));
-
-        act.Should().Throw<CryptographicException>();
-    }
-
-    [Fact]
     public void Derive_with_different_passphrase_cannot_decrypt()
     {
-        var salt = System.Text.Encoding.UTF8.GetBytes("app-salt");
-        var a = AesGcmEncryptionProvider.Derive("passphrase-1", salt);
-        var b = AesGcmEncryptionProvider.Derive("passphrase-2", salt);
+        var a = AesGcmEncryptionProvider.Derive("passphrase-1");
+        var b = AesGcmEncryptionProvider.Derive("passphrase-2");
 
         var act = () => b.Decrypt(a.Encrypt("value"));
 

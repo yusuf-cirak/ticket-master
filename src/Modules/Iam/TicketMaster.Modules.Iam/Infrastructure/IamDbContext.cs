@@ -31,7 +31,6 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.ToTable("roles");
             entity.HasKey(r => r.Id);
             entity.Ignore(r => r.DomainEvents);
             entity.Property(r => r.Name).HasMaxLength(100);

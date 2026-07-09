@@ -39,14 +39,14 @@ public sealed class AesGcmEncryptionProvider : IEncryptionProvider
     /// <summary>
     /// Application-side salt. Split key material — the actual AES key is derived (HKDF-SHA256) from the
     /// out-of-band key material (env var) AND this salt, so a leaked env var alone can't decrypt without also
-    /// knowing the app's salt. Overridable per call.
+    /// knowing the app's salt. A fixed application constant.
     /// </summary>
-    public static readonly byte[] DefaultSalt = Encoding.UTF8.GetBytes("TicketMaster.Config.Secrets.Salt.v1");
+    public static readonly byte[] DefaultSalt = "TicketMaster.Config.Secrets.Salt.v1"u8.ToArray();
 
-    private static readonly byte[] DerivationInfo = Encoding.UTF8.GetBytes("TicketMaster.Config.Secrets.v1");
+    private static readonly byte[] DerivationInfo = "TicketMaster.Config.Secrets.v1"u8.ToArray();
 
     /// <summary>Derives the 32-byte AES key from key material + salt via HKDF-SHA256.</summary>
-    public static AesGcmEncryptionProvider Derive(string keyMaterial, byte[]? salt = null)
+    public static AesGcmEncryptionProvider Derive(string keyMaterial)
     {
         if (string.IsNullOrEmpty(keyMaterial))
             throw new ArgumentException("Key material is required.", nameof(keyMaterial));
@@ -55,7 +55,7 @@ public sealed class AesGcmEncryptionProvider : IEncryptionProvider
             HashAlgorithmName.SHA256,
             ikm: Encoding.UTF8.GetBytes(keyMaterial),
             outputLength: 32,
-            salt: salt ?? DefaultSalt,
+            salt: DefaultSalt,
             info: DerivationInfo);
         return new AesGcmEncryptionProvider(key);
     }
@@ -64,13 +64,13 @@ public sealed class AesGcmEncryptionProvider : IEncryptionProvider
     /// Derives the key from the key material in an environment variable + the app salt. Throws (fail-fast) when the
     /// variable is missing. The env value is a passphrase (any length) — the strength comes from HKDF + the salt.
     /// </summary>
-    public static AesGcmEncryptionProvider FromEnvironment(string envVar = DefaultKeyEnvVar, byte[]? salt = null)
+    public static AesGcmEncryptionProvider FromEnvironment(string envVar = DefaultKeyEnvVar)
     {
         var raw = Environment.GetEnvironmentVariable(envVar);
         if (string.IsNullOrWhiteSpace(raw))
             throw new InvalidOperationException(
                 $"Configuration contains encrypted secrets but the '{envVar}' environment variable (key material) is not set.");
-        return Derive(raw, salt);
+        return Derive(raw);
     }
 
     public string Encrypt(string plaintext)
