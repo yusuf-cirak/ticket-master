@@ -1,17 +1,21 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using TicketMaster.Modules.Iam.Domain;
+using TicketMaster.Modules.Iam.Infrastructure;
 using TicketMaster.ServiceDefaults.Modularity;
 
 namespace TicketMaster.Modules.Iam;
 
 /// <summary>
-/// Identity &amp; Access Management module. Currently a walking skeleton that proves the module-discovery seam with a
-/// second module; the domain (users/roles), Identity store, JWT issuer, Keycloak federation and permission
-/// authorization are added in subsequent slices.
+/// Identity &amp; Access Management module. Owns user/role persistence (ASP.NET Identity over <see cref="IamDbContext"/>
+/// keyed by Vogen ids). JWT issuer, Keycloak federation and cached permission authorization are added in later slices.
 /// </summary>
 public sealed class IamModule : IModule
 {
@@ -21,7 +25,28 @@ public sealed class IamModule : IModule
 
     public void Add(IServiceCollection services, IConfiguration configuration)
     {
-        // Slices to come: AddIdentityCore + IamDbContext, JWT issuer, Keycloak sync, permission policies.
+        services.AddDomainEventDispatch();
+        services.AddAuditing();
+
+        services.AddDbContext<IamDbContext>((sp, o) =>
+            o.UseNpgsql(configuration.GetConnectionString("Postgres"),
+                    npg => npg.MigrationsHistoryTable("__ef_migrations", IamDbContext.Schema))
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(
+                    sp.GetRequiredService<DomainEventDispatchInterceptor>(),
+                    sp.GetRequiredService<AuditingSaveChangesInterceptor>()));
+
+        services.AddIdentityCore<User>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 12;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            })
+            .AddEntityFrameworkStores<IamDbContext>();
+
+        services.AddDbContextMigration<IamDbContext>();
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)

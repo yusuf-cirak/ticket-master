@@ -3,7 +3,7 @@ using Vogen;
 namespace TicketMaster.Modules.Iam.Domain;
 
 /// <summary>Strongly-typed user id (Vogen-generated equality/validation/EF+JSON converters). Seeded time-ordered.</summary>
-[ValueObject<Guid>]
+[ValueObject<Guid>(conversions: Conversions.Default | Conversions.EfCoreValueConverter)]
 public readonly partial struct UserId
 {
     private static Validation Validate(Guid input) =>

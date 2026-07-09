@@ -18,7 +18,7 @@ public class UserTests
 
         result.IsSuccess.Should().BeTrue();
         var user = result.Value;
-        user.Email.Value.Should().Be("user@example.com");
+        user.Email.Should().Be("user@example.com");
         user.DisplayName.Should().Be("Ada Lovelace");
         user.Status.Should().Be(UserStatus.Active);
         user.DomainEvents.OfType<UserRegisteredDomainEvent>().Should().ContainSingle();

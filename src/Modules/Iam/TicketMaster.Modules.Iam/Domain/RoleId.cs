@@ -3,7 +3,7 @@ using Vogen;
 namespace TicketMaster.Modules.Iam.Domain;
 
 /// <summary>Strongly-typed role id (Vogen-generated). Seeded time-ordered.</summary>
-[ValueObject<Guid>]
+[ValueObject<Guid>(conversions: Conversions.Default | Conversions.EfCoreValueConverter)]
 public readonly partial struct RoleId
 {
     private static Validation Validate(Guid input) =>

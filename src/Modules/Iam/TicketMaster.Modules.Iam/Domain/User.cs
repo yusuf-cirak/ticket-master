@@ -1,45 +1,50 @@
+using Microsoft.AspNetCore.Identity;
 using TicketMaster.BuildingBlocks.Domain;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
-using TicketMaster.BuildingBlocks.Domain.ValueObjects;
 using TicketMaster.Modules.Iam.Domain.Events;
 using YC.Monad;
+using DomainEmail = TicketMaster.BuildingBlocks.Domain.ValueObjects.Email;
 
 namespace TicketMaster.Modules.Iam.Domain;
 
 /// <summary>
-/// A user account (rich aggregate). ASP.NET Identity persists the auth store (password hash, lockout) separately;
-/// this aggregate owns the business identity, invariants and domain events. Construct via <see cref="Register"/>.
-/// Roles are referenced by id; effective permissions are resolved (and cached) at authorization time, not stored here.
+/// A user account. Merges the rich aggregate (factory, invariants, domain events) with the ASP.NET Identity user
+/// store (password hash, lockout, security stamp) as one entity — Identity is the persistence/authentication backing
+/// of the aggregate. Identity roles are NOT used; roles are our own <see cref="Role"/> aggregate. Construct via
+/// <see cref="Register"/>. <see cref="IdentityUser{TKey}.NormalizedEmail"/> holds the Gmail-canonical uniqueness key.
 /// </summary>
-public sealed class User : AggregateRoot<UserId>, IAuditable
+public sealed class User : IdentityUser<UserId>, IAggregateRoot, IAuditable
 {
+    private readonly List<IDomainEvent> _domainEvents = [];
     private readonly HashSet<RoleId> _roles = [];
 
-    private User() // EF
-    {
-        Email = null!;
-        DisplayName = null!;
-    }
+    public User() { } // Identity + EF materialization
 
-    private User(UserId id, Email email, string displayName) : base(id)
+    private User(UserId id, DomainEmail email, string displayName)
     {
-        Email = email;
+        Id = id;
+        UserName = email.Value;
+        Email = email.Value;
+        NormalizedEmail = email.Canonical.ToUpperInvariant(); // uniqueness key (dot/plus-canonical)
         DisplayName = displayName;
         Status = UserStatus.Active;
     }
 
-    public Email Email { get; private set; }
-    public string DisplayName { get; private set; }
+    public string DisplayName { get; private set; } = null!;
     public UserStatus Status { get; private set; }
+
+    // ponytail: role assignments are not persisted in this slice (mapped in the authorization slice); the in-memory
+    // set keeps the aggregate behavior. Kept out of EF via Ignore.
     public IReadOnlyCollection<RoleId> Roles => _roles;
 
-    // Auditing (stamped by the interceptor).
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
     public DateTimeOffset CreatedAtUtc { get; set; }
     public string? CreatedBy { get; set; }
     public DateTimeOffset? ModifiedAtUtc { get; set; }
     public string? ModifiedBy { get; set; }
 
-    public static Result<User> Register(Email email, string displayName)
+    public static Result<User> Register(DomainEmail email, string displayName)
     {
         if (string.IsNullOrWhiteSpace(displayName))
             return Error.Create("user.display_name_required", "Display name is required.", 400);
@@ -66,4 +71,8 @@ public sealed class User : AggregateRoot<UserId>, IAuditable
     public void Unlock() => Status = UserStatus.Active;
 
     public void Disable() => Status = UserStatus.Disabled;
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
+
+    private void Raise(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
 }
