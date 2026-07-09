@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TicketMaster.BuildingBlocks.Infrastructure.Inbox;
 using TicketMaster.BuildingBlocks.Infrastructure.Outbox;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using TicketMaster.ServiceDefaults.Modularity;
 
 namespace TicketMaster.Modules.Platform;

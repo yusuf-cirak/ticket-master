@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
 using TicketMaster.BuildingBlocks.Domain.Security;
 
-namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 
 /// <summary>
 /// Stamps <see cref="IAuditable"/> entities with create/modify actor + UTC timestamp on save, from the scoped

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 
 public static class DomainEventDispatchExtensions
 {

@@ -10,6 +10,7 @@ using TicketMaster.BuildingBlocks.Domain;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
 using TicketMaster.BuildingBlocks.Domain.Security;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Infrastructure;

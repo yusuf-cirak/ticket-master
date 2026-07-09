@@ -13,6 +13,12 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Persistence\EfCore\Interceptors\DomainEventDispatchExtensions.cs">
+      <DependentUpon>DomainEventDispatchInterceptor.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

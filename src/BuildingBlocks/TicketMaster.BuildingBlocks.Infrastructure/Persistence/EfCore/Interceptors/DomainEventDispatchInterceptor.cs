@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using TicketMaster.BuildingBlocks.Domain;
 
-namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 
 /// <summary>
 /// Dispatches aggregates' domain events on save so no developer has to remember to publish them by hand.
