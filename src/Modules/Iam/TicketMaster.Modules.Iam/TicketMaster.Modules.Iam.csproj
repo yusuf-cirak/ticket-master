@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Domain\TicketMaster.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Application\TicketMaster.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Infrastructure\TicketMaster.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.ServiceDefaults\TicketMaster.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\TicketMaster.Modules.Iam.Contracts\TicketMaster.Modules.Iam.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

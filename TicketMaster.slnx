@@ -12,6 +12,10 @@
     <Project Path="src/BuildingBlocks/TicketMaster.BuildingBlocks.RateLimiting/TicketMaster.BuildingBlocks.RateLimiting.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Iam/">
+    <Project Path="src/Modules/Iam/TicketMaster.Modules.Iam.Contracts/TicketMaster.Modules.Iam.Contracts.csproj" />
+    <Project Path="src/Modules/Iam/TicketMaster.Modules.Iam/TicketMaster.Modules.Iam.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Platform/">
     <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform.Contracts/TicketMaster.Modules.Platform.Contracts.csproj" />
     <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform/TicketMaster.Modules.Platform.csproj" />

@@ -6,6 +6,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Caching\TicketMaster.BuildingBlocks.Caching.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.BuildingBlocks.RateLimiting\TicketMaster.BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
+    <ProjectReference Include="..\..\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
   </ItemGroup>
 
   <ItemGroup>

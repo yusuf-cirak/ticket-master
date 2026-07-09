@@ -21,7 +21,7 @@ builder.AddAppCache();
 builder.AddRateLimiting();
 
 // Named opt-in; each module's services + endpoints + MediatR/validators are auto-discovered (IModule).
-builder.AddModules("Platform");
+builder.AddModules("Platform", "Iam");
 builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
