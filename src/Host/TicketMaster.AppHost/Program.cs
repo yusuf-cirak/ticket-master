@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using MassTransit;
 using Scalar.AspNetCore;
-using TicketMaster.BuildingBlocks.Application;
+using TicketMaster.ServiceDefaults.Modularity;
 using TicketMaster.BuildingBlocks.Caching.FusionCache;
 using TicketMaster.BuildingBlocks.Caching.Redis;
 using TicketMaster.BuildingBlocks.RateLimiting;
@@ -20,8 +20,8 @@ builder.AddRedisInfrastructure();
 builder.AddAppCache();
 builder.AddRateLimiting();
 
-builder.Services.AddApplicationMessaging(typeof(PlatformModule).Assembly);
-builder.Services.AddPlatformModule(builder.Configuration);
+// Named opt-in; each module's services + endpoints + MediatR/validators are auto-discovered (IModule).
+builder.AddModules("Platform");
 builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
@@ -62,7 +62,7 @@ app.MapDefaultEndpoints(); // /health/liveness, /health/readiness, /health
 
 // Business endpoints opt into the burst policy; health/docs stay unthrottled.
 var api = app.MapGroup("/api").RequireRateLimiting("burst");
-api.MapPlatformEndpoints();
+api.MapModuleEndpoints();
 
 // Diagnostic identity probe — scope-protected; exercises JWT auth + user_id/client_ip log enrichment.
 api.MapGet("/whoami", (ClaimsPrincipal user) =>
