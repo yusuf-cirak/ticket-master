@@ -1,0 +1,4 @@
+# Ignore everything in this log directory except the placeholder that keeps it in the repo.
+*
+!.gitkeep
+!.gitignore
