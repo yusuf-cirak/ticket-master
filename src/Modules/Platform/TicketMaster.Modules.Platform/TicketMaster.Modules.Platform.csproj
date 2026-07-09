@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TicketMaster.Modules.Platform.Contracts\TicketMaster.Modules.Platform.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Application\TicketMaster.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.ServiceDefaults\TicketMaster.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

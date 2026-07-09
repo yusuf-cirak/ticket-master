@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="YC.Monad" />
+    <!-- Abstractions only (INotification/IRequest) — no MediatR runtime in the domain. -->
+    <PackageReference Include="MediatR.Contracts" />
   </ItemGroup>
 
 </Project>

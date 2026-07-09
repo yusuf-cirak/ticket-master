@@ -17,6 +17,8 @@
   <ItemGroup>
     <!-- Shared kernel: cross-cutting telemetry/correlation constants. -->
     <ProjectReference Include="..\TicketMaster.BuildingBlocks.Domain\TicketMaster.BuildingBlocks.Domain.csproj" />
+    <!-- Module discovery wires MediatR/validators across module assemblies. -->
+    <ProjectReference Include="..\TicketMaster.BuildingBlocks.Application\TicketMaster.BuildingBlocks.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
