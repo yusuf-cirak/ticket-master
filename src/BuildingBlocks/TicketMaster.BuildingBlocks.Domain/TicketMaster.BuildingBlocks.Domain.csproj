@@ -10,4 +10,8 @@
     <PackageReference Include="MediatR.Contracts" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="ValueObjects/DisposableEmailDomains.txt" />
+  </ItemGroup>
+
 </Project>

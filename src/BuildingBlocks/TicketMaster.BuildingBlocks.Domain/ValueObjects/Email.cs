@@ -105,7 +105,7 @@ public sealed partial record Email
         if (ReservedTlds.Contains(tld))
             return Error.Create("email.reserved_tld", "Email domain has an invalid or reserved TLD.", 400);
 
-        if (DisposableDomains.Contains(domain))
+        if (DisposableEmailDomains.Contains(domain))
             return Error.Create("email.disposable", "Disposable email addresses are not allowed.", 400);
 
         return new Email(value);
@@ -121,13 +121,5 @@ public sealed partial record Email
     private static readonly FrozenSet<string> ReservedTlds = new[]
     {
         "con", "prn", "aux", "nul", "lan", "local", "localhost", "test", "invalid", "example"
-    }.ToFrozenSet(StringComparer.Ordinal);
-
-    private static readonly FrozenSet<string> DisposableDomains = new[]
-    {
-        "10minutemail.com", "guerrillamail.com", "guerrillamailblock.com", "mailinator.com", "tempmail.org",
-        "temp-mail.org", "yopmail.com", "throwaway.email", "maildrop.cc", "sharklasers.com", "pokemail.net",
-        "spam4.me", "mohmal.com", "emailondeck.com", "fakeinbox.com", "trashmail.com", "dispostable.com",
-        "tempail.com", "getnada.com", "armyspy.com"
     }.ToFrozenSet(StringComparer.Ordinal);
 }
