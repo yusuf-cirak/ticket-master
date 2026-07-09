@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\TicketMaster.BuildingBlocks.Infrastructure\TicketMaster.BuildingBlocks.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\TicketMaster.ServiceDefaults\TicketMaster.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\TicketMaster.BuildingBlocks.RateLimiting\TicketMaster.BuildingBlocks.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
   </ItemGroup>
 
 </Project>

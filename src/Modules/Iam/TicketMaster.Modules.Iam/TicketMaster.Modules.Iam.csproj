@@ -14,4 +14,9 @@
     <ProjectReference Include="..\TicketMaster.Modules.Iam.Contracts\TicketMaster.Modules.Iam.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Not PrivateAssets=all: the generated ids reference Vogen.SharedTypes at runtime, so it must flow to output. -->
+    <PackageReference Include="Vogen" />
+  </ItemGroup>
+
 </Project>

@@ -27,6 +27,9 @@
     <!-- Result monad -->
     <PackageVersion Include="YC.Monad" Version="1.3.0" />
 
+    <!-- Strongly-typed ids (source generator) -->
+    <PackageVersion Include="Vogen" Version="8.0.5" />
+
     <!-- Persistence -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
