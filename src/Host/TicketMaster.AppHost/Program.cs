@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MassTransit;
 using Scalar.AspNetCore;
 using TicketMaster.ServiceDefaults.Modularity;
+using TicketMaster.ServiceDefaults.Configuration.Secrets;
 using TicketMaster.BuildingBlocks.Caching.FusionCache;
 using TicketMaster.BuildingBlocks.Caching.Redis;
 using TicketMaster.BuildingBlocks.RateLimiting;
@@ -11,6 +12,9 @@ using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Decrypt `secret:`-prefixed config values (AES-GCM, key derived from CONFIG_SECRET_KEY + app salt); reload-aware.
+builder.Configuration.AddSecretConfiguration();
 
 // UTC + structured logging + OpenTelemetry + health checks + correlation id.
 builder.AddServiceDefaults();

@@ -15,7 +15,7 @@ public static class SecretConfigurationExtensions
     /// change notification is raised to <c>IOptionsMonitor</c>/<c>IConfiguration</c> consumers. The encryption key is
     /// resolved lazily, only when a <c>secret:</c> value is actually decrypted, so dev setups with no secrets need no key.
     /// </summary>
-    public static IConfigurationManager AddSecretDecryption(
+    public static IConfigurationManager AddSecretConfiguration(
         this IConfigurationManager configuration, Func<IEncryptionProvider>? encryptionProviderFactory = null)
     {
         encryptionProviderFactory ??= () => AesGcmEncryptionProvider.FromEnvironment();
@@ -35,7 +35,9 @@ public static class SecretConfigurationExtensions
     }
 }
 
-internal sealed class SecretConfigurationSource(IConfigurationRoot inner, Func<IEncryptionProvider> encryptionProviderFactory)
+internal sealed class SecretConfigurationSource(
+    IConfigurationRoot inner,
+    Func<IEncryptionProvider> encryptionProviderFactory)
     : IConfigurationSource
 {
     public IConfigurationProvider Build(IConfigurationBuilder builder) =>
@@ -67,8 +69,27 @@ internal sealed class SecretConfigurationProvider : ConfigurationProvider, IDisp
         foreach (var pair in _inner.AsEnumerable())
         {
             var value = pair.Value;
-            if (value is not null && value.StartsWith(SecretConfigurationExtensions.SecretPrefix, StringComparison.Ordinal))
+
+            // Only secret:-prefixed values are decrypted; everything else passes through unchanged.
+            if (string.IsNullOrEmpty(value) ||
+                !value.StartsWith(SecretConfigurationExtensions.SecretPrefix, StringComparison.Ordinal))
+            {
+                data[pair.Key] = value;
+                continue;
+            }
+
+            try
+            {
                 value = _encryption.Value.Decrypt(value[SecretConfigurationExtensions.SecretPrefix.Length..]);
+            }
+            catch (Exception e)
+            {
+                // Fail fast — a secret that won't decrypt is a misconfiguration; never let the raw ciphertext
+                // (or a half-processed value) reach a consumer.
+                throw new InvalidOperationException(
+                    $"Failed to decrypt configuration secret for key '{pair.Key}'. Verify the encryption key and salt.", e);
+            }
+
             data[pair.Key] = value;
         }
 

@@ -36,14 +36,41 @@ public sealed class AesGcmEncryptionProvider : IEncryptionProvider
         _key = key;
     }
 
-    /// <summary>Loads the key from a base64 environment variable. Throws (fail-fast) when it is missing/invalid.</summary>
-    public static AesGcmEncryptionProvider FromEnvironment(string envVar = DefaultKeyEnvVar)
+    /// <summary>
+    /// Application-side salt. Split key material — the actual AES key is derived (HKDF-SHA256) from the
+    /// out-of-band key material (env var) AND this salt, so a leaked env var alone can't decrypt without also
+    /// knowing the app's salt. Overridable per call.
+    /// </summary>
+    public static readonly byte[] DefaultSalt = Encoding.UTF8.GetBytes("TicketMaster.Config.Secrets.Salt.v1");
+
+    private static readonly byte[] DerivationInfo = Encoding.UTF8.GetBytes("TicketMaster.Config.Secrets.v1");
+
+    /// <summary>Derives the 32-byte AES key from key material + salt via HKDF-SHA256.</summary>
+    public static AesGcmEncryptionProvider Derive(string keyMaterial, byte[]? salt = null)
+    {
+        if (string.IsNullOrEmpty(keyMaterial))
+            throw new ArgumentException("Key material is required.", nameof(keyMaterial));
+
+        var key = HKDF.DeriveKey(
+            HashAlgorithmName.SHA256,
+            ikm: Encoding.UTF8.GetBytes(keyMaterial),
+            outputLength: 32,
+            salt: salt ?? DefaultSalt,
+            info: DerivationInfo);
+        return new AesGcmEncryptionProvider(key);
+    }
+
+    /// <summary>
+    /// Derives the key from the key material in an environment variable + the app salt. Throws (fail-fast) when the
+    /// variable is missing. The env value is a passphrase (any length) — the strength comes from HKDF + the salt.
+    /// </summary>
+    public static AesGcmEncryptionProvider FromEnvironment(string envVar = DefaultKeyEnvVar, byte[]? salt = null)
     {
         var raw = Environment.GetEnvironmentVariable(envVar);
         if (string.IsNullOrWhiteSpace(raw))
             throw new InvalidOperationException(
-                $"Configuration contains encrypted secrets but the '{envVar}' environment variable (base64-encoded 32-byte key) is not set.");
-        return new AesGcmEncryptionProvider(Convert.FromBase64String(raw));
+                $"Configuration contains encrypted secrets but the '{envVar}' environment variable (key material) is not set.");
+        return Derive(raw, salt);
     }
 
     public string Encrypt(string plaintext)
