@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -15,44 +15,51 @@ namespace TicketMaster.UnitTests.ServiceDefaults;
 
 public class IdempotencyTests
 {
-    private static DefaultHttpContext BuildContext(string method, bool requireIdempotency, IDistributedCache cache, string? key = null)
+    private static readonly IdempotencyEndpointFilter Filter =
+        new(NullLogger<IdempotencyEndpointFilter>.Instance);
+
+    private static (DefaultHttpContext http, EndpointFilterInvocationContext filterContext) BuildContext(
+        string method, IDistributedCache cache, string? key = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton(cache);
-        var context = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
-        context.Request.Method = method;
-        context.Request.Path = "/api/pay";
+        var http = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
+        http.Request.Method = method;
+        http.Request.Path = "/api/pay";
         if (key is not null)
-            context.Request.Headers["Idempotency-Key"] = key;
-        context.Response.Body = new MemoryStream();
-        if (requireIdempotency)
-            context.SetEndpoint(new Endpoint(_ => Task.CompletedTask,
-                new EndpointMetadataCollection(RequireIdempotencyMetadata.Instance), "pay"));
-        return context;
+            http.Request.Headers["Idempotency-Key"] = key;
+        http.Response.Body = new MemoryStream();
+        return (http, EndpointFilterInvocationContext.Create(http));
     }
 
-    private static IdempotencyMiddleware Middleware(RequestDelegate next) =>
-        new(next, NullLogger<IdempotencyMiddleware>.Instance);
+    private static async Task ExecuteIfResult(object? result, HttpContext http)
+    {
+        if (result is IResult r)
+            await r.ExecuteAsync(http);
+    }
 
     [Fact]
-    public async Task Missing_key_on_required_endpoint_returns_400()
+    public async Task Missing_key_returns_400()
     {
-        var context = BuildContext("POST", requireIdempotency: true, new FakeCache());
+        var (http, filterContext) = BuildContext("POST", new FakeCache());
         var called = false;
+        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object?>(Results.Ok()); };
 
-        await Middleware(_ => { called = true; return Task.CompletedTask; }).InvokeAsync(context);
+        var result = await Filter.InvokeAsync(filterContext, next);
 
-        context.Response.StatusCode.Should().Be(400);
+        result.Should().BeOfType<ProblemHttpResult>()
+            .Which.StatusCode.Should().Be(400);
         called.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Non_required_endpoint_passes_through()
+    public async Task Safe_method_passes_through()
     {
-        var context = BuildContext("POST", requireIdempotency: false, new FakeCache());
+        var (_, filterContext) = BuildContext("GET", new FakeCache());
         var called = false;
+        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object?>(Results.Ok()); };
 
-        await Middleware(_ => { called = true; return Task.CompletedTask; }).InvokeAsync(context);
+        await Filter.InvokeAsync(filterContext, next);
 
         called.Should().BeTrue();
     }
@@ -61,23 +68,35 @@ public class IdempotencyTests
     public async Task Replays_stored_response_on_repeated_key()
     {
         var cache = new FakeCache();
-        RequestDelegate handler = async c =>
-        {
-            c.Response.StatusCode = 201;
-            c.Response.ContentType = "application/json";
-            await c.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("{\"id\":1}"));
-        };
+        EndpointFilterDelegate handler = _ => ValueTask.FromResult<object?>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
 
-        var first = BuildContext("POST", requireIdempotency: true, cache, key: "k-1");
-        await Middleware(handler).InvokeAsync(first);
+        var (_, first) = BuildContext("POST", cache, key: "k-1");
+        await Filter.InvokeAsync(first, handler);
 
         var calls = 0;
-        var second = BuildContext("POST", requireIdempotency: true, cache, key: "k-1");
-        await Middleware(c => { calls++; return handler(c); }).InvokeAsync(second);
+        EndpointFilterDelegate countingHandler = _ =>
+        {
+            calls++;
+            return ValueTask.FromResult<object?>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
+        };
+        var (secondHttp, second) = BuildContext("POST", cache, key: "k-1");
+        var result = await Filter.InvokeAsync(second, countingHandler);
+        await ExecuteIfResult(result, secondHttp);
 
         calls.Should().Be(0); // handler not re-run — response replayed from cache
-        second.Response.StatusCode.Should().Be(201);
-        second.Response.Headers["Idempotency-Replayed"].ToString().Should().Be("true");
+        secondHttp.Response.StatusCode.Should().Be(201);
+        secondHttp.Response.Headers["Idempotency-Replayed"].ToString().Should().Be("true");
+    }
+
+    // A DI-free IResult so result execution in unit tests doesn't require JsonOptions/logging services.
+    private sealed class RawResult(int status, string contentType, byte[] body) : IResult
+    {
+        public async Task ExecuteAsync(HttpContext httpContext)
+        {
+            httpContext.Response.StatusCode = status;
+            httpContext.Response.ContentType = contentType;
+            await httpContext.Response.Body.WriteAsync(body, httpContext.RequestAborted);
+        }
     }
 
     private sealed class FakeCache : IDistributedCache
