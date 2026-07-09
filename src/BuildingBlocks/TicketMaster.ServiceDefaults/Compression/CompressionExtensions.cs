@@ -15,16 +15,17 @@ public static class CompressionExtensions
 {
     public static WebApplicationBuilder AddCompression(this WebApplicationBuilder builder)
     {
+        // Accept br/gzip/deflate request bodies; unsupported encodings fall through untouched (415 if the
+        // endpoint can't read them). Default providers only — no custom codecs that could widen the attack surface.
+        builder.Services.AddRequestDecompression();
+        
+        
         builder.Services.AddResponseCompression(o =>
         {
             o.EnableForHttps = false;
             o.Providers.Add<BrotliCompressionProvider>();
             o.Providers.Add<GzipCompressionProvider>();
         });
-
-        // Accept br/gzip/deflate request bodies; unsupported encodings fall through untouched (415 if the
-        // endpoint can't read them). Default providers only — no custom codecs that could widen the attack surface.
-        builder.Services.AddRequestDecompression();
 
         return builder;
     }

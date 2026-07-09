@@ -22,8 +22,22 @@ internal static class HealthCheckExtensions
     public static WebApplicationBuilder AddDefaultHealthChecks(this WebApplicationBuilder builder)
     {
         var cfg = builder.Configuration;
+        
+        
+        // Liveness
         var checks = builder.Services.AddHealthChecks()
             .AddCheck<ThreadPoolStarvationHealthCheck>("threadpool", tags: [Live]);
+        
+        
+        
+        // Startup: schema migrations applied. Tag is its own group (NOT 'ready' — readiness probes the
+        // Debezium Connect URL, and Debezium gates on this, which would deadlock). Tracker is optional.
+        checks.Add(new HealthCheckRegistration(
+            "migrations",
+            sp => new MigrationsAppliedHealthCheck(sp.GetService<MigrationReadinessTracker>()),
+            failureStatus: null,
+            tags: [Startup]));
+
 
         // Drain-on-shutdown: readiness fails the instant SIGTERM arrives so the LB stops routing here before the
         // in-flight drain. Singleton + factory registration so a single ApplicationStopping callback is wired.
@@ -33,14 +47,6 @@ internal static class HealthCheckExtensions
             sp => sp.GetRequiredService<ShutdownReadinessHealthCheck>(),
             failureStatus: HealthStatus.Unhealthy,
             tags: [Ready]));
-
-        // Startup: schema migrations applied. Tag is its own group (NOT 'ready' — readiness probes the
-        // Debezium Connect URL, and Debezium gates on this, which would deadlock). Tracker is optional.
-        checks.Add(new HealthCheckRegistration(
-            "migrations",
-            sp => new MigrationsAppliedHealthCheck(sp.GetService<MigrationReadinessTracker>()),
-            failureStatus: null,
-            tags: [Startup]));
 
         if (cfg.GetConnectionString("Postgres") is { Length: > 0 } postgres)
             checks.AddNpgSql(postgres, name: "postgres", tags: [Ready], timeout: TimeSpan.FromSeconds(3));

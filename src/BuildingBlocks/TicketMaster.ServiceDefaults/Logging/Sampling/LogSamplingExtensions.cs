@@ -32,6 +32,7 @@ public static class LogSamplingExtensions
     {
         if (SamplingActive(app))
             app.UseMiddleware<LogSamplingMiddleware>();
+        
         return app;
     }
 
