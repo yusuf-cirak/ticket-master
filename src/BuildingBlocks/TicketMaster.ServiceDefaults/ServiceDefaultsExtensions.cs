@@ -33,6 +33,8 @@ public static class ServiceDefaultsExtensions
         builder.Services.AddFeatureFlags();
         builder.AddForwardedHeaders(); // trust edge proxy X-Forwarded-* → real client IP + scheme
         builder.AddJwtAuthentication(); // JWT bearer authN + secure-by-default authZ + scope handler
+        builder.AddCurrentUser(); // ICurrentUser over the ambient principal (application/domain-facing)
+        builder.AddAuditLogging(); // IAuditLogger → structured audit trail on the OTel pipeline
         builder.AddDefaultHealthChecks();
 
         return builder;
@@ -74,8 +76,8 @@ public static class ServiceDefaultsExtensions
 
             app.UseOutputCache();
             app.UseDetailedHttpLogging(); // request/response logging (properties, headers, body)
-            app.UseIdempotency(); // replay stored response for repeated Idempotency-Key
-            
+            // Idempotency is now a per-endpoint filter (.RequireIdempotency()) — no global middleware here.
+
             return app;
         }
 
