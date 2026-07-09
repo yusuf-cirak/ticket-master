@@ -3,3 +3,23 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+
+# IDE / editor
+.idea/
+.vs/
+*.DotSettings.user
+*.user
+
+# AI agent / tooling artifacts
+.claude/
+.claude-flow/
+.swarm/
+.mcp.json
+ruvector.db
+
+# Old corrupted git directory (see MEMORY: git history rebuilt from transcripts)
+.git.corrupt/
+
+# Stray shell-redirect / copy-paste artifacts
+/200
+/EmailRegex.IsMatch(input)
