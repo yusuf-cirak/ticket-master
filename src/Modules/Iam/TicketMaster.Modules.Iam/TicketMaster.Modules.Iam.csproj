@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Not PrivateAssets=all: the generated ids reference Vogen.SharedTypes at runtime, so it must flow to output. -->
-    <PackageReference Include="Vogen" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />

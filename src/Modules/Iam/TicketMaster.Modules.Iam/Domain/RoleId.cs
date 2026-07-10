@@ -1,13 +1,17 @@
-using Vogen;
+using TicketMaster.BuildingBlocks.Domain.Identifiers;
 
 namespace TicketMaster.Modules.Iam.Domain;
 
-/// <summary>Strongly-typed role id (Vogen-generated). Seeded time-ordered.</summary>
-[ValueObject<Guid>(conversions: Conversions.Default | Conversions.EfCoreValueConverter)]
-public readonly partial struct RoleId
+/// <summary>Strongly-typed role id. Seeded time-ordered.</summary>
+public sealed record RoleId(Guid Value) : GuidId(Value), IGuidId<RoleId>
 {
-    private static Validation Validate(Guid input) =>
-        input != Guid.Empty ? Validation.Ok : Validation.Invalid("Role id cannot be empty.");
+    public static RoleId New() => new(Guid.CreateVersion7());
 
-    public static RoleId New() => From(Guid.CreateVersion7());
+    /// <summary>Trusted rehydration (EF / JSON) — no validation.</summary>
+    public static RoleId FromGuid(Guid value) => new(value);
+
+    /// <summary>Validated factory for inbound values: rejects the empty GUID.</summary>
+    public static RoleId From(Guid value) => value == Guid.Empty
+        ? throw new ArgumentException("Role id cannot be empty.", nameof(value))
+        : new(value);
 }

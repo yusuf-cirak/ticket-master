@@ -1,13 +1,17 @@
-using Vogen;
+using TicketMaster.BuildingBlocks.Domain.Identifiers;
 
 namespace TicketMaster.Modules.Iam.Domain;
 
-/// <summary>Strongly-typed user id (Vogen-generated equality/validation/EF+JSON converters). Seeded time-ordered.</summary>
-[ValueObject<Guid>(conversions: Conversions.Default | Conversions.EfCoreValueConverter)]
-public readonly partial struct UserId
+/// <summary>Strongly-typed identifier for the User aggregate (users/claims/logins/tokens).</summary>
+public sealed record UserId(Guid Value) : GuidId(Value), IGuidId<UserId>
 {
-    private static Validation Validate(Guid input) =>
-        input != Guid.Empty ? Validation.Ok : Validation.Invalid("User id cannot be empty.");
+    public static UserId New() => new(Guid.CreateVersion7());
 
-    public static UserId New() => From(Guid.CreateVersion7());
+    /// <summary>Trusted rehydration (EF / JSON) — no validation.</summary>
+    public static UserId FromGuid(Guid value) => new(value);
+
+    /// <summary>Validated factory for inbound values: rejects the empty GUID.</summary>
+    public static UserId From(Guid value) => value == Guid.Empty
+        ? throw new ArgumentException("UserId cannot be empty.", nameof(value))
+        : new(value);
 }

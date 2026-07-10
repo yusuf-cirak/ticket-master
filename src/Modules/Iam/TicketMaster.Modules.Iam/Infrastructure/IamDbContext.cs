@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Identifiers;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using TicketMaster.Modules.Iam.Domain;
 
@@ -30,8 +31,8 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        configurationBuilder.Properties<UserId>().HaveConversion<UserId.EfCoreValueConverter>();
-        configurationBuilder.Properties<RoleId>().HaveConversion<RoleId.EfCoreValueConverter>();
+        // One convention converts every strongly-typed id (UserId, RoleId, …) to its underlying column type.
+        configurationBuilder.ApplyStronglyTypedIds(typeof(IamDbContext).Assembly);
         // Domain string columns are never null — null ⇄ empty string on both read and write.
         configurationBuilder.Properties<string>().HaveConversion<NullToEmptyStringConverter>();
     }
