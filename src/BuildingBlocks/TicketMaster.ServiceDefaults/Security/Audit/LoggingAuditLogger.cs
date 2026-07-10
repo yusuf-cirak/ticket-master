@@ -27,9 +27,9 @@ internal sealed partial class LoggingAuditLogger(ILogger<LoggingAuditLogger> log
     }
 
     [LoggerMessage(EventId = 9001, Level = LogLevel.Information,
-        Message = "audit {audit_action} by {actor} on {entity_type}/{entity_id}")]
+        Message = "audit {auditAction} by {actor} on {entityType}/{entityId}")]
     private static partial void Emit(
-        ILogger logger, string audit_action, string actor, string entity_type, string entity_id);
+        ILogger logger, string auditAction, string actor, string entityType, string entityId);
 }
 
 public static class AuditLoggerExtensions

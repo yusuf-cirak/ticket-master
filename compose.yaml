@@ -1,0 +1,7 @@
+﻿services:
+  ticketmaster.apphost:
+    image: ticketmaster.apphost
+    build:
+      context: .
+      dockerfile: src/Host/TicketMaster.AppHost/Dockerfile
+
