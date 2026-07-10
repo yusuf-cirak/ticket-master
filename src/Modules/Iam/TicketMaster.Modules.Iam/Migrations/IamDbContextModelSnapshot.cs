@@ -106,9 +106,12 @@ namespace TicketMaster.Modules.Iam.Migrations
 
             modelBuilder.Entity("TicketMaster.Modules.Iam.Domain.Role", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")

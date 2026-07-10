@@ -12,7 +12,7 @@ using TicketMaster.Modules.Iam.Infrastructure;
 namespace TicketMaster.Modules.Iam.Migrations
 {
     [DbContext(typeof(IamDbContext))]
-    [Migration("20260710230012_InitialIam")]
+    [Migration("20260710232640_InitialIam")]
     partial class InitialIam
     {
         /// <inheritdoc />
@@ -109,9 +109,12 @@ namespace TicketMaster.Modules.Iam.Migrations
 
             modelBuilder.Entity("TicketMaster.Modules.Iam.Domain.Role", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")

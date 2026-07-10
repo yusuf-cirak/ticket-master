@@ -16,7 +16,7 @@ public sealed class Role : AuditableAggregateRoot<RoleId>
 
     private Role() { } // EF
 
-    private Role(RoleId id, string name) : base(id) => Name = name;
+    private Role(string name) => Name = name; // Id is a database-generated int identity, assigned on insert
 
     public string Name { get; private set; } = string.Empty;
     public IReadOnlyCollection<string> Permissions => _permissions;
@@ -28,7 +28,7 @@ public sealed class Role : AuditableAggregateRoot<RoleId>
         if (name.Length > 100)
             return Error.Create("role.name_too_long", "Role name must be at most 100 characters.", 400);
 
-        var role = new Role(RoleId.New(), name.Trim());
+        var role = new Role(name.Trim());
         if (permissions is not null)
             foreach (var permission in permissions)
                 role.Grant(permission);

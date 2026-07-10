@@ -52,7 +52,8 @@ namespace TicketMaster.Modules.Iam.Migrations
                 schema: "iam",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     permissions = table.Column<string[]>(type: "text[]", nullable: true),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),

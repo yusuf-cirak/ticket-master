@@ -39,7 +39,7 @@ public class UserTests
     public void AssignRole_adds_role_once()
     {
         var user = User.Register(AnEmail(), "Ada").Value;
-        var roleId = RoleId.New();
+        var roleId = RoleId.From(1);
 
         user.AssignRole(roleId);
         user.AssignRole(roleId);
