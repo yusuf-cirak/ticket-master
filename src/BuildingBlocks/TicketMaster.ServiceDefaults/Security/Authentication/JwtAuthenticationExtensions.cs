@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using TicketMaster.BuildingBlocks.Domain.Security;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -60,6 +61,7 @@ public static class JwtAuthenticationExtensions
 
                 o.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = RejectRevokedToken,
                     OnChallenge = WriteChallengeProblem,
                     OnForbidden = WriteForbiddenProblem,
                     OnAuthenticationFailed = SuppressFailureDetail
@@ -94,6 +96,19 @@ public static class JwtAuthenticationExtensions
     // Don't surface token-validation specifics to the caller; the generic challenge response stands. Details remain
     // in the trace/logs for diagnostics.
     private static Task SuppressFailureDetail(AuthenticationFailedContext context) => Task.CompletedTask;
+
+    // A token can be signed, unexpired, and still revoked (logout / forced sign-out). Reject it if its jti is on the
+    // blacklist. Fails open if the blacklist store is unavailable (the store swallows its own backing-store errors).
+    private static async Task RejectRevokedToken(TokenValidatedContext context)
+    {
+        var jti = context.Principal?.FindFirst("jti")?.Value;
+        if (string.IsNullOrEmpty(jti))
+            return;
+
+        var blacklist = context.HttpContext.RequestServices.GetService<ITokenBlacklist>();
+        if (blacklist is not null && await blacklist.IsRevokedAsync(jti, context.HttpContext.RequestAborted))
+            context.Fail("token_revoked");
+    }
 
     private static async Task WriteProblem(HttpContext http, int status, string title, string detail)
     {

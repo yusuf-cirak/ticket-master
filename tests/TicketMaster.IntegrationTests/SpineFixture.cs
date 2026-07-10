@@ -53,7 +53,7 @@ public sealed class SpineFixture : IAsyncLifetime
             Expires = DateTime.UtcNow.AddMinutes(5),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSigningKey)), SecurityAlgorithms.HmacSha256),
-            Claims = new Dictionary<string, object> { ["sub"] = "test-user-1" }
+            Claims = new Dictionary<string, object> { ["sub"] = "test-user-1", ["jti"] = Guid.NewGuid().ToString("N") }
         };
         if (scopes.Length > 0)
             descriptor.Claims["scope"] = string.Join(' ', scopes);
