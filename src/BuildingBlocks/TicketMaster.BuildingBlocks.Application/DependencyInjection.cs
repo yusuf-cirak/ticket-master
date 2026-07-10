@@ -2,6 +2,8 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using TicketMaster.BuildingBlocks.Application.Abstractions.Locking;
 using TicketMaster.BuildingBlocks.Application.Behaviors;
 
 namespace TicketMaster.BuildingBlocks.Application;
@@ -18,10 +20,14 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(handlerAssemblies);
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>)); // runs before handlers
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>)); // validate first
+            cfg.AddOpenBehavior(typeof(LockBehavior<,>)); // then acquire the distributed lock (if ILockRequest)
         });
 
         services.AddValidatorsFromAssemblies(handlerAssemblies, includeInternalTypes: true);
+
+        // Fail-loud default; the Redis infrastructure registration overrides it with the real lock.
+        services.TryAddSingleton<IDistributedLock, UnconfiguredDistributedLock>();
         return services;
     }
 }
