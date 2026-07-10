@@ -6,8 +6,8 @@ namespace TicketMaster.ServiceDefaults.Serialization;
 
 /// <summary>
 /// Serializes any strongly-typed id as its bare underlying value (a UserId is just its GUID on the wire, not an
-/// object) and reads it back into the strong type. Register once in the JSON options; it covers every current and
-/// future GuidId/StringId/IntId.
+/// object) and reads it back into the strong type via its constructor. Register once in the JSON options; it covers
+/// every current and future GuidId/StringId/IntId with no per-id code.
 /// </summary>
 public sealed class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
 {
@@ -27,10 +27,10 @@ public sealed class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
     }
 }
 
-public sealed class GuidIdJsonConverter<TId> : JsonConverter<TId> where TId : GuidId, IGuidId<TId>
+public sealed class GuidIdJsonConverter<TId> : JsonConverter<TId> where TId : GuidId
 {
     public override TId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => reader.TokenType == JsonTokenType.Null ? null : TId.FromGuid(reader.GetGuid());
+        => reader.TokenType == JsonTokenType.Null ? null : StronglyTypedIdFactory<TId, Guid>.Create(reader.GetGuid());
 
     public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
     {
@@ -39,10 +39,10 @@ public sealed class GuidIdJsonConverter<TId> : JsonConverter<TId> where TId : Gu
     }
 }
 
-public sealed class StringIdJsonConverter<TId> : JsonConverter<TId> where TId : StringId, IStringId<TId>
+public sealed class StringIdJsonConverter<TId> : JsonConverter<TId> where TId : StringId
 {
     public override TId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => reader.TokenType == JsonTokenType.Null ? null : TId.FromString(reader.GetString());
+        => reader.TokenType == JsonTokenType.Null ? null : StronglyTypedIdFactory<TId, string>.Create(reader.GetString());
 
     public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
     {
@@ -51,10 +51,10 @@ public sealed class StringIdJsonConverter<TId> : JsonConverter<TId> where TId : 
     }
 }
 
-public sealed class IntIdJsonConverter<TId> : JsonConverter<TId> where TId : IntId, IIntId<TId>
+public sealed class IntIdJsonConverter<TId> : JsonConverter<TId> where TId : IntId
 {
     public override TId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => reader.TokenType == JsonTokenType.Null ? null : TId.FromInt(reader.GetInt32());
+        => reader.TokenType == JsonTokenType.Null ? null : StronglyTypedIdFactory<TId, int>.Create(reader.GetInt32());
 
     public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
     {

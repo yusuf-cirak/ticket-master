@@ -10,13 +10,40 @@ namespace TicketMaster.UnitTests.BuildingBlocks;
 
 public class StronglyTypedIdTests
 {
-    private sealed record TestId(Guid Value) : GuidId(Value), IGuidId<TestId>
+    private sealed record TestId(Guid Value) : GuidId(Value), IParsable<TestId>
     {
-        public static TestId FromGuid(Guid value) => new(value);
+        public static TestId Parse(string s, IFormatProvider provider) => new(Guid.Parse(s));
+
+        public static bool TryParse(string s, IFormatProvider provider, out TestId result)
+        {
+            if (Guid.TryParse(s, out var value)) { result = new TestId(value); return true; }
+            result = null;
+            return false;
+        }
     }
 
-    // Route/query binding reaches TryParse through the IParsable<T> constraint (as minimal APIs do), not directly —
-    // the interface members are explicit implementations.
+    private sealed record AltId(Guid Value) : GuidId(Value);
+
+    private sealed record Slug(string Value) : StringId(Value);
+
+    [Fact]
+    public void StringId_trims_and_treats_null_as_empty()
+    {
+        new Slug("  abc  ").Value.Should().Be("abc");
+        new Slug(null).Value.Should().Be(string.Empty);
+        new Slug(" x ").Should().Be(new Slug("x")); // normalized → equal
+    }
+
+    [Fact]
+    public void String_column_converter_trims_on_write()
+    {
+        // Trim is the converter's job; the null-free guarantee comes from non-null (empty-initialized) domain
+        // properties, so EF never hands the converter a null to begin with.
+        var converter = new TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.NullToEmptyStringConverter();
+        converter.ConvertToProvider("  padded  ").Should().Be("padded");
+    }
+
+    // Route/query binding reaches TryParse through the IParsable<T> constraint, exactly as minimal APIs do.
     private static bool TryParseId<T>(string text, out T result) where T : IParsable<T>
         => T.TryParse(text, null, out result);
 
@@ -44,7 +71,7 @@ public class StronglyTypedIdTests
     }
 
     [Fact]
-    public void Ef_converter_maps_to_and_from_the_underlying_guid()
+    public void Ef_converter_maps_to_and_from_the_underlying_guid_via_constructor()
     {
         var converter = new GuidIdConverter<TestId>();
         var guid = Guid.NewGuid();
@@ -59,10 +86,5 @@ public class StronglyTypedIdTests
         var guid = Guid.NewGuid();
         // Records compare the EqualityContract too, so two id families never collide even with the same value.
         ((object)new TestId(guid)).Equals(new AltId(guid)).Should().BeFalse();
-    }
-
-    private sealed record AltId(Guid Value) : GuidId(Value), IGuidId<AltId>
-    {
-        public static AltId FromGuid(Guid value) => new(value);
     }
 }
