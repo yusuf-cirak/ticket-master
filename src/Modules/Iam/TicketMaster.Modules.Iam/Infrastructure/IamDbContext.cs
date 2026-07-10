@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using TicketMaster.Modules.Iam.Domain;
 
 namespace TicketMaster.Modules.Iam.Infrastructure;
@@ -38,6 +39,8 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
             entity.HasIndex(r => r.Name).IsUnique();
             entity.PrimitiveCollection(r => r.Permissions); // jsonb array of resource:action strings
         });
+
+        modelBuilder.ApplySoftDeleteFilters(); // global !IsDeleted filter for ISoftDeletable entities
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

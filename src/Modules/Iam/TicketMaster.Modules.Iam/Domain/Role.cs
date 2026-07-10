@@ -9,7 +9,7 @@ namespace TicketMaster.Modules.Iam.Domain;
 /// authorization; the role → permission mapping is what the cached permission resolver reads at request time, so
 /// the JWT need only carry role names, never a frozen permission list. Construct via <see cref="Create"/>.
 /// </summary>
-public sealed class Role : AggregateRoot<RoleId>, IAuditable
+public sealed class Role : AggregateRoot<RoleId>, IAuditable, ISoftDeletable
 {
     private readonly HashSet<string> _permissions = new(StringComparer.Ordinal);
 
@@ -24,6 +24,10 @@ public sealed class Role : AggregateRoot<RoleId>, IAuditable
     public string CreatedBy { get; set; } = string.Empty;
     public DateTimeOffset? ModifiedAtUtc { get; set; }
     public string ModifiedBy { get; set; } = string.Empty;
+
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAtUtc { get; set; }
+    public string DeletedBy { get; set; } = string.Empty;
 
     public static Result<Role> Create(string name, IEnumerable<string> permissions = null)
     {

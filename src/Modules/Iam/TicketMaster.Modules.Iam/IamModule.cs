@@ -28,6 +28,7 @@ public sealed class IamModule : IModule
     {
         services.AddDomainEventDispatch();
         services.AddAuditing();
+        services.AddSoftDelete();
 
         services.AddDbContext<IamDbContext>((sp, o) =>
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
@@ -35,7 +36,8 @@ public sealed class IamModule : IModule
                 .UseSnakeCaseNamingConvention()
                 .AddInterceptors(
                     sp.GetRequiredService<DomainEventDispatchInterceptor>(),
-                    sp.GetRequiredService<AuditingSaveChangesInterceptor>()));
+                    sp.GetRequiredService<AuditingSaveChangesInterceptor>(),
+                    sp.GetRequiredService<SoftDeleteSaveChangesInterceptor>()));
 
         services.AddIdentityCore<User>(options =>
             {
