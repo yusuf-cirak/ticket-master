@@ -115,6 +115,7 @@ public class InterceptorTests
     {
         public bool IsAuthenticated => userId is not null;
         public string UserId => userId ?? string.Empty;
+        public string TokenId => string.Empty;
         public string UserName => userId ?? string.Empty;
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];

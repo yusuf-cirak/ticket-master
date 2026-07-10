@@ -20,6 +20,7 @@ internal sealed class HttpContextCurrentUser(IHttpContextAccessor accessor) : IC
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
 
     public string UserId => Principal?.FindFirstValue("sub") ?? string.Empty;
+    public string TokenId => Principal?.FindFirstValue("jti") ?? string.Empty;
 
     public string UserName =>
         Principal?.FindFirstValue("name") ?? Principal?.FindFirstValue("preferred_username") ?? string.Empty;

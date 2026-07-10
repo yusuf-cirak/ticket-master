@@ -4,7 +4,9 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TicketMaster.BuildingBlocks.Application.Abstractions.Locking;
+using TicketMaster.BuildingBlocks.Application.Abstractions.Security;
 using TicketMaster.BuildingBlocks.Application.Behaviors;
+using TicketMaster.BuildingBlocks.Domain.Security;
 
 namespace TicketMaster.BuildingBlocks.Application;
 
@@ -20,7 +22,8 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(handlerAssemblies);
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>)); // validate first
+            cfg.AddOpenBehavior(typeof(SensitiveRequestBehavior<,>)); // re-verify caller (if ISensitiveRequest)
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>)); // then validate
             cfg.AddOpenBehavior(typeof(LockBehavior<,>)); // then acquire the distributed lock (if ILockRequest)
         });
 
@@ -28,6 +31,9 @@ public static class DependencyInjection
 
         // Fail-loud default; the Redis infrastructure registration overrides it with the real lock.
         services.TryAddSingleton<IDistributedLock, UnconfiguredDistributedLock>();
+        // Safe defaults so the security behaviors always resolve; the host/Redis registrations override them.
+        services.TryAddSingleton<ICurrentUser, AnonymousCurrentUser>();
+        services.TryAddSingleton<ITokenBlacklist, NoOpTokenBlacklist>();
         return services;
     }
 }

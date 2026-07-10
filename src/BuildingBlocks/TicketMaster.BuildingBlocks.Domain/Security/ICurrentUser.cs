@@ -13,6 +13,9 @@ public interface ICurrentUser
     /// <summary>The <c>sub</c> claim — the stable subject id; empty when unauthenticated.</summary>
     string UserId { get; }
 
+    /// <summary>The <c>jti</c> claim — the current token's id; empty when unauthenticated. Used to re-check revocation.</summary>
+    string TokenId { get; }
+
     string UserName { get; }
 
     IReadOnlyCollection<string> Roles { get; }

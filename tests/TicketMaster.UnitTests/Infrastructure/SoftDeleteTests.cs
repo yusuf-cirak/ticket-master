@@ -59,6 +59,7 @@ public class SoftDeleteTests
     {
         public bool IsAuthenticated => userId.Length > 0;
         public string UserId => userId;
+        public string TokenId => string.Empty;
         public string UserName => userId;
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
