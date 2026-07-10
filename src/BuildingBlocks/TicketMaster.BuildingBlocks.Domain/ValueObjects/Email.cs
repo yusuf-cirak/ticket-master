@@ -66,7 +66,7 @@ public sealed partial record Email
         }
     }
 
-    public static Result<Email> Create(string? input)
+    public static Result<Email> Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return Error.Create("email.empty", "Email address is required.", 400);

@@ -21,7 +21,7 @@ namespace TicketMaster.Modules.Iam.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    display_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    display_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     created_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<string>(type: "text", nullable: true),
@@ -53,8 +53,8 @@ namespace TicketMaster.Modules.Iam.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    permissions = table.Column<string[]>(type: "text[]", nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    permissions = table.Column<string[]>(type: "text[]", nullable: true),
                     created_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<string>(type: "text", nullable: true),
                     modified_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),

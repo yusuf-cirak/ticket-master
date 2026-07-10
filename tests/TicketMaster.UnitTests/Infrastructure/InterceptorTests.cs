@@ -114,8 +114,8 @@ public class InterceptorTests
     private sealed class StubCurrentUser(string? userId) : ICurrentUser
     {
         public bool IsAuthenticated => userId is not null;
-        public string? UserId => userId;
-        public string? UserName => userId;
+        public YC.Monad.Option<string> UserId => YC.Monad.Option.Create(userId);
+        public YC.Monad.Option<string> UserName => YC.Monad.Option.Create(userId);
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
         public bool HasPermission(string permission) => false;

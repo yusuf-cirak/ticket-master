@@ -12,7 +12,7 @@ using TicketMaster.Modules.Iam.Infrastructure;
 namespace TicketMaster.Modules.Iam.Migrations
 {
     [DbContext(typeof(IamDbContext))]
-    [Migration("20260709193537_InitialIam")]
+    [Migration("20260710194004_InitialIam")]
     partial class InitialIam
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace TicketMaster.Modules.Iam.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("iam")
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -130,13 +130,11 @@ namespace TicketMaster.Modules.Iam.Migrations
                         .HasColumnName("modified_by");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.PrimitiveCollection<string[]>("Permissions")
-                        .IsRequired()
                         .HasColumnType("text[]")
                         .HasColumnName("permissions");
 
@@ -174,7 +172,6 @@ namespace TicketMaster.Modules.Iam.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("display_name");

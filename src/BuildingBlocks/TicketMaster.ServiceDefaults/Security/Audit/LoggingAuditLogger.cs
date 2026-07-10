@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
 using TicketMaster.BuildingBlocks.Domain.Security;
+using YC.Monad;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -22,7 +23,7 @@ internal sealed partial class LoggingAuditLogger(ILogger<LoggingAuditLogger> log
         CancellationToken cancellationToken = default)
     {
         using var scope = data is { Count: > 0 } ? logger.BeginScope(data) : null;
-        Emit(logger, action, currentUser.UserId ?? "anonymous", entityType, entityId);
+        Emit(logger, action, currentUser.UserId.Match(() => "anonymous", id => id), entityType, entityId);
         return Task.CompletedTask;
     }
 

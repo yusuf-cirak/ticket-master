@@ -7,7 +7,7 @@ public abstract class Entity<TId> where TId : notnull
     protected Entity(TId id) => Id = id;
     protected Entity() { }
 
-    public override bool Equals(object? obj) =>
+    public override bool Equals(object obj) =>
         obj is Entity<TId> other && GetType() == other.GetType() && Id.Equals(other.Id);
 
     public override int GetHashCode() => HashCode.Combine(GetType(), Id);

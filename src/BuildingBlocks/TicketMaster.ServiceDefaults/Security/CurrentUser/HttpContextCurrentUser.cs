@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using TicketMaster.BuildingBlocks.Domain.Security;
+using YC.Monad;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -19,10 +20,10 @@ internal sealed class HttpContextCurrentUser(IHttpContextAccessor accessor) : IC
 
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
 
-    public string? UserId => Principal?.FindFirstValue("sub");
+    public Option<string> UserId => Option.Create(Principal?.FindFirstValue("sub"));
 
-    public string? UserName =>
-        Principal?.FindFirstValue("name") ?? Principal?.FindFirstValue("preferred_username");
+    public Option<string> UserName =>
+        Option.Create(Principal?.FindFirstValue("name") ?? Principal?.FindFirstValue("preferred_username"));
 
     public IReadOnlyCollection<string> Roles =>
         Principal?.FindAll("role").Select(c => c.Value).ToArray() ?? [];

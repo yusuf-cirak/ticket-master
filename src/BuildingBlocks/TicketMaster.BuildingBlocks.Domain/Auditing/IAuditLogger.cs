@@ -10,8 +10,8 @@ public interface IAuditLogger
 {
     Task LogAsync(
         string action,
-        string? entityType = null,
-        string? entityId = null,
-        IReadOnlyDictionary<string, object?>? data = null,
+        string entityType = null,
+        string entityId = null,
+        IReadOnlyDictionary<string, object> data = null,
         CancellationToken cancellationToken = default);
 }

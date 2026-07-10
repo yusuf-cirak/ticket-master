@@ -2,9 +2,9 @@ namespace TicketMaster.BuildingBlocks.Domain;
 
 public abstract class ValueObject
 {
-    protected abstract IEnumerable<object?> GetEqualityComponents();
+    protected abstract IEnumerable<object> GetEqualityComponents();
 
-    public override bool Equals(object? obj) =>
+    public override bool Equals(object obj) =>
         obj is ValueObject other && GetType() == other.GetType()
         && GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
 
