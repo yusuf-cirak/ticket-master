@@ -23,22 +23,7 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema(Schema);
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.Ignore(u => u.DomainEvents);
-            entity.Ignore(u => u.Roles); // role assignments are persisted in the authorization slice
-            entity.Property(u => u.DisplayName).HasMaxLength(200);
-            entity.Property(u => u.Status).HasConversion<string>().HasMaxLength(20);
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasKey(r => r.Id);
-            entity.Ignore(r => r.DomainEvents);
-            entity.Property(r => r.Name).HasMaxLength(100);
-            entity.HasIndex(r => r.Name).IsUnique();
-            entity.PrimitiveCollection(r => r.Permissions); // jsonb array of resource:action strings
-        });
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IamDbContext).Assembly); // IEntityTypeConfiguration<>
 
         modelBuilder.ApplySoftDeleteFilters(); // global !IsDeleted filter for ISoftDeletable entities
     }
