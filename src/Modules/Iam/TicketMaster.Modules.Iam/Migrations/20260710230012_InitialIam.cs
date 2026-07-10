@@ -55,6 +55,7 @@ namespace TicketMaster.Modules.Iam.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     permissions = table.Column<string[]>(type: "text[]", nullable: true),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     created_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<string>(type: "text", nullable: true),
                     modified_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),

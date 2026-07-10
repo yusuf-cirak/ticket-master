@@ -12,7 +12,7 @@ using TicketMaster.Modules.Iam.Infrastructure;
 namespace TicketMaster.Modules.Iam.Migrations
 {
     [DbContext(typeof(IamDbContext))]
-    [Migration("20260710211604_InitialIam")]
+    [Migration("20260710230012_InitialIam")]
     partial class InitialIam
     {
         /// <inheritdoc />
@@ -149,6 +149,12 @@ namespace TicketMaster.Modules.Iam.Migrations
                     b.PrimitiveCollection<string[]>("Permissions")
                         .HasColumnType("text[]")
                         .HasColumnName("permissions");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id")
                         .HasName("pk_roles");

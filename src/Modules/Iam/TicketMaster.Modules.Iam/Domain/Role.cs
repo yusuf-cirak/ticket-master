@@ -11,7 +11,8 @@ namespace TicketMaster.Modules.Iam.Domain;
 /// </summary>
 public sealed class Role : AuditableAggregateRoot<RoleId>
 {
-    private readonly HashSet<string> _permissions = new(StringComparer.Ordinal);
+    // A list (not a set) because EF primitive collections must be an array/IList; uniqueness is kept via Grant/Create.
+    private readonly List<string> _permissions = [];
 
     private Role() { } // EF
 
@@ -30,12 +31,16 @@ public sealed class Role : AuditableAggregateRoot<RoleId>
         var role = new Role(RoleId.New(), name.Trim());
         if (permissions is not null)
             foreach (var permission in permissions)
-                role._permissions.Add(permission);
+                role.Grant(permission);
 
         return role;
     }
 
-    public void Grant(string permission) => _permissions.Add(permission);
+    public void Grant(string permission)
+    {
+        if (!_permissions.Contains(permission))
+            _permissions.Add(permission);
+    }
 
     public void Revoke(string permission) => _permissions.Remove(permission);
 }

@@ -147,6 +147,12 @@ namespace TicketMaster.Modules.Iam.Migrations
                         .HasColumnType("text[]")
                         .HasColumnName("permissions");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id")
                         .HasName("pk_roles");
 
