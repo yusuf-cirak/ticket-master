@@ -8,7 +8,7 @@ namespace TicketMaster.ServiceDefaults;
 /// External orchestration gates on this — e.g. Debezium waits for it before building its outbox publication.
 /// When no migrators are registered (<paramref name="tracker"/> null) it is vacuously Healthy.
 /// </summary>
-internal sealed class MigrationsAppliedHealthCheck(MigrationReadinessTracker? tracker) : IHealthCheck
+internal sealed class MigrationsAppliedHealthCheck(MigrationReadinessTracker tracker) : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {

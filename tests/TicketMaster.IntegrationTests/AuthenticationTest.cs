@@ -11,7 +11,8 @@ namespace TicketMaster.IntegrationTests;
 /// anonymous (401) and insufficiently-scoped (403) callers and admits a correctly-scoped token (200). Confirms
 /// the secure-by-default fallback policy, scope enforcement, and problem+json challenge.
 /// </summary>
-public sealed class AuthenticationTest(SpineFixture fixture) : IClassFixture<SpineFixture>
+[Collection(IntegrationCollection.Name)]
+public sealed class AuthenticationTest(SpineFixture fixture) 
 {
     private const string Probe = "/api/whoami";
 

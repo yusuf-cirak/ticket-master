@@ -34,14 +34,14 @@ internal sealed class SensitiveDataLogRecordProcessor : BaseProcessor<LogRecord>
         if (record.Attributes is not { Count: > 0 } attributes)
             return;
 
-        List<KeyValuePair<string, object?>>? rewritten = null;
+        List<KeyValuePair<string, object>> rewritten = null;
         for (var i = 0; i < attributes.Count; i++)
         {
             if (attributes[i].Value is null || !IsSensitive(attributes[i].Key))
                 continue;
 
-            rewritten ??= new List<KeyValuePair<string, object?>>(attributes);
-            rewritten[i] = new KeyValuePair<string, object?>(attributes[i].Key, Mask);
+            rewritten ??= new List<KeyValuePair<string, object>>(attributes);
+            rewritten[i] = new KeyValuePair<string, object>(attributes[i].Key, Mask);
         }
 
         if (rewritten is not null)

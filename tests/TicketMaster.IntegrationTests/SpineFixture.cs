@@ -175,6 +175,19 @@ public sealed class SpineFixture : IAsyncLifetime
         await RegisterOutboxConnectorAsync();
     }
 
+    /// <summary>
+    /// Flushes the shared Redis so a rate-limit-sensitive test starts from a clean window. The whole assembly shares
+    /// one Redis (single container), so tests that assert exact rate-limit counts must reset it first; tests run
+    /// sequentially within the collection, so this is safe.
+    /// </summary>
+    public async Task ResetRedisAsync()
+    {
+        await using var mux = await StackExchange.Redis.ConnectionMultiplexer.ConnectAsync(
+            $"{RedisConnectionString},allowAdmin=true");
+        foreach (var endpoint in mux.GetEndPoints())
+            await mux.GetServer(endpoint).FlushDatabaseAsync();
+    }
+
     public async Task DisposeAsync()
     {
         Client?.Dispose();

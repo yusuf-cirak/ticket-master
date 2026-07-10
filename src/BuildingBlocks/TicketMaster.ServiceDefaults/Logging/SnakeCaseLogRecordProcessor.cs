@@ -17,7 +17,7 @@ internal sealed class SnakeCaseLogRecordProcessor : BaseProcessor<LogRecord>
             return;
 
         var changed = false;
-        var rewritten = new List<KeyValuePair<string, object?>>(attributes.Count);
+        var rewritten = new List<KeyValuePair<string, object>>(attributes.Count);
         foreach (var attribute in attributes)
         {
             // Leave OTel's special placeholder keys (e.g. "{OriginalFormat}", which carries the message
@@ -30,7 +30,7 @@ internal sealed class SnakeCaseLogRecordProcessor : BaseProcessor<LogRecord>
 
             var key = SnakeCase.Convert(attribute.Key);
             if (key != attribute.Key) changed = true;
-            rewritten.Add(new KeyValuePair<string, object?>(key, attribute.Value));
+            rewritten.Add(new KeyValuePair<string, object>(key, attribute.Value));
         }
 
         // Only reassign when something actually changed — semconv-only records (all keys already

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
 using TicketMaster.Modules.Iam.Domain;
 
 namespace TicketMaster.Modules.Iam.Infrastructure;
@@ -43,5 +44,7 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
     {
         configurationBuilder.Properties<UserId>().HaveConversion<UserId.EfCoreValueConverter>();
         configurationBuilder.Properties<RoleId>().HaveConversion<RoleId.EfCoreValueConverter>();
+        // Domain string columns are never null — null ⇄ empty string on both read and write.
+        configurationBuilder.Properties<string>().HaveConversion<NullToEmptyStringConverter>();
     }
 }

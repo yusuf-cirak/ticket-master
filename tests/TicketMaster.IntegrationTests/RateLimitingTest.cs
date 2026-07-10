@@ -9,7 +9,8 @@ namespace TicketMaster.IntegrationTests;
 /// (configured 20/5s × the anon tier 0.25 = 5 permits) is enforced, and the 6th request in the window is
 /// rejected with an RFC-7807 429 + Retry-After.
 /// </summary>
-public sealed class RateLimitingTest(SpineFixture fixture) : IClassFixture<SpineFixture>
+[Collection(IntegrationCollection.Name)]
+public sealed class RateLimitingTest(SpineFixture fixture) 
 {
     private const int AnonymousBurstPermits = 5; // ceil(20 * 0.25)
 
@@ -17,6 +18,8 @@ public sealed class RateLimitingTest(SpineFixture fixture) : IClassFixture<Spine
     public async Task BurstLimit_IsEnforced_Returns429WithProblemDetailsAndRetryAfter()
     {
         // The first <permit> requests in the window are admitted (not 429).
+        await fixture.ResetRedisAsync(); // start from a clean rate-limit window (Redis is shared across tests)
+
         for (var i = 0; i < AnonymousBurstPermits; i++)
         {
             var ok = await fixture.Client.PostAsJsonAsync("/api/platform/ping", new { note = $"rl-{i}" });

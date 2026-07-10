@@ -57,8 +57,8 @@ public class InterceptorTests
     }
 
     private static TestDbContext NewContext(
-        DomainEventDispatchInterceptor? domainEvents = null,
-        AuditingSaveChangesInterceptor? auditing = null)
+        DomainEventDispatchInterceptor domainEvents = null,
+        AuditingSaveChangesInterceptor auditing = null)
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString());
@@ -82,9 +82,9 @@ public class InterceptorTests
 
         public string Name { get; set; } = "";
         public DateTimeOffset CreatedAtUtc { get; set; }
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
         public DateTimeOffset? ModifiedAtUtc { get; set; }
-        public string? ModifiedBy { get; set; }
+        public string ModifiedBy { get; set; }
 
         public void RaisePre() => Raise(new PreEvent());
         public void RaisePost() => Raise(new PostEvent());
@@ -111,11 +111,11 @@ public class InterceptorTests
         }
     }
 
-    private sealed class StubCurrentUser(string? userId) : ICurrentUser
+    private sealed class StubCurrentUser(string userId) : ICurrentUser
     {
         public bool IsAuthenticated => userId is not null;
-        public YC.Monad.Option<string> UserId => YC.Monad.Option.Create(userId);
-        public YC.Monad.Option<string> UserName => YC.Monad.Option.Create(userId);
+        public string UserId => userId ?? string.Empty;
+        public string UserName => userId ?? string.Empty;
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
         public bool HasPermission(string permission) => false;

@@ -9,7 +9,7 @@ namespace TicketMaster.BuildingBlocks.Infrastructure.Outbox;
 public sealed class OutboxWriter(DbContext dbContext) : IOutboxWriter
 {
     public OutboxMessage Enqueue(IntegrationEvent @event, string aggregateType, string aggregateId,
-        string? correlationId = null, string? causationId = null)
+        string correlationId = null, string causationId = null)
     {
         var row = new OutboxMessage
         {

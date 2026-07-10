@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
 using TicketMaster.BuildingBlocks.Domain.Security;
-using YC.Monad;
 
 namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 
@@ -26,13 +25,13 @@ public sealed class AuditingSaveChangesInterceptor(ICurrentUser currentUser, Tim
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    private void Stamp(DbContext? context)
+    private void Stamp(DbContext context)
     {
         if (context is null)
             return;
 
         var now = clock.GetUtcNow();
-        var actor = currentUser.UserId.Match(() => "system", id => id);
+        var actor = string.IsNullOrEmpty(currentUser.UserId) ? "system" : currentUser.UserId;
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
         {

@@ -21,7 +21,7 @@ public sealed class RedisOptions
     public string ServiceName { get; init; } = "tm-master";
 
     /// <summary>Optional auth password for the data nodes (master/replicas).</summary>
-    public string? Password { get; init; }
+    public string Password { get; init; }
 
     public int Database { get; init; }
 

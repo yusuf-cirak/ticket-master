@@ -18,7 +18,7 @@ namespace TicketMaster.Modules.Platform.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("platform")
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -46,16 +46,15 @@ namespace TicketMaster.Modules.Platform.Migrations
             modelBuilder.Entity("TicketMaster.BuildingBlocks.Infrastructure.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("AggregateId")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("aggregate_id");
 
                     b.Property<string>("AggregateType")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("aggregate_type");
 
@@ -68,7 +67,6 @@ namespace TicketMaster.Modules.Platform.Migrations
                         .HasColumnName("correlation_id");
 
                     b.Property<string>("EventType")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("event_type");
 
@@ -77,7 +75,6 @@ namespace TicketMaster.Modules.Platform.Migrations
                         .HasColumnName("occurred_on");
 
                     b.Property<string>("Payload")
-                        .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("payload");
 

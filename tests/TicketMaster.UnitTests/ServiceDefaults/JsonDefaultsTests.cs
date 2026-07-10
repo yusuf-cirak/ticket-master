@@ -13,7 +13,7 @@ public class JsonDefaultsTests
 {
     private enum Color { Red, Green }
 
-    private sealed record Sample(Color Shade, string? Note);
+    private sealed record Sample(Color Shade, string Note);
 
     private static JsonSerializerOptions ResolveOptions()
     {

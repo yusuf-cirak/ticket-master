@@ -11,7 +11,7 @@ public class GlobalExceptionHandlerTests
 {
     private sealed class CapturingProblemDetailsService : IProblemDetailsService
     {
-        public ProblemDetailsContext? Captured;
+        public ProblemDetailsContext Captured;
         public ValueTask WriteAsync(ProblemDetailsContext context) { Captured = context; return ValueTask.CompletedTask; }
         public ValueTask<bool> TryWriteAsync(ProblemDetailsContext context) { Captured = context; return ValueTask.FromResult(true); }
     }

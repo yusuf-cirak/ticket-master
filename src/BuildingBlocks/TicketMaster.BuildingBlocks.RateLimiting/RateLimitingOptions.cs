@@ -8,7 +8,7 @@ public sealed class RateLimitingOptions
     public bool Enabled { get; init; } = true;
 
     /// <summary>Redis key prefix; defaults to the application's <c>ServiceName</c> when not set.</summary>
-    public string? KeyPrefix { get; set; }
+    public string KeyPrefix { get; set; }
 
     /// <summary>Named policies (e.g. <c>burst</c>, <c>quotaRead</c>, <c>quotaWrite</c>, <c>concurrency</c>).</summary>
     public Dictionary<string, PolicyDefinition> Policies { get; init; } = new(StringComparer.OrdinalIgnoreCase);

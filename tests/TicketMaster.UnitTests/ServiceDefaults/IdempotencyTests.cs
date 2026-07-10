@@ -19,7 +19,7 @@ public class IdempotencyTests
         new(NullLogger<IdempotencyEndpointFilter>.Instance);
 
     private static (DefaultHttpContext http, EndpointFilterInvocationContext filterContext) BuildContext(
-        string method, IDistributedCache cache, string? key = null)
+        string method, IDistributedCache cache, string key = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton(cache);
@@ -32,7 +32,7 @@ public class IdempotencyTests
         return (http, EndpointFilterInvocationContext.Create(http));
     }
 
-    private static async Task ExecuteIfResult(object? result, HttpContext http)
+    private static async Task ExecuteIfResult(object result, HttpContext http)
     {
         if (result is IResult r)
             await r.ExecuteAsync(http);
@@ -43,7 +43,7 @@ public class IdempotencyTests
     {
         var (http, filterContext) = BuildContext("POST", new FakeCache());
         var called = false;
-        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object?>(Results.Ok()); };
+        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object>(Results.Ok()); };
 
         var result = await Filter.InvokeAsync(filterContext, next);
 
@@ -57,7 +57,7 @@ public class IdempotencyTests
     {
         var (_, filterContext) = BuildContext("GET", new FakeCache());
         var called = false;
-        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object?>(Results.Ok()); };
+        EndpointFilterDelegate next = _ => { called = true; return ValueTask.FromResult<object>(Results.Ok()); };
 
         await Filter.InvokeAsync(filterContext, next);
 
@@ -68,7 +68,7 @@ public class IdempotencyTests
     public async Task Replays_stored_response_on_repeated_key()
     {
         var cache = new FakeCache();
-        EndpointFilterDelegate handler = _ => ValueTask.FromResult<object?>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
+        EndpointFilterDelegate handler = _ => ValueTask.FromResult<object>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
 
         var (_, first) = BuildContext("POST", cache, key: "k-1");
         await Filter.InvokeAsync(first, handler);
@@ -77,7 +77,7 @@ public class IdempotencyTests
         EndpointFilterDelegate countingHandler = _ =>
         {
             calls++;
-            return ValueTask.FromResult<object?>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
+            return ValueTask.FromResult<object>(new RawResult(201, "application/json", "{\"id\":1}"u8.ToArray()));
         };
         var (secondHttp, second) = BuildContext("POST", cache, key: "k-1");
         var result = await Filter.InvokeAsync(second, countingHandler);
@@ -102,8 +102,8 @@ public class IdempotencyTests
     private sealed class FakeCache : IDistributedCache
     {
         private readonly Dictionary<string, byte[]> _store = new();
-        public byte[]? Get(string key) => _store.TryGetValue(key, out var v) ? v : null;
-        public Task<byte[]?> GetAsync(string key, CancellationToken token = default) => Task.FromResult(Get(key));
+        public byte[] Get(string key) => _store.TryGetValue(key, out var v) ? v : null;
+        public Task<byte[]> GetAsync(string key, CancellationToken token = default) => Task.FromResult(Get(key));
         public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _store[key] = value;
         public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
         {

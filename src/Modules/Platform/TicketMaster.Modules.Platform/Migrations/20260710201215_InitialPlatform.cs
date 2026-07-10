@@ -34,14 +34,15 @@ namespace TicketMaster.Modules.Platform.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    aggregate_type = table.Column<string>(type: "text", nullable: false),
-                    aggregate_id = table.Column<string>(type: "text", nullable: false),
-                    event_type = table.Column<string>(type: "text", nullable: false),
+                    aggregate_type = table.Column<string>(type: "text", nullable: true),
+                    aggregate_id = table.Column<string>(type: "text", nullable: true),
+                    event_type = table.Column<string>(type: "text", nullable: true),
                     version = table.Column<int>(type: "integer", nullable: false),
                     occurred_on = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     correlation_id = table.Column<string>(type: "text", nullable: true),
                     causation_id = table.Column<string>(type: "text", nullable: true),
-                    payload = table.Column<string>(type: "jsonb", nullable: false)
+                    trace_parent = table.Column<string>(type: "text", nullable: true),
+                    payload = table.Column<string>(type: "jsonb", nullable: true)
                 },
                 constraints: table =>
                 {

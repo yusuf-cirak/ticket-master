@@ -14,7 +14,7 @@ public class ValidationBehaviorTests
 {
     private sealed record Command(string Name);
 
-    private static RequestHandlerDelegate<Result<string>> Next(Result<string>? value = null)
+    private static RequestHandlerDelegate<Result<string>> Next(Result<string> value = null)
         => () => Task.FromResult(value ?? Result.Success("ok"));
 
     [Fact]

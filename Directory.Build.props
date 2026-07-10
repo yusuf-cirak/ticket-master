@@ -10,9 +10,5 @@
          DB updates independently of our code, so a newly-published advisory should not break a green build. Keep
          code warnings as errors. Track + upgrade the flagged transitive packages separately. -->
     <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
-    <!-- Nullable reference types are off project-wide (optionality is expressed with YC.Monad Option&lt;T&gt;).
-         Existing `?` reference annotations are meaningless in this context; tolerate them rather than churn every
-         file. New code should prefer Option&lt;T&gt; over nullable references. -->
-    <NoWarn>$(NoWarn);CS8632</NoWarn>
   </PropertyGroup>
 </Project>

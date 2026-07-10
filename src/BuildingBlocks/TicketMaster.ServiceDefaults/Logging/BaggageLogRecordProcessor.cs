@@ -37,7 +37,7 @@ internal sealed class BaggageLogRecordProcessor : BaseProcessor<LogRecord>
             return;
 
         var attributes = record.Attributes;
-        List<KeyValuePair<string, object?>>? merged = null;
+        List<KeyValuePair<string, object>> merged = null;
 
         foreach (var key in BaggageKeys) // foreach over an array — index-based, no enumerator allocation
         {
@@ -45,25 +45,25 @@ internal sealed class BaggageLogRecordProcessor : BaseProcessor<LogRecord>
                 continue;
 
             merged ??= Seed(attributes, BaggageKeys.Length);
-            merged.Add(new KeyValuePair<string, object?>(key, value));
+            merged.Add(new KeyValuePair<string, object>(key, value));
         }
 
         if (merged is not null)
             record.Attributes = merged;
     }
 
-    private static List<KeyValuePair<string, object?>> Seed(
-        IReadOnlyList<KeyValuePair<string, object?>>? existing, int headroom)
+    private static List<KeyValuePair<string, object>> Seed(
+        IReadOnlyList<KeyValuePair<string, object>> existing, int headroom)
     {
         var count = existing?.Count ?? 0;
-        var list = new List<KeyValuePair<string, object?>>(count + headroom);
+        var list = new List<KeyValuePair<string, object>>(count + headroom);
         for (var i = 0; i < count; i++)
             list.Add(existing![i]);
 
         return list;
     }
 
-    private static bool ContainsKey(IReadOnlyList<KeyValuePair<string, object?>>? attributes, string key)
+    private static bool ContainsKey(IReadOnlyList<KeyValuePair<string, object>> attributes, string key)
     {
         if (attributes is null)
             return false;

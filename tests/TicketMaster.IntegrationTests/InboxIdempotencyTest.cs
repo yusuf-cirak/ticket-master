@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Testcontainers.PostgreSql;
 using TicketMaster.BuildingBlocks.Infrastructure.Inbox;
 using TicketMaster.BuildingBlocks.Infrastructure.Outbox;
 using TicketMaster.Modules.Platform;
+using Xunit;
 
 namespace TicketMaster.IntegrationTests;
 
@@ -12,25 +12,11 @@ namespace TicketMaster.IntegrationTests;
 /// provider cannot enforce it). Under concurrent at-least-once duplicate delivery, exactly one
 /// delivery must commit — the inbox marker and the work's state change persist exactly once and
 /// together — and the losing deliveries must resolve gracefully (false, no exception), never a
-/// poison-message loop.
+/// poison-message loop. Uses the shared spine's already-migrated Postgres.
 /// </summary>
-public sealed class InboxIdempotencyTest : IAsyncLifetime
+[Collection(IntegrationCollection.Name)]
+public sealed class InboxIdempotencyTest(SpineFixture fixture)
 {
-    private PostgreSqlContainer _postgres = null!;
-
-    public async Task InitializeAsync()
-    {
-        _postgres = new PostgreSqlBuilder("postgres:16-alpine")
-            .WithDatabase("ticketmaster")
-            .WithUsername("tm")
-            .WithPassword("tm")
-            .Build();
-        await _postgres.StartAsync();
-
-        await using var ctx = NewContext();
-        await ctx.Database.MigrateAsync();
-    }
-
     [Fact]
     public async Task ConcurrentDuplicateDelivery_CommitsExactlyOnce_AndNeverThrows()
     {
@@ -81,13 +67,8 @@ public sealed class InboxIdempotencyTest : IAsyncLifetime
 
     private PlatformDbContext NewContext() =>
         new(new DbContextOptionsBuilder<PlatformDbContext>()
-            .UseNpgsql(_postgres.GetConnectionString())
+            .UseNpgsql(fixture.PostgresConnectionString)
             // Must match the production model (PlatformModule) so the snake_case migration applies.
             .UseSnakeCaseNamingConvention()
             .Options);
-
-    public async Task DisposeAsync()
-    {
-        if (_postgres != null) await _postgres.DisposeAsync();
-    }
 }

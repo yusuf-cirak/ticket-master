@@ -44,7 +44,7 @@ internal sealed class CorrelationMiddleware(RequestDelegate next)
     /// time-ordered UUIDv7 is generated. This is also what keeps the value safe to echo into a response header:
     /// only a normalized GUID is ever reflected, never raw caller input.
     /// </summary>
-    private static string NormalizeOrGenerate(string? inbound, string? upstream)
+    private static string NormalizeOrGenerate(string inbound, string upstream)
     {
         if (Guid.TryParse(inbound, out var fromHeader))
             return fromHeader.ToString();

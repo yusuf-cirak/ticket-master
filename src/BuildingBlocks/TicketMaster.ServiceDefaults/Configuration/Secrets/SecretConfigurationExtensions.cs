@@ -16,7 +16,7 @@ public static class SecretConfigurationExtensions
     /// resolved lazily, only when a <c>secret:</c> value is actually decrypted, so dev setups with no secrets need no key.
     /// </summary>
     public static IConfigurationManager AddSecretConfiguration(
-        this IConfigurationManager configuration, Func<IEncryptionProvider>? encryptionProviderFactory = null)
+        this IConfigurationManager configuration, Func<IEncryptionProvider> encryptionProviderFactory = null)
     {
         encryptionProviderFactory ??= () => AesGcmEncryptionProvider.FromEnvironment();
 
@@ -52,7 +52,7 @@ internal sealed class SecretConfigurationProvider : ConfigurationProvider, IDisp
 {
     private readonly IConfigurationRoot _inner;
     private readonly Lazy<IEncryptionProvider> _encryption;
-    private readonly IDisposable? _reloadRegistration;
+    private readonly IDisposable _reloadRegistration;
 
     public SecretConfigurationProvider(IConfigurationRoot inner, Func<IEncryptionProvider> encryptionProviderFactory)
     {
@@ -65,7 +65,7 @@ internal sealed class SecretConfigurationProvider : ConfigurationProvider, IDisp
 
     private void ReloadFromInner()
     {
-        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var pair in _inner.AsEnumerable())
         {
             var value = pair.Value;

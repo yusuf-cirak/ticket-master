@@ -30,7 +30,7 @@ public sealed class User : IdentityUser<UserId>, IAggregateRoot, IAuditable
         Status = UserStatus.Active;
     }
 
-    public string DisplayName { get; private set; } = null!;
+    public string DisplayName { get; private set; } = string.Empty;
     public UserStatus Status { get; private set; }
 
     // ponytail: role assignments are not persisted in this slice (mapped in the authorization slice); the in-memory
@@ -40,9 +40,9 @@ public sealed class User : IdentityUser<UserId>, IAggregateRoot, IAuditable
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public string? CreatedBy { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
     public DateTimeOffset? ModifiedAtUtc { get; set; }
-    public string? ModifiedBy { get; set; }
+    public string ModifiedBy { get; set; } = string.Empty;
 
     public static Result<User> Register(DomainEmail email, string displayName)
     {

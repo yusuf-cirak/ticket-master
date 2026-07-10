@@ -83,6 +83,6 @@ public static class HttpLoggingExtensions
         ResolveEnabled(configuration[EnabledKey]);
 
     // On in every environment by default; off only when explicitly configured "false".
-    internal static bool ResolveEnabled(string? configuredValue) =>
+    internal static bool ResolveEnabled(string configuredValue) =>
         !bool.TryParse(configuredValue, out var enabled) || enabled;
 }

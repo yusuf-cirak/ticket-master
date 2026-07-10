@@ -29,8 +29,7 @@ public static class ApiPlatformExtensions
                     o.ApiVersionReader = ApiVersionReader.Combine(
                         new UrlSegmentApiVersionReader(),
                         new HeaderApiVersionReader("X-Api-Version"));
-                })
-                .EnableApiVersionBinding(); // minimal-API ApiVersion parameter binding
+                });
 
             return services;
         }

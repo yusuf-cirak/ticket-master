@@ -12,7 +12,7 @@ using TicketMaster.Modules.Iam.Infrastructure;
 namespace TicketMaster.Modules.Iam.Migrations
 {
     [DbContext(typeof(IamDbContext))]
-    [Migration("20260710194004_InitialIam")]
+    [Migration("20260710200402_InitialIam")]
     partial class InitialIam
     {
         /// <inheritdoc />

@@ -26,7 +26,7 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
     private const int MaxStoredBodyBytes = 1024 * 1024; // 1 MB
     private static readonly TimeSpan Ttl = TimeSpan.FromHours(24);
 
-    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    public async ValueTask<object> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var http = context.HttpContext;
 
@@ -56,7 +56,7 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
         return await CaptureAndStore(context, next, cache, cacheKey);
     }
 
-    private static async Task<object?> CaptureAndStore(
+    private static async Task<object> CaptureAndStore(
         EndpointFilterInvocationContext context, EndpointFilterDelegate next, IDistributedCache cache, string cacheKey)
     {
         var http = context.HttpContext;
@@ -103,7 +103,7 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
         return key.Length is > 0 and <= MaxKeyLength;
     }
 
-    private sealed record StoredResponse(int StatusCode, string? ContentType, byte[] Body);
+    private sealed record StoredResponse(int StatusCode, string ContentType, byte[] Body);
 
     /// <summary>Writes a previously-stored response, tagged with the replay header.</summary>
     private sealed class ReplayedResult(StoredResponse record) : IResult

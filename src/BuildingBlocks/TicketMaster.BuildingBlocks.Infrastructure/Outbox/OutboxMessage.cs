@@ -12,8 +12,8 @@ public sealed class OutboxMessage
     // The event-driven trio. CorrelationId is a GUID → Debezium emits a CorrelationId header that
     // MassTransit maps natively into ConsumeContext.CorrelationId; CausationId travels as a custom header the
     // consume filter restores; trace continuity travels in TraceParent.
-    public string? CorrelationId { get; init; }            // ties every event in one flow (GUID)
-    public string? CausationId { get; init; }              // id of the message that directly caused this one
-    public string? TraceParent { get; init; }              // W3C traceparent captured at write time -> Kafka header
+    public string CorrelationId { get; init; }            // ties every event in one flow (GUID)
+    public string CausationId { get; init; }              // id of the message that directly caused this one
+    public string TraceParent { get; init; }              // W3C traceparent captured at write time -> Kafka header
     public string Payload { get; init; } = default!;       // jsonb
 }

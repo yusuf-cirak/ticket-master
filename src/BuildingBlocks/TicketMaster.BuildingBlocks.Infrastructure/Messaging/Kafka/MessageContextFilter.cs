@@ -49,7 +49,7 @@ public sealed class MessageContextFilter<T> : IFilter<ConsumeContext<T>>
 
     public void Probe(ProbeContext context) => context.CreateFilterScope("messageContext");
 
-    private static Activity? StartActivity(ConsumeContext context)
+    private static Activity StartActivity(ConsumeContext context)
     {
         var name = $"{typeof(T).Name} receive";
         return Header(context, MessageHeaders.TraceParent) is { Length: > 0 } traceparent
@@ -58,7 +58,7 @@ public sealed class MessageContextFilter<T> : IFilter<ConsumeContext<T>>
             : Source.StartActivity(name, ActivityKind.Consumer);
     }
 
-    private static string? Header(ConsumeContext context, string key)
+    private static string Header(ConsumeContext context, string key)
     {
         if (!context.Headers.TryGetHeader(key, out var raw) || raw is null)
             return null;

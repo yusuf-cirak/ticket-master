@@ -31,10 +31,10 @@ public sealed class JwtOptions
     public string Audience { get; init; } = string.Empty;
 
     /// <summary>HMAC secret for <see cref="JwtMode.Symmetric"/>. Dev/test only — never a production secret in config.</summary>
-    public string? SigningKey { get; init; }
+    public string SigningKey { get; init; }
 
     /// <summary>OIDC issuer base URL for <see cref="JwtMode.Authority"/> (JWKS auto-discovered).</summary>
-    public string? Authority { get; init; }
+    public string Authority { get; init; }
 
     /// <summary>Require HTTPS for metadata/JWKS retrieval. Keep <c>true</c> outside local development.</summary>
     public bool RequireHttpsMetadata { get; init; } = true;

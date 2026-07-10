@@ -48,7 +48,7 @@ public class SecretConfigurationTests
     {
         var crypto = NewProvider();
         var config = new ConfigurationManager();
-        config.AddInMemoryCollection(new Dictionary<string, string?>
+        config.AddInMemoryCollection(new Dictionary<string, string>
         {
             ["Db:Password"] = SecretConfigurationExtensions.SecretPrefix + crypto.Encrypt("p@ss"),
             ["Db:Host"] = "localhost",
@@ -64,7 +64,7 @@ public class SecretConfigurationTests
     public void AddSecretDecryption_is_a_noop_without_secrets()
     {
         var config = new ConfigurationManager();
-        config.AddInMemoryCollection(new Dictionary<string, string?> { ["Db:Host"] = "localhost" });
+        config.AddInMemoryCollection(new Dictionary<string, string> { ["Db:Host"] = "localhost" });
 
         // No key set, no secret: values → must not throw.
         config.AddSecretConfiguration(NewProvider);
@@ -138,7 +138,7 @@ public class SecretConfigurationTests
     {
         private readonly ReloadableProvider _provider = new();
 
-        public void Set(string key, string? value) => _provider.Set(key, value);
+        public void Set(string key, string value) => _provider.Set(key, value);
         public void Reload() => _provider.Reload();
         public IConfigurationProvider Build(IConfigurationBuilder builder) => _provider;
 

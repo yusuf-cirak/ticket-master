@@ -34,6 +34,6 @@ public static class ResultEndpointExtensions
         return TypedResults.Problem(
             detail: error.Message,
             statusCode: status,
-            extensions: string.IsNullOrEmpty(error.Code) ? null : new Dictionary<string, object?> { ["code"] = error.Code });
+            extensions: string.IsNullOrEmpty(error.Code) ? null : new Dictionary<string, object> { ["code"] = error.Code });
     }
 }

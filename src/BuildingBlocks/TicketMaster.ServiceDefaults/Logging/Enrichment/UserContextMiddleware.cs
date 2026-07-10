@@ -28,7 +28,7 @@ internal sealed class UserContextMiddleware(RequestDelegate next)
         return next(context);
     }
 
-    private static string? UserId(ClaimsPrincipal user) =>
+    private static string UserId(ClaimsPrincipal user) =>
         user.Identity?.IsAuthenticated == true
             ? user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value
             : null;

@@ -37,6 +37,6 @@ public class BaggageLogRecordProcessorTests
 
         var record = exported.Should().ContainSingle().Subject;
         record.Attributes.Should().NotBeNull();
-        record.Attributes!.Should().Contain(kv => kv.Key == "correlation_id" && (string?)kv.Value == "corr-99");
+        record.Attributes!.Should().Contain(kv => kv.Key == "correlation_id" && (string)kv.Value == "corr-99");
     }
 }

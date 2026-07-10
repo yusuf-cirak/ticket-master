@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TicketMaster.BuildingBlocks.Domain.Auditing;
 using TicketMaster.BuildingBlocks.Domain.Security;
-using YC.Monad;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -17,20 +16,20 @@ internal sealed partial class LoggingAuditLogger(ILogger<LoggingAuditLogger> log
 {
     public Task LogAsync(
         string action,
-        string? entityType = null,
-        string? entityId = null,
-        IReadOnlyDictionary<string, object?>? data = null,
+        string entityType = null,
+        string entityId = null,
+        IReadOnlyDictionary<string, object> data = null,
         CancellationToken cancellationToken = default)
     {
         using var scope = data is { Count: > 0 } ? logger.BeginScope(data) : null;
-        Emit(logger, action, currentUser.UserId.Match(() => "anonymous", id => id), entityType, entityId);
+        Emit(logger, action, string.IsNullOrEmpty(currentUser.UserId) ? "anonymous" : currentUser.UserId, entityType, entityId);
         return Task.CompletedTask;
     }
 
     [LoggerMessage(EventId = 9001, Level = LogLevel.Information,
         Message = "audit {audit_action} by {actor} on {entity_type}/{entity_id}")]
     private static partial void Emit(
-        ILogger logger, string audit_action, string actor, string? entity_type, string? entity_id);
+        ILogger logger, string audit_action, string actor, string entity_type, string entity_id);
 }
 
 public static class AuditLoggerExtensions

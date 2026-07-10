@@ -13,22 +13,19 @@ public sealed class Role : AggregateRoot<RoleId>, IAuditable
 {
     private readonly HashSet<string> _permissions = new(StringComparer.Ordinal);
 
-    private Role() // EF
-    {
-        Name = null!;
-    }
+    private Role() { } // EF
 
     private Role(RoleId id, string name) : base(id) => Name = name;
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public IReadOnlyCollection<string> Permissions => _permissions;
 
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public string? CreatedBy { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
     public DateTimeOffset? ModifiedAtUtc { get; set; }
-    public string? ModifiedBy { get; set; }
+    public string ModifiedBy { get; set; } = string.Empty;
 
-    public static Result<Role> Create(string name, IEnumerable<string>? permissions = null)
+    public static Result<Role> Create(string name, IEnumerable<string> permissions = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Error.Create("role.name_required", "Role name is required.", 400);

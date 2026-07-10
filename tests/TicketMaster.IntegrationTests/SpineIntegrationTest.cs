@@ -4,7 +4,8 @@ using Npgsql;
 
 namespace TicketMaster.IntegrationTests;
 
-public sealed class SpineIntegrationTest(SpineFixture fixture) : IClassFixture<SpineFixture>
+[Collection(IntegrationCollection.Name)]
+public sealed class SpineIntegrationTest(SpineFixture fixture) 
 {
     /// <summary>
     /// Full end-to-end test:
@@ -19,7 +20,9 @@ public sealed class SpineIntegrationTest(SpineFixture fixture) : IClassFixture<S
     [Fact]
     public async Task PostPlatformPing_ShouldWriteInboxRow_ViaOutboxDebeziumKafkaSpine()
     {
-        // Arrange — client is pre-created in SpineFixture; MassTransit rider is live
+        // Arrange — client is pre-created in SpineFixture; MassTransit rider is live.
+        // Reset the shared rate limiter so a prior rate-limit test can't have exhausted the anon /ping budget.
+        await fixture.ResetRedisAsync();
 
         // Act
         var response = await fixture.Client.PostAsJsonAsync(
