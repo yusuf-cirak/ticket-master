@@ -48,6 +48,25 @@ namespace TicketMaster.Modules.Iam.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "refresh_tokens",
+                schema: "iam",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    token_hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    created_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    expires_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    created_by_ip = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    revoked_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    replaced_by_token_hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_refresh_tokens", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "roles",
                 schema: "iam",
                 columns: table => new
@@ -163,6 +182,19 @@ namespace TicketMaster.Modules.Iam.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_refresh_tokens_token_hash",
+                schema: "iam",
+                table: "refresh_tokens",
+                column: "token_hash",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_refresh_tokens_user_id",
+                schema: "iam",
+                table: "refresh_tokens",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_roles_name",
                 schema: "iam",
                 table: "roles",
@@ -183,6 +215,10 @@ namespace TicketMaster.Modules.Iam.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens",
+                schema: "iam");
+
+            migrationBuilder.DropTable(
+                name: "refresh_tokens",
                 schema: "iam");
 
             migrationBuilder.DropTable(

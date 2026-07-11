@@ -18,6 +18,8 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
 
     public DbSet<Role> Roles => Set<Role>();
 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

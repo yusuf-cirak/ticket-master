@@ -49,6 +49,14 @@ public sealed class IamModule : IModule
             })
             .AddEntityFrameworkStores<IamDbContext>();
 
+        services.AddOptions<TokenIssuanceOptions>()
+            .BindConfiguration(TokenIssuanceOptions.SectionName)
+            .Validate(o => o.AccessTokenMinutes > 0 && o.RefreshTokenDays > 0,
+                "Iam:Tokens lifetimes must be positive.")
+            .ValidateOnStart();
+
+        services.AddScoped<ITokenService, JwtTokenService>();
+
         services.AddDbContextMigration<IamDbContext>();
     }
 
@@ -58,5 +66,7 @@ public sealed class IamModule : IModule
 
         group.MapGet("/ping", () => Results.Ok(new { module = "iam", status = "ok" }))
             .AllowAnonymous();
+
+        group.MapAuthEndpoints();
     }
 }
