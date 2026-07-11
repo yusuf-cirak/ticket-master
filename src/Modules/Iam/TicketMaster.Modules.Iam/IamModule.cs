@@ -49,6 +49,11 @@ public sealed class IamModule : IModule
             })
             .AddEntityFrameworkStores<IamDbContext>();
 
+        // Key accounts on Email.Canonical (Gmail dot/+ folded) so CreateAsync/FindByEmailAsync match the aggregate's
+        // uniqueness key instead of overriding it with the plain upper-cased address. Registered after AddIdentityCore
+        // so it wins over the default UpperInvariantLookupNormalizer.
+        services.AddScoped<ILookupNormalizer, CanonicalEmailNormalizer>();
+
         services.AddOptions<TokenIssuanceOptions>()
             .BindConfiguration(TokenIssuanceOptions.SectionName)
             .Validate(o => o.AccessTokenMinutes > 0 && o.RefreshTokenDays > 0,

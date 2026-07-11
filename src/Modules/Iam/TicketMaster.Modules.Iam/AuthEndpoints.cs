@@ -80,7 +80,7 @@ public static class AuthEndpoints
     }
 
     private static async Task<IResult> RefreshAsync(
-        RefreshRequest body, ITokenService tokenService, IamDbContext db,
+        RefreshRequest body, ITokenService tokenService, IamDbContext db, UserManager<User> userManager,
         IOptions<TokenIssuanceOptions> options, TimeProvider timeProvider, HttpContext http, CancellationToken ct)
     {
         var now = timeProvider.GetUtcNow();
@@ -91,7 +91,8 @@ public static class AuthEndpoints
             return InvalidCredentials();
 
         var user = await db.Users.FirstOrDefaultAsync(u => u.Id == existing.UserId, ct);
-        if (user is null)
+        // Re-check lockout: a locked-out account must not keep minting access tokens via refresh.
+        if (user is null || await userManager.IsLockedOutAsync(user))
             return InvalidCredentials();
 
         // Rotate: revoke the presented token, pointing it at its replacement, then mint a fresh pair.
@@ -113,7 +114,8 @@ public static class AuthEndpoints
         // Revoke the presented refresh token if we still hold an active copy.
         var hash = tokenService.HashRefreshToken(body.RefreshToken ?? string.Empty);
         var existing = await db.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
-        if (existing is not null && existing.IsActive(now))
+        // Only the token's owner may revoke it — don't let one caller revoke another user's refresh token.
+        if (existing is not null && existing.IsActive(now) && existing.UserId.Value.ToString() == currentUser.UserId)
             existing.Revoke(now);
         await db.SaveChangesAsync(ct);
 
