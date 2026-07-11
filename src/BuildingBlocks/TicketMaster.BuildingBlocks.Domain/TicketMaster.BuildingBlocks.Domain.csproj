@@ -8,6 +8,8 @@
     <PackageReference Include="YC.Monad" />
     <!-- Abstractions only (INotification/IRequest) — no MediatR runtime in the domain. -->
     <PackageReference Include="MediatR.Contracts" />
+    <!-- Not PrivateAssets=all: generated value objects reference Vogen.SharedTypes at runtime. -->
+    <PackageReference Include="Vogen" />
   </ItemGroup>
 
   <ItemGroup>
