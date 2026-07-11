@@ -11,4 +11,10 @@
          code warnings as errors. Track + upgrade the flagged transitive packages separately. -->
     <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
   </PropertyGroup>
+
+  <!-- ZLinq: zero-allocation LINQ, default in every project. Global using enables .AsValueEnumerable() everywhere. -->
+  <ItemGroup>
+    <PackageReference Include="ZLinq" />
+    <Using Include="ZLinq" />
+  </ItemGroup>
 </Project>
