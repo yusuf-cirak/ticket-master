@@ -1,28 +1,14 @@
-using TicketMaster.BuildingBlocks.Domain.Identifiers;
+using Vogen;
 
 namespace TicketMaster.Modules.Iam.Domain;
 
-/// <summary>Strongly-typed identifier for the User aggregate (users/claims/logins/tokens).</summary>
-public sealed record UserId(Guid Value) : GuidId(Value), IParsable<UserId>
+/// <summary>Strongly-typed identifier for the User aggregate. Vogen generates value equality, the EF value converter,
+/// the System.Text.Json converter, and IParsable (route/query binding).</summary>
+[ValueObject<Guid>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
+public readonly partial struct UserId
 {
-    public static UserId New() => new(Guid.CreateVersion7());
+    public static UserId New() => From(Guid.CreateVersion7());
 
-    /// <summary>Validated factory for inbound values: rejects the empty GUID.</summary>
-    public static UserId From(Guid value) => value == Guid.Empty
-        ? throw new ArgumentException("UserId cannot be empty.", nameof(value))
-        : new(value);
-
-    public static UserId Parse(string s, IFormatProvider provider) => new(Guid.Parse(s));
-
-    public static bool TryParse(string s, IFormatProvider provider, out UserId result)
-    {
-        if (Guid.TryParse(s, out var value))
-        {
-            result = new UserId(value);
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
+    private static Validation Validate(Guid value) =>
+        value == Guid.Empty ? Validation.Invalid("UserId cannot be empty.") : Validation.Ok;
 }

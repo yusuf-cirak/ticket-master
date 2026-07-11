@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
@@ -12,7 +11,7 @@ public static class ConcurrencyExtensions
     /// updates/deletes and raises <see cref="Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException"/> on a lost
     /// update. Call from an entity's configuration: <c>builder.HasSystemConcurrency();</c>.
     /// </summary>
-    public static EntityTypeBuilder<TEntity> HasSystemConcurrency<TEntity>(this EntityTypeBuilder<TEntity> builder)
+    public static EntityTypeBuilder<TEntity> HasConcurrencyToken<TEntity>(this EntityTypeBuilder<TEntity> builder)
         where TEntity : class
     {
         builder.Property<uint>("xmin").IsRowVersion();

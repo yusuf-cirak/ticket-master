@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using TicketMaster.ServiceDefaults.Serialization;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -29,7 +28,6 @@ public static class JsonExtensions
             o.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             o.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
             o.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper));
-            o.SerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory()); // ids serialize as their bare value
         });
 
         return services;
