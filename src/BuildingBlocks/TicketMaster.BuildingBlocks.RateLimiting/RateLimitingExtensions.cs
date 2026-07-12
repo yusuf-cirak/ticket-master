@@ -38,6 +38,13 @@ public static class RateLimitingExtensions
             .PostConfigure(o => o.KeyPrefix ??= serviceName)
             .Validate(o => o.BurstBan.Duration >= TimeSpan.FromSeconds(10),
                 "RateLimiting:BurstBan:Duration must be at least 10 seconds.")
+            .Validate(o => o.Adaptive.MinLimit >= 1
+                    && o.Adaptive.MaxLimit >= o.Adaptive.MinLimit
+                    && o.Adaptive.Step >= 1
+                    && o.Adaptive.HealthyThreshold > 0
+                    && o.Adaptive.HealthyThreshold <= o.Adaptive.OverloadThreshold
+                    && o.Adaptive.OverloadThreshold <= 1,
+                "RateLimiting:Adaptive limits/thresholds are invalid (need 1≤Min≤Max, Step≥1, 0<Healthy≤Overload≤1).")
             .ValidateOnStart();
 
         builder.Services.AddSingleton<PrincipalPartitioner>();
@@ -50,6 +57,18 @@ public static class RateLimitingExtensions
             builder.Services.AddSingleton<IBurstBanStore, LocalBurstBanStore>();
         else
             builder.Services.AddSingleton<IBurstBanStore, RedisBurstBanStore>();
+
+        // Layer 2 — system-wide adaptive admission control (AIMD). Enforcement is ALWAYS the in-process gate; the
+        // Mode only picks the load SIGNAL: Local = this process, Distributed = fleet max via Redis (see AdaptiveOptions).
+        builder.Services.AddSingleton<RequestMetricsCollector>();
+        builder.Services.AddSingleton<LocalLoadSignal>();
+        if (options.Mode == RateLimitingMode.Distributed)
+            builder.Services.AddSingleton<ILoadSignal, DistributedLoadSignal>();
+        else
+            builder.Services.AddSingleton<ILoadSignal>(sp => sp.GetRequiredService<LocalLoadSignal>());
+        builder.Services.AddSingleton(new AdmissionLimit(options.Adaptive.MaxLimit));
+        builder.Services.AddSingleton<IAdmissionGate, InProcAdmissionGate>();
+        builder.Services.AddHostedService<AdaptiveAdmissionController>();
 
         builder.Services.AddRateLimiter(limiter =>
         {
@@ -68,6 +87,24 @@ public static class RateLimitingExtensions
 
     public static WebApplication UseRateLimiting(this WebApplication app)
     {
+        var metrics = app.Services.GetRequiredService<RequestMetricsCollector>();
+        var gate = app.Services.GetRequiredService<IAdmissionGate>();
+
+        // Outermost: time every request and record latency + 5xx rate, feeding the adaptive load signal. Runs on the
+        // whole pipeline so it captures true end-to-end latency (including any short-circuited 429/503).
+        app.Use(async (context, next) =>
+        {
+            var start = Stopwatch.GetTimestamp();
+            try
+            {
+                await next(context);
+            }
+            finally
+            {
+                metrics.Record(Stopwatch.GetElapsedTime(start).TotalMilliseconds, context.Response.StatusCode);
+            }
+        });
+
         // Runs BEFORE the rate limiter consumes a permit: a banned caller is short-circuited with 429 regardless of
         // whether the sliding window has since reset. Only endpoints carrying the burst policy metadata are checked
         // (health/docs stay untouched). Routing has already run in a WebApplication pipeline, so GetEndpoint() is set.
@@ -94,6 +131,28 @@ public static class RateLimitingExtensions
         });
 
         app.UseRateLimiter();
+
+        // Runs AFTER the rate limiter (per-caller shedding first) but before the endpoint: the system-wide AIMD gate.
+        // Same burst-policy endpoints as Layer 1 (health/docs skipped). Over the current admission limit ⇒ 503.
+        app.Use(async (context, next) =>
+        {
+            var meta = context.GetEndpoint()?.Metadata.GetMetadata<EnableRateLimitingAttribute>();
+            if (meta?.PolicyName != BurstPolicy)
+            {
+                await next(context);
+                return;
+            }
+
+            if (!gate.TryEnter(out var lease))
+            {
+                await Write503Async(context, context.RequestAborted);
+                return;
+            }
+
+            using (lease)
+                await next(context);
+        });
+
         return app;
     }
 
@@ -201,6 +260,27 @@ public static class RateLimitingExtensions
             Status = StatusCodes.Status429TooManyRequests,
             Title = "Too Many Requests",
             Type = "https://datatracker.ietf.org/doc/html/rfc6585#section-4"
+        };
+        problem.Extensions["traceId"] = Activity.Current?.TraceId.ToString();
+
+        await response.WriteAsJsonAsync(problem, ct);
+    }
+
+    // The RFC-7807 503 shape emitted by the adaptive admission gate when the system is shedding load.
+    private static async Task Write503Async(HttpContext httpContext, CancellationToken ct)
+    {
+        RateLimitingMeter.AdaptiveRejected.Add(1);
+
+        var response = httpContext.Response;
+        response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+        response.Headers.RetryAfter = "1";
+
+        var problem = new ProblemDetails
+        {
+            Status = StatusCodes.Status503ServiceUnavailable,
+            Title = "Service Unavailable",
+            Detail = "System under load",
+            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.4"
         };
         problem.Extensions["traceId"] = Activity.Current?.TraceId.ToString();
 
