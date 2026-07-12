@@ -32,8 +32,8 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        // Vogen source-generates this registration from the [EfCoreConverter<T>] markers on VogenEfCoreConverters — reflection-free.
-        configurationBuilder.RegisterAllInVogenEfCoreConverters();
+        // Register each Vogen value object's generated (reflection-free) EF converter; the scan is a one-time startup cost.
+        configurationBuilder.RegisterVogenEfCoreConverters(typeof(IamDbContext).Assembly);
         // Domain string columns are never null — null ⇄ empty string on both read and write.
         configurationBuilder.Properties<string>().HaveConversion<NullToEmptyStringConverter>();
     }
