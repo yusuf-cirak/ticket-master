@@ -3,11 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TicketMaster.Modules.Iam.Application.Abstractions;
+using TicketMaster.Modules.Iam.Application.Features.Authentication;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.ServiceDefaults;
 using YC.Monad;
 
-namespace TicketMaster.Modules.Iam.Application.Features.Authentication;
+namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 
 /// <summary>Password login. Wrong password drives Identity lockout; every failure returns the same generic 401.</summary>
 public static class LoginCommand

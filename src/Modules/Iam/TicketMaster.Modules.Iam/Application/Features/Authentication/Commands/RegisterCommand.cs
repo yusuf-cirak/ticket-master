@@ -6,14 +6,12 @@ using TicketMaster.Modules.Iam.Domain;
 using YC.Monad;
 using DomainEmail = TicketMaster.BuildingBlocks.Domain.ValueObjects.Email;
 
-namespace TicketMaster.Modules.Iam.Application.Features.Authentication;
+namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 
 /// <summary>Registers a new user account. Domain factory failures and Identity errors flow back as Result failures.</summary>
 public static class RegisterCommand
 {
     public sealed record Command(string Email, string DisplayName, string Password) : IRequest<Result<Response>>;
-
-    public sealed record Response(Guid UserId);
 
     public sealed class Validator : AbstractValidator<Command>
     {
@@ -51,4 +49,6 @@ public static class RegisterCommand
             return Result.Success(new Response(user.Id.Value));
         }
     }
+
+    public sealed record Response(Guid UserId);
 }

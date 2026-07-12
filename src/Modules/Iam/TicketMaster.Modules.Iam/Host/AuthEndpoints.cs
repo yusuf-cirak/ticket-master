@@ -2,7 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using TicketMaster.Modules.Iam.Application.Features.Authentication;
+using TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
+using TicketMaster.Modules.Iam.Application.Features.Authentication.Queries;
 using TicketMaster.ServiceDefaults;
 
 namespace TicketMaster.Modules.Iam.Host;

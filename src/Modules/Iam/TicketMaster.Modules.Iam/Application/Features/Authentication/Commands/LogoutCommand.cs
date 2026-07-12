@@ -6,7 +6,7 @@ using TicketMaster.BuildingBlocks.Domain.Security;
 using TicketMaster.Modules.Iam.Infrastructure;
 using YC.Monad;
 
-namespace TicketMaster.Modules.Iam.Application.Features.Authentication;
+namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 
 /// <summary>
 /// Signs the caller out: revokes the presented refresh token (only if the caller owns it) and blacklists the current

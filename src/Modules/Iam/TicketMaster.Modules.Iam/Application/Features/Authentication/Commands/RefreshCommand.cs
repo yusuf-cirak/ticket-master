@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketMaster.Modules.Iam.Application.Abstractions;
+using TicketMaster.Modules.Iam.Application.Features.Authentication;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.Modules.Iam.Infrastructure;
 using TicketMaster.ServiceDefaults;
 using YC.Monad;
 
-namespace TicketMaster.Modules.Iam.Application.Features.Authentication;
+namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 
 /// <summary>
 /// Exchanges an active refresh token for a fresh pair, rotating (revoking) the presented token. Re-checks lockout so a
