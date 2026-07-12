@@ -12,11 +12,11 @@ internal static class RateLimitingMeter
 
     private static readonly Meter Meter = new(MeterName);
 
-    public static readonly Counter<long> Allowed =
-        Meter.CreateCounter<long>("ratelimit.allowed", description: "Requests admitted by the rate limiter.");
-
     public static readonly Counter<long> Rejected =
         Meter.CreateCounter<long>("ratelimit.rejected", description: "Requests rejected (429) by the rate limiter.");
+
+    public static readonly Counter<long> Banned =
+        Meter.CreateCounter<long>("burst.banned", description: "Burst bans armed after a caller exceeded the burst limit.");
 
     public static readonly Counter<long> Fallback =
         Meter.CreateCounter<long>("ratelimit.fallback", description: "Times the limiter degraded to the in-memory fallback (Redis unavailable).");

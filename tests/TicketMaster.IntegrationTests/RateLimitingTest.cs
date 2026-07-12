@@ -35,4 +35,35 @@ public sealed class RateLimitingTest(SpineFixture fixture)
         var body = await rejected.Content.ReadAsStringAsync();
         body.Should().Contain("Too Many Requests");
     }
+
+    /// <summary>
+    /// Exceeding the burst window arms a fixed 10s soft-ban that outlives the 5s sliding window: the caller stays 429
+    /// with a Retry-After ≥ 9s on the next request, and remains 429 even after the sliding window has fully reset.
+    /// </summary>
+    [Fact]
+    public async Task BurstBan_OutlivesSlidingWindow_KeepsCaller429()
+    {
+        await fixture.ResetRedisAsync(); // clean window AND ban key
+
+        // Exhaust the burst permits.
+        for (var i = 0; i < AnonymousBurstPermits; i++)
+            await fixture.Client.PostAsJsonAsync("/api/platform/ping", new { note = $"ban-{i}" });
+
+        // Breach → arms the 10s ban.
+        var breach = await fixture.Client.PostAsJsonAsync("/api/platform/ping", new { note = "ban-breach" });
+        breach.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+
+        // The next request is short-circuited by the ban, not the window: a Retry-After ≥ 9s can only come from the
+        // 10s ban, since the sliding window is only 5s.
+        var banned = await fixture.Client.PostAsJsonAsync("/api/platform/ping", new { note = "ban-next" });
+        banned.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+        banned.Headers.RetryAfter!.Delta!.Value.Should().BeGreaterThanOrEqualTo(
+            TimeSpan.FromSeconds(9), "the 10s burst ban outlives the 5s sliding window");
+
+        // After the sliding window has fully reset (6s > 5s window) the caller is STILL 429 — proof the ban persists
+        // independently of the window (a window-only limiter would have admitted this request).
+        await Task.Delay(TimeSpan.FromSeconds(6));
+        var stillBanned = await fixture.Client.PostAsJsonAsync("/api/platform/ping", new { note = "ban-after-window" });
+        stillBanned.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+    }
 }
