@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
 using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+using TicketMaster.Modules.Iam.Application.Abstractions;
 using TicketMaster.Modules.Iam.Domain;
+using TicketMaster.Modules.Iam.Host;
 using TicketMaster.Modules.Iam.Infrastructure;
 using TicketMaster.ServiceDefaults.Modularity;
 
@@ -61,6 +63,7 @@ public sealed class IamModule : IModule
             .ValidateOnStart();
 
         services.AddScoped<ITokenService, JwtTokenService>();
+        services.AddScoped<IAuthTokenIssuer, AuthTokenIssuer>();
 
         services.AddDbContextMigration<IamDbContext>();
     }
