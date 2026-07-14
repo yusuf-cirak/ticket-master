@@ -29,7 +29,7 @@ internal static class Aimd
     public static int NextLimit(int current, double score, AdaptiveOptions o)
     {
         var next = score < o.HealthyThreshold ? current + o.Step
-                 : score > o.OverloadThreshold ? current / 2
+                 : score > o.OverloadThreshold ? (int)(current * o.DecreaseFactor)
                  : current;
 
         return Math.Clamp(next, o.MinLimit, o.MaxLimit);
@@ -97,6 +97,7 @@ internal sealed class AdaptiveAdmissionController(
         var o = options.Value.Adaptive;
         RateLimitingMeter.TrackAdmissionLimit(limit); // adaptive.limit observable gauge
         RateLimitingMeter.TrackLoad(state); // adaptive.load.* gauges
+        var smoothed = double.NaN; // EWMA of the load score across ticks (seeded by the first sample)
 
         using var timer = new PeriodicTimer(o.ControlInterval, clock);
 
@@ -108,8 +109,12 @@ internal sealed class AdaptiveAdmissionController(
                 try
                 {
                     var sample = signal.Sample();
-                    state.Publish(sample); // expose components to the meter gauges
-                    score = sample.Score;
+                    // EWMA smoothing so a single spike doesn't slam the limit; first sample seeds the average.
+                    smoothed = double.IsNaN(smoothed)
+                        ? sample.Score
+                        : o.ScoreSmoothing * sample.Score + (1 - o.ScoreSmoothing) * smoothed;
+                    state.Publish(sample with { Score = smoothed }); // gauge shows the smoothed score AIMD uses; components stay raw
+                    score = smoothed;
                 }
                 catch (Exception ex)
                 {

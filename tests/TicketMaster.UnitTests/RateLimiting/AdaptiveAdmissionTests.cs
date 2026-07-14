@@ -29,9 +29,9 @@ public class AdaptiveAdmissionTests
     }
 
     [Fact]
-    public void Overloaded_score_halves()
+    public void Overloaded_score_decreases()
     {
-        Aimd.NextLimit(current: 100, score: 0.95, Opts()).Should().Be(50); // > OverloadThreshold ⇒ /2
+        Aimd.NextLimit(current: 100, score: 0.95, Opts()).Should().Be(70); // > OverloadThreshold ⇒ ×0.7
     }
 
     [Fact]
@@ -49,11 +49,11 @@ public class AdaptiveAdmissionTests
     [Fact]
     public void Decrease_is_clamped_to_min()
     {
-        Aimd.NextLimit(current: 12, score: 1.0, Opts(min: 10)).Should().Be(10); // 12/2=6, clamped up to Min
+        Aimd.NextLimit(current: 12, score: 1.0, Opts(min: 10)).Should().Be(10); // 12×0.7=8, clamped up to Min
     }
 
     [Fact]
-    public void Sequence_of_scores_drives_additive_increase_then_halving()
+    public void Sequence_of_scores_drives_additive_increase_then_decrease()
     {
         var o = Opts(min: 10, max: 1000, step: 10);
         var limit = 100;
@@ -63,13 +63,13 @@ public class AdaptiveAdmissionTests
             limit = Aimd.NextLimit(limit, 0.1, o);
         limit.Should().Be(130);
 
-        // One overloaded tick: halve.
+        // One overloaded tick: multiplicative decrease ×0.7.
         limit = Aimd.NextLimit(limit, 0.99, o);
-        limit.Should().Be(65);
+        limit.Should().Be(91);
 
         // A middle tick: hold.
         limit = Aimd.NextLimit(limit, 0.78, o);
-        limit.Should().Be(65);
+        limit.Should().Be(91);
     }
 
     // --- Load signal normalization ------------------------------------------

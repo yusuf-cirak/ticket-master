@@ -59,8 +59,14 @@ public sealed class AdaptiveOptions
     /// <summary>Composite score below this ⇒ additive increase.</summary>
     public double HealthyThreshold { get; init; } = 0.70;
 
-    /// <summary>Composite score above this ⇒ multiplicative decrease (halve).</summary>
+    /// <summary>Composite score above this ⇒ multiplicative decrease.</summary>
     public double OverloadThreshold { get; init; } = 0.85;
+
+    /// <summary>Multiplicative-decrease factor on overload (0..1). 0.7 = gentler than halving; smoother recovery.</summary>
+    public double DecreaseFactor { get; init; } = 0.7;
+
+    /// <summary>EWMA smoothing on the load score (0..1]. Lower = smoother (a single spike won't slam the limit); 1 = no smoothing.</summary>
+    public double ScoreSmoothing { get; init; } = 0.4;
 
     /// <summary>Expected p50-ish request latency (ms); the latency signal normalizes against this.</summary>
     public int LatencyBaselineMs { get; init; } = 200;

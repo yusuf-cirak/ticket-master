@@ -43,8 +43,10 @@ public static class RateLimitingExtensions
                     && o.Adaptive.Step >= 1
                     && o.Adaptive.HealthyThreshold > 0
                     && o.Adaptive.HealthyThreshold <= o.Adaptive.OverloadThreshold
-                    && o.Adaptive.OverloadThreshold <= 1,
-                "RateLimiting:Adaptive limits/thresholds are invalid (need 1≤Min≤Max, Step≥1, 0<Healthy≤Overload≤1).")
+                    && o.Adaptive.OverloadThreshold <= 1
+                    && o.Adaptive.DecreaseFactor is > 0 and < 1
+                    && o.Adaptive.ScoreSmoothing is > 0 and <= 1,
+                "RateLimiting:Adaptive limits/thresholds are invalid (need 1≤Min≤Max, Step≥1, 0<Healthy≤Overload≤1, 0<DecreaseFactor<1, 0<ScoreSmoothing≤1).")
             .ValidateOnStart();
 
         builder.Services.AddSingleton<PrincipalPartitioner>();
@@ -118,7 +120,7 @@ public static class RateLimitingExtensions
                 return;
             }
 
-            var key = BurstPartitionKey(context);
+            var key = BurstBanScope(context);
             var store = context.RequestServices.GetRequiredService<IBurstBanStore>();
             var remaining = await store.GetRemainingBanAsync(key, context.RequestAborted);
 
@@ -215,13 +217,14 @@ public static class RateLimitingExtensions
         });
     }
 
-    // The burst-ban partition key: the same principal+route partition the limiter buckets on, so the ban lines up
-    // exactly with the bucket that was breached. Shared by OnRejected (arm) and the ban middleware (enforce).
-    private static string BurstPartitionKey(HttpContext context)
+    // The burst-ban scope: principal + route (the same bucket the burst limiter breached), WITHOUT the limiter's
+    // key prefix — the ban store adds its own "{prefix}:ban:" prefix, so this stays a clean single-namespaced key.
+    // Shared by OnRejected (arm) and the ban middleware (enforce).
+    private static string BurstBanScope(HttpContext context)
     {
         var partitioner = context.RequestServices.GetRequiredService<PrincipalPartitioner>();
         var (principalId, _) = partitioner.ResolvePrincipal(context);
-        return partitioner.PartitionKey(BurstPolicy, principalId, PrincipalPartitioner.RouteScope(context));
+        return $"{principalId}|{PrincipalPartitioner.RouteScope(context)}";
     }
 
     private static async ValueTask OnRejected(OnRejectedContext context, CancellationToken cancellationToken)
@@ -239,7 +242,7 @@ public static class RateLimitingExtensions
         var options = httpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<RateLimitingOptions>>().Value;
         var store = httpContext.RequestServices.GetRequiredService<IBurstBanStore>();
         var banDuration = options.BurstBan.Duration;
-        await store.BanAsync(BurstPartitionKey(httpContext), banDuration, cancellationToken);
+        await store.BanAsync(BurstBanScope(httpContext), banDuration, cancellationToken);
         RateLimitingMeter.Banned.Add(1);
 
         // The caller should not retry before the ban lifts.
