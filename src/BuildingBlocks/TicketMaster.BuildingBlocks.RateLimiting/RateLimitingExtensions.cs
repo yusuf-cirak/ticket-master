@@ -66,6 +66,7 @@ public static class RateLimitingExtensions
             builder.Services.AddSingleton<ILoadSignal, DistributedLoadSignal>();
         else
             builder.Services.AddSingleton<ILoadSignal>(sp => sp.GetRequiredService<LocalLoadSignal>());
+        builder.Services.AddSingleton<LoadSignalState>();
         builder.Services.AddSingleton(new AdmissionLimit(options.Adaptive.MaxLimit));
         builder.Services.AddSingleton<IAdmissionGate, InProcAdmissionGate>();
         builder.Services.AddHostedService<AdaptiveAdmissionController>();

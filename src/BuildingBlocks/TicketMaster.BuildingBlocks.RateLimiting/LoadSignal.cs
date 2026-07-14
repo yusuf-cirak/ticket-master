@@ -1,14 +1,27 @@
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace TicketMaster.BuildingBlocks.RateLimiting;
 
-/// <summary>Composite process/fleet load score in [0..1]; 0 = idle, 1 = fully saturated.</summary>
+/// <summary>Composite load in [0..1] (0 = idle, 1 = saturated) plus the components that produced it, for observability.</summary>
+internal readonly record struct LoadSample(double Score, double Cpu, double ThreadPool, double Latency, double Error);
+
+/// <summary>Composite process/fleet load signal in [0..1]; 0 = idle, 1 = fully saturated.</summary>
 internal interface ILoadSignal
 {
-    double Sample();
+    LoadSample Sample();
+}
+
+/// <summary>Last sampled load, published by the adaptive controller so the meter can expose it as gauges.</summary>
+internal sealed class LoadSignalState
+{
+    private readonly Lock _gate = new();
+    private LoadSample _last;
+    public void Publish(LoadSample sample) { lock (_gate) _last = sample; }
+    public LoadSample Current { get { lock (_gate) return _last; } }
 }
 
 /// <summary>Pure normalization/composition helpers — kept static so they're unit-testable without any process state.</summary>
@@ -56,7 +69,7 @@ internal sealed class LocalLoadSignal(
     private long _lastTimestamp = clock.GetTimestamp();
     private TimeSpan _lastCpu = Process.GetCurrentProcess().TotalProcessorTime;
 
-    public double Sample()
+    public LoadSample Sample()
     {
         var o = options.Value.Adaptive;
         var cores = Environment.ProcessorCount;
@@ -66,7 +79,7 @@ internal sealed class LocalLoadSignal(
         var latency = LoadMath.NormalizeLatency(metrics.LatencyEwmaMs, o.LatencyBaselineMs);
         var error = Math.Clamp(metrics.ErrorRate, 0, 1);
 
-        return LoadMath.Composite(cpu, threadPool, latency, error, o);
+        return new LoadSample(LoadMath.Composite(cpu, threadPool, latency, error, o), cpu, threadPool, latency, error);
     }
 
     // Process CPU time consumed since the last sample, divided by (wall-clock elapsed × cores). Clamped to [0..1].
@@ -98,44 +111,75 @@ internal sealed class DistributedLoadSignal(
     LocalLoadSignal local,
     IConnectionMultiplexer mux,
     IOptions<RateLimitingOptions> options,
+    TimeProvider clock,
     ILogger<DistributedLoadSignal> logger) : ILoadSignal
 {
     // Stable per-instance id for this node's field in the shared hash.
     private readonly string _instanceId = Guid.NewGuid().ToString("N");
 
-    // ponytail: whole-hash TTL (not per-field HEXPIRE) — a node that dies without clearing its field lingers in the
-    // "fleet max" until every node stops refreshing and the hash expires. Acceptable for a load SIGNAL; upgrade to
-    // Redis 7.4 HEXPIRE per-field TTL if stale-node skew ever matters.
-    private static readonly TimeSpan HashTtl = TimeSpan.FromSeconds(10);
+    // Each field carries "{score};{unixMs}"; a node whose last write is older than the staleness window is ignored
+    // (and best-effort pruned), so a crashed node no longer poisons the fleet max. The whole-hash TTL is a backstop.
+    private static readonly TimeSpan HashTtl = TimeSpan.FromSeconds(30);
 
     private string Prefix => options.Value.KeyPrefix ?? "app";
     private RedisKey LoadKey => $"{Prefix}:load";
 
-    public double Sample()
+    public LoadSample Sample()
     {
-        var localScore = local.Sample();
+        var localSample = local.Sample();
 
         if (!mux.IsConnected)
-            return localScore; // fail-open
+            return localSample; // fail-open
 
         try
         {
             var db = mux.GetDatabase();
-            db.HashSet(LoadKey, _instanceId, localScore);
-            db.KeyExpire(LoadKey, HashTtl); // refresh liveness on every sample
+            var nowMs = clock.GetUtcNow().ToUnixTimeMilliseconds();
+            db.HashSet(LoadKey, _instanceId, $"{localSample.Score.ToString(CultureInfo.InvariantCulture)};{nowMs}");
+            db.KeyExpire(LoadKey, HashTtl);
 
-            var max = localScore;
+            // Ignore nodes that haven't refreshed within ~3 control intervals (min 5s).
+            var staleMs = Math.Max(options.Value.Adaptive.ControlInterval.TotalMilliseconds * 3, 5_000);
+            var max = localSample.Score;
+            List<RedisValue> stale = null;
             foreach (var entry in db.HashGetAll(LoadKey))
-                if (entry.Value.TryParse(out double v) && v > max)
-                    max = v;
+            {
+                if (!TryParseField(entry.Value, out var score, out var tsMs))
+                    continue;
+                if (nowMs - tsMs <= staleMs)
+                    max = Math.Max(max, score);
+                else
+                    (stale ??= []).Add(entry.Name);
+            }
 
-            return Math.Clamp(max, 0, 1);
+            if (stale is { Count: > 0 })
+                db.HashDelete(LoadKey, [.. stale]); // best-effort prune of dead nodes
+
+            return localSample with { Score = Math.Clamp(max, 0, 1) };
         }
         catch (RedisException ex)
         {
             logger.LogDebug(ex, "Distributed load signal fell back to local score (Redis unavailable).");
-            return localScore; // fail-open
+            return localSample; // fail-open
         }
+    }
+
+    // "{score};{unixMs}"; tolerate a bare "{score}" (treated as fresh) for rolling deploys.
+    private static bool TryParseField(RedisValue value, out double score, out long tsMs)
+    {
+        score = 0;
+        tsMs = long.MaxValue; // bare/legacy → never stale
+        string raw = value;
+        if (string.IsNullOrEmpty(raw))
+            return false;
+
+        var sep = raw.IndexOf(';');
+        var scorePart = sep < 0 ? raw : raw[..sep];
+        if (!double.TryParse(scorePart, NumberStyles.Float, CultureInfo.InvariantCulture, out score))
+            return false;
+        if (sep >= 0)
+            long.TryParse(raw.AsSpan(sep + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out tsMs);
+        return true;
     }
 }
 

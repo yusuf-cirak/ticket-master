@@ -38,4 +38,22 @@ internal static class RateLimitingMeter
             Meter.CreateObservableGauge("adaptive.limit", () => limit.Current,
                 description: "Current global admission limit (max concurrent in-flight admitted requests).");
     }
+
+    private static int _loadGaugesRegistered;
+
+    /// <summary>
+    /// Registers the <c>adaptive.load.*</c> observable gauges (composite score + its components), so operators can see
+    /// WHY the admission limit moved. Idempotent — registered once even if multiple hosts share this static meter.
+    /// </summary>
+    public static void TrackLoad(LoadSignalState state)
+    {
+        if (Interlocked.Exchange(ref _loadGaugesRegistered, 1) != 0)
+            return;
+
+        Meter.CreateObservableGauge("adaptive.load.score", () => state.Current.Score, description: "Composite load score [0..1] driving AIMD.");
+        Meter.CreateObservableGauge("adaptive.load.cpu", () => state.Current.Cpu, description: "CPU component of the load score [0..1].");
+        Meter.CreateObservableGauge("adaptive.load.threadpool", () => state.Current.ThreadPool, description: "Thread-pool backlog component [0..1].");
+        Meter.CreateObservableGauge("adaptive.load.latency", () => state.Current.Latency, description: "Latency component [0..1].");
+        Meter.CreateObservableGauge("adaptive.load.errors", () => state.Current.Error, description: "5xx error-rate component [0..1].");
+    }
 }

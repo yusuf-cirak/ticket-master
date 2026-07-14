@@ -87,6 +87,7 @@ internal sealed class InProcAdmissionGate(AdmissionLimit limit) : IAdmissionGate
 internal sealed class AdaptiveAdmissionController(
     ILoadSignal signal,
     AdmissionLimit limit,
+    LoadSignalState state,
     IOptions<RateLimitingOptions> options,
     TimeProvider clock,
     ILogger<AdaptiveAdmissionController> logger) : BackgroundService
@@ -95,6 +96,7 @@ internal sealed class AdaptiveAdmissionController(
     {
         var o = options.Value.Adaptive;
         RateLimitingMeter.TrackAdmissionLimit(limit); // adaptive.limit observable gauge
+        RateLimitingMeter.TrackLoad(state); // adaptive.load.* gauges
 
         using var timer = new PeriodicTimer(o.ControlInterval, clock);
 
@@ -105,7 +107,9 @@ internal sealed class AdaptiveAdmissionController(
                 double score;
                 try
                 {
-                    score = signal.Sample();
+                    var sample = signal.Sample();
+                    state.Publish(sample); // expose components to the meter gauges
+                    score = sample.Score;
                 }
                 catch (Exception ex)
                 {
