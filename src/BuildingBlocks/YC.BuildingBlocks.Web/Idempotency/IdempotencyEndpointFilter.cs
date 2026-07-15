@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,15 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
             return await next(context);
         }
 
-        var cacheKey = $"idempotency:{http.Request.Method}:{http.Request.Path}:{key}";
+        // Scope the key by caller so one principal's stored response can never be replayed to another. The
+        // idempotency key is client-chosen, so an unscoped key lets a caller reuse a victim's key and read back the
+        // victim's cached response (cross-user disclosure). Authenticated → the "sub" principal; anonymous → the
+        // per-source IP (never crosses distinct callers; a shared-NAT collision would additionally require the same
+        // client-chosen key, which is negligible).
+        var scope = http.User.FindFirstValue("sub")
+                    ?? http.Connection.RemoteIpAddress?.ToString()
+                    ?? "anonymous";
+        var cacheKey = $"idempotency:{scope}:{http.Request.Method}:{http.Request.Path}:{key}";
 
         if (await cache.GetAsync(cacheKey, http.RequestAborted) is { } cached)
             return new ReplayedResult(JsonSerializer.Deserialize<StoredResponse>(cached)!);
