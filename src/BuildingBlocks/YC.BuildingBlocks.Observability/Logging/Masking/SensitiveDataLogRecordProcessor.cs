@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Redacts sensitive log attributes by <b>name</b> — the OpenTelemetry-native equivalent of Serilog's

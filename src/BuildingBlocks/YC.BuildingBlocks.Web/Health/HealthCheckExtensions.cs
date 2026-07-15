@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using YC.BuildingBlocks.Observability;
 using YC.BuildingBlocks.Domain.Diagnostics;
 
 namespace YC.BuildingBlocks.Web;

@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using YC.BuildingBlocks.Domain.Observability;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Enriches the request's telemetry with <c>user_id</c> (the authenticated <c>sub</c>) and <c>client_ip</c> by
@@ -12,7 +12,7 @@ namespace YC.BuildingBlocks.Web;
 /// authentication (User populated) and after forwarded headers (RemoteIpAddress = real client). Neither key is in
 /// the sensitive-mask set, so both are emitted verbatim.
 /// </summary>
-internal sealed class UserContextMiddleware(RequestDelegate next)
+public sealed class UserContextMiddleware(RequestDelegate next)
 {
     public Task InvokeAsync(HttpContext context)
     {

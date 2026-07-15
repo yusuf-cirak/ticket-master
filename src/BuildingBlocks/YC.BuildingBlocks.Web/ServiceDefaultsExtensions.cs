@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using YC.BuildingBlocks.Observability;
 using YC.BuildingBlocks.Security;
 
 namespace YC.BuildingBlocks.Web;

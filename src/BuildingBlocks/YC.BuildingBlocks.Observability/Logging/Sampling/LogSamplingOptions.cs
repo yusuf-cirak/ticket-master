@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Tail log sampling: per request, buffer the chatty low-severity logs and decide at the end whether to keep

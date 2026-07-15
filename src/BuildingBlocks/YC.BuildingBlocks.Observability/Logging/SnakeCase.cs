@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Converts log attribute key names (PascalCase / camelCase, acronym-aware) to snake_case, the

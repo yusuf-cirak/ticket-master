@@ -3,7 +3,7 @@ using OpenTelemetry;
 using OpenTelemetry.Logs;
 using YC.BuildingBlocks.Domain.Observability;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Stamps every log record with the propagated cross-cutting baggage (<c>correlation_id</c>, <c>causation_id</c>,

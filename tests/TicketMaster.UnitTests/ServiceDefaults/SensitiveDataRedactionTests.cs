@@ -1,3 +1,4 @@
+using YC.BuildingBlocks.Observability;
 using FluentAssertions;
 using YC.BuildingBlocks.Web;
 using Xunit;

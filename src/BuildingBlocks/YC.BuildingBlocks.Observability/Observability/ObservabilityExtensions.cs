@@ -11,9 +11,9 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using YC.BuildingBlocks.Domain.Observability;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
-internal static class ObservabilityExtensions
+public static class ObservabilityExtensions
 {
     /// <summary>
     /// OpenTelemetry traces + metrics + logs over OTLP (default http://localhost:4317, overridable via

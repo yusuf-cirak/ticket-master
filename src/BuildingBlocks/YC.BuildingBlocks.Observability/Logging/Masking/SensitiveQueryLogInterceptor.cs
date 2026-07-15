@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpLogging;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Logs the request query string with sensitive parameter <i>values</i> redacted, instead of the framework's
@@ -11,7 +11,7 @@ namespace YC.BuildingBlocks.Web;
 /// signatures, API keys, …). Parameter names are kept (useful for debugging: paging, filters); only the values of
 /// known-sensitive names become <c>***</c>. Matching is case-insensitive.
 /// </summary>
-internal sealed class SensitiveQueryLogInterceptor : IHttpLoggingInterceptor
+public sealed class SensitiveQueryLogInterceptor : IHttpLoggingInterceptor
 {
     private const string Mask = "***";
 

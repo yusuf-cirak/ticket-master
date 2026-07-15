@@ -1,3 +1,4 @@
+using YC.BuildingBlocks.Observability;
 using System.Collections.Generic;
 using System.Diagnostics;
 using FluentAssertions;

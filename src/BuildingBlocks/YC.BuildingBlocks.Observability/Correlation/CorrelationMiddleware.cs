@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using YC.BuildingBlocks.Domain.Observability;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Establishes the request's <c>correlation_id</c> — a durable, business-level identifier distinct from the
@@ -13,7 +13,7 @@ namespace YC.BuildingBlocks.Web;
 /// logs (<see cref="BaggageLogRecordProcessor"/>) and the span, and is carried across the outbox boundary —
 /// and echoed back to the caller as <c>X-Correlation-ID</c> (plus <c>X-Trace-Id</c> for direct trace lookup).
 /// </summary>
-internal sealed class CorrelationMiddleware(RequestDelegate next)
+public sealed class CorrelationMiddleware(RequestDelegate next)
 {
     public Task InvokeAsync(HttpContext context)
     {

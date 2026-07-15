@@ -1,7 +1,7 @@
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Observability;
 
 /// <summary>
 /// Rewrites every log attribute key to snake_case (OpenTelemetry semantic-convention casing) so the

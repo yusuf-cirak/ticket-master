@@ -1,3 +1,4 @@
+using YC.BuildingBlocks.Observability;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
