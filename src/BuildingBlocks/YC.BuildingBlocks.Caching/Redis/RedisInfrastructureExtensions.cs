@@ -21,8 +21,6 @@ public static class RedisInfrastructureExtensions
 
         var multiplexer = RedisConnectionFactory.Create(options);
         builder.Services.AddSingleton(multiplexer);
-        builder.Services.AddSingleton<YC.BuildingBlocks.Application.Abstractions.Locking.IDistributedLock, RedisDistributedLock>();
-        builder.Services.AddSingleton<YC.BuildingBlocks.Domain.Security.ITokenBlacklist, RedisTokenBlacklist>();
 
         // L2 for FusionCache + any IDistributedCache consumer. Keys are app-prefixed.
         builder.Services.AddStackExchangeRedisCache(redis =>

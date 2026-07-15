@@ -1,7 +1,7 @@
 using StackExchange.Redis;
 using YC.BuildingBlocks.Application.Abstractions.Locking;
 
-namespace YC.BuildingBlocks.Caching.Redis;
+namespace YC.BuildingBlocks.Locking;
 
 /// <summary>
 /// Redis-backed <see cref="IDistributedLock"/>. Acquires with <c>SET key token NX PX</c> (atomic, non-blocking) and

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Caching.Redis;
+namespace YC.BuildingBlocks.Locking;
 
 /// <summary>
 /// Redis-backed <see cref="ITokenBlacklist"/>. Stores <c>revoked:{jti}</c> with a TTL equal to the token's remaining

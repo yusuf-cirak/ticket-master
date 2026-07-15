@@ -5,6 +5,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Configuration.Secrets\YC.BuildingBlocks.Configuration.Secrets.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Caching\YC.BuildingBlocks.Caching.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Locking\YC.BuildingBlocks.Locking.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
     <ProjectReference Include="..\..\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />

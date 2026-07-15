@@ -5,6 +5,7 @@ using YC.BuildingBlocks.Web.Modularity;
 using YC.BuildingBlocks.Configuration.Secrets;
 using YC.BuildingBlocks.Caching.FusionCache;
 using YC.BuildingBlocks.Caching.Redis;
+using YC.BuildingBlocks.Locking;
 using YC.BuildingBlocks.RateLimiting;
 using YC.BuildingBlocks.Web;
 using YC.BuildingBlocks.Infrastructure.Messaging.Kafka;
@@ -21,6 +22,7 @@ builder.AddServiceDefaults();
 
 // Shared sentinel-aware Redis connection + FusionCache (L1/L2) + distributed rate limiting.
 builder.AddRedisInfrastructure();
+builder.AddRedisLocking();
 builder.AddAppCache();
 builder.AddRateLimiting();
 
