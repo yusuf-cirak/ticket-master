@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="MassTransit.Kafka" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Persistence\EfCore\Interceptors\DomainEventDispatchExtensions.cs">
+      <DependentUpon>DomainEventDispatchInterceptor.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

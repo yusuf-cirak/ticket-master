@@ -1,5 +1,5 @@
 using FluentAssertions;
-using TicketMaster.BuildingBlocks.RateLimiting;
+using YC.BuildingBlocks.RateLimiting;
 using Xunit;
 
 namespace TicketMaster.UnitTests.RateLimiting;

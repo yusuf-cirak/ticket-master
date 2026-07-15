@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using TicketMaster.BuildingBlocks.RateLimiting;
+using YC.BuildingBlocks.RateLimiting;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 

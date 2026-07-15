@@ -1,7 +1,7 @@
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using TicketMaster.BuildingBlocks.Application;
+using YC.BuildingBlocks.Application;
 using Xunit;
 
 namespace TicketMaster.UnitTests.BuildingBlocks;

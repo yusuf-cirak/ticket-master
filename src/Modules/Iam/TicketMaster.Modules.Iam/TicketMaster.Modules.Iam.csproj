@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Domain\TicketMaster.BuildingBlocks.Domain.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Application\TicketMaster.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Infrastructure\TicketMaster.BuildingBlocks.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.ServiceDefaults\TicketMaster.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Infrastructure\YC.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\TicketMaster.Modules.Iam.Contracts\TicketMaster.Modules.Iam.Contracts.csproj" />
   </ItemGroup>
 

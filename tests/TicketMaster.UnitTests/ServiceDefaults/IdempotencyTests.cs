@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
-using TicketMaster.BuildingBlocks.Application.Abstractions.Locking;
-using TicketMaster.BuildingBlocks.Application.Behaviors;
+using YC.BuildingBlocks.Application.Abstractions.Locking;
+using YC.BuildingBlocks.Application.Behaviors;
 using Xunit;
 using YC.Monad;
 

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

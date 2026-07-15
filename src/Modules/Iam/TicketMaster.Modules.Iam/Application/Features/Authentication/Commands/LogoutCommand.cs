@@ -2,7 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using TicketMaster.BuildingBlocks.Domain.Security;
+using YC.BuildingBlocks.Domain.Security;
 using TicketMaster.Modules.Iam.Infrastructure;
 using YC.Monad;
 

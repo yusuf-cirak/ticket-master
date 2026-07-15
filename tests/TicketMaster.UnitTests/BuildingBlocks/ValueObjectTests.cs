@@ -1,6 +1,6 @@
 using System.Text.Json;
 using FluentAssertions;
-using TicketMaster.BuildingBlocks.Domain.ValueObjects;
+using YC.BuildingBlocks.Domain.ValueObjects;
 using Vogen;
 using Xunit;
 

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

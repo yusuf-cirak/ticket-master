@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
-using TicketMaster.BuildingBlocks.Application.Behaviors;
-using TicketMaster.BuildingBlocks.Domain.Errors;
+using YC.BuildingBlocks.Application.Behaviors;
+using YC.BuildingBlocks.Domain.Errors;
 using Xunit;
 using YC.Monad;
 

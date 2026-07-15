@@ -6,7 +6,7 @@ using TicketMaster.Modules.Iam.Application.Abstractions;
 using TicketMaster.Modules.Iam.Application.Features.Authentication;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.Modules.Iam.Infrastructure;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;

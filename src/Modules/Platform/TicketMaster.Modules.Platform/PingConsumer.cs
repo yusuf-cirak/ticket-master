@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using TicketMaster.BuildingBlocks.Infrastructure.Inbox;
+using YC.BuildingBlocks.Infrastructure.Inbox;
 using TicketMaster.Modules.Platform.Contracts;
 
 namespace TicketMaster.Modules.Platform;

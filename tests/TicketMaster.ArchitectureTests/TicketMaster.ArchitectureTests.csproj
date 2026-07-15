@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BuildingBlocks\TicketMaster.BuildingBlocks.Domain\TicketMaster.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
   </ItemGroup>
 

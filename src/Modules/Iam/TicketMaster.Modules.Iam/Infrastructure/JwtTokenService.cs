@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TicketMaster.Modules.Iam.Domain;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 
 namespace TicketMaster.Modules.Iam.Infrastructure;
 

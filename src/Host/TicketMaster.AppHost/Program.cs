@@ -1,13 +1,13 @@
 using System.Security.Claims;
 using MassTransit;
 using Scalar.AspNetCore;
-using TicketMaster.ServiceDefaults.Modularity;
-using TicketMaster.ServiceDefaults.Configuration.Secrets;
-using TicketMaster.BuildingBlocks.Caching.FusionCache;
-using TicketMaster.BuildingBlocks.Caching.Redis;
-using TicketMaster.BuildingBlocks.RateLimiting;
-using TicketMaster.ServiceDefaults;
-using TicketMaster.BuildingBlocks.Infrastructure.Messaging.Kafka;
+using YC.BuildingBlocks.Web.Modularity;
+using YC.BuildingBlocks.Web.Configuration.Secrets;
+using YC.BuildingBlocks.Caching.FusionCache;
+using YC.BuildingBlocks.Caching.Redis;
+using YC.BuildingBlocks.RateLimiting;
+using YC.BuildingBlocks.Web;
+using YC.BuildingBlocks.Infrastructure.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 

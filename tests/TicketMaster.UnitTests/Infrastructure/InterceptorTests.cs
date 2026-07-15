@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TicketMaster.BuildingBlocks.Domain;
-using TicketMaster.BuildingBlocks.Domain.Auditing;
-using TicketMaster.BuildingBlocks.Domain.Security;
-using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
-using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+using YC.BuildingBlocks.Domain;
+using YC.BuildingBlocks.Domain.Auditing;
+using YC.BuildingBlocks.Domain.Security;
+using YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Infrastructure;

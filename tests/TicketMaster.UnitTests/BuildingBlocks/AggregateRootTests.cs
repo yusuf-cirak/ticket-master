@@ -1,5 +1,5 @@
 using FluentAssertions;
-using TicketMaster.BuildingBlocks.Domain;
+using YC.BuildingBlocks.Domain;
 using Xunit;
 
 namespace TicketMaster.UnitTests.BuildingBlocks;

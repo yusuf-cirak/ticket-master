@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using TicketMaster.BuildingBlocks.Infrastructure.Outbox;
+using YC.BuildingBlocks.Infrastructure.Outbox;
 using TicketMaster.Modules.Platform.Contracts;
 
 namespace TicketMaster.Modules.Platform;

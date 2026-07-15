@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using TicketMaster.ServiceDefaults;
+using YC.BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

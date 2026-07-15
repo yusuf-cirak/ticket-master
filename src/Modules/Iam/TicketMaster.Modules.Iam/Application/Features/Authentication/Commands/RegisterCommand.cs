@@ -1,10 +1,10 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using TicketMaster.BuildingBlocks.Domain.Errors;
+using YC.BuildingBlocks.Domain.Errors;
 using TicketMaster.Modules.Iam.Domain;
 using YC.Monad;
-using DomainEmail = TicketMaster.BuildingBlocks.Domain.ValueObjects.Email;
+using DomainEmail = YC.BuildingBlocks.Domain.ValueObjects.Email;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 

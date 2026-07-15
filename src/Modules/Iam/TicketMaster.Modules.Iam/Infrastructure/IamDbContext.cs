@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore;
-using TicketMaster.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+using YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
 using TicketMaster.Modules.Iam.Domain;
 
 namespace TicketMaster.Modules.Iam.Infrastructure;

@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
-using TicketMaster.BuildingBlocks.Application.Abstractions.Security;
-using TicketMaster.BuildingBlocks.Application.Behaviors;
-using TicketMaster.BuildingBlocks.Domain.Security;
+using YC.BuildingBlocks.Application.Abstractions.Security;
+using YC.BuildingBlocks.Application.Behaviors;
+using YC.BuildingBlocks.Domain.Security;
 using Xunit;
 using YC.Monad;
 

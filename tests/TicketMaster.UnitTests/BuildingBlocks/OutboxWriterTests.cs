@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using TicketMaster.BuildingBlocks.Infrastructure.Messaging;
-using TicketMaster.BuildingBlocks.Infrastructure.Outbox;
+using YC.BuildingBlocks.Infrastructure.Messaging;
+using YC.BuildingBlocks.Infrastructure.Outbox;
 using Xunit;
 
 namespace TicketMaster.UnitTests.BuildingBlocks;

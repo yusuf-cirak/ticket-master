@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Infrastructure\TicketMaster.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Infrastructure\YC.BuildingBlocks.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

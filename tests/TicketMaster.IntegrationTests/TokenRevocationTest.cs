@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
-using TicketMaster.BuildingBlocks.Domain.Security;
+using YC.BuildingBlocks.Domain.Security;
 using Xunit;
 
 namespace TicketMaster.IntegrationTests;

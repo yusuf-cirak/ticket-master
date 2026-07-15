@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.ServiceDefaults\TicketMaster.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Application\TicketMaster.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.BuildingBlocks.Caching\TicketMaster.BuildingBlocks.Caching.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\TicketMaster.BuildingBlocks.RateLimiting\TicketMaster.BuildingBlocks.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Caching\YC.BuildingBlocks.Caching.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
     <ProjectReference Include="..\..\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
   </ItemGroup>

@@ -1,5 +1,5 @@
-using TicketMaster.BuildingBlocks.Domain;
-using TicketMaster.BuildingBlocks.Domain.Auditing;
+using YC.BuildingBlocks.Domain;
+using YC.BuildingBlocks.Domain.Auditing;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Domain;

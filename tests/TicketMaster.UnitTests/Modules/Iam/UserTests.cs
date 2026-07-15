@@ -1,6 +1,6 @@
 using System.Linq;
 using FluentAssertions;
-using TicketMaster.BuildingBlocks.Domain.ValueObjects;
+using YC.BuildingBlocks.Domain.ValueObjects;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.Modules.Iam.Domain.Events;
 using Xunit;
