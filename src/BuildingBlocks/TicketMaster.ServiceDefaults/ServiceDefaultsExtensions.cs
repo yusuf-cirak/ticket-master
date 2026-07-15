@@ -12,16 +12,19 @@ namespace TicketMaster.ServiceDefaults;
 /// </summary>
 public static class ServiceDefaultsExtensions
 {
-    public static WebApplicationBuilder AddServiceDefaults(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddServiceDefaults(this WebApplicationBuilder builder, Action<ServiceDefaultsOptions> configure = null)
     {
         // Run the process in UTC regardless of the host's timezone, before any date/time API is touched.
         Environment.SetEnvironmentVariable("TZ", "UTC");
         TimeZoneInfo.ClearCachedData();
 
-        var serviceName = builder.Configuration["ServiceName"] ?? builder.Environment.ApplicationName;
+        var options = new ServiceDefaultsOptions();
+        configure?.Invoke(options);
+
+        var serviceName = options.ServiceName ?? builder.Configuration["ServiceName"] ?? builder.Environment.ApplicationName;
 
         builder.AddObservability(serviceName); // traces + metrics + logs (OTLP), snake_case keys
-        builder.AddLogSampling(); // tail sampling: buffer Info, flush on error / sampled rate
+        builder.AddLogSampling(options.LogSampling); // tail sampling: buffer Info, flush on error / sampled rate
         builder.AddGlobalExceptionHandling(); // RFC 9457 problem+json for unhandled exceptions
         builder.AddDetailedHttpLogging(); // opt-in body/header capture (non-prod default), 1k-bounded
         builder.AddResilience(); // Kestrel limits, request timeout, outbound resilience, shutdown
@@ -32,10 +35,10 @@ public static class ServiceDefaultsExtensions
         builder.Services.AddApiVersioningDefaults();
         builder.Services.AddFeatureFlags();
         builder.AddForwardedHeaders(); // trust edge proxy X-Forwarded-* → real client IP + scheme
-        builder.AddJwtAuthentication(); // JWT bearer authN + secure-by-default authZ + scope handler
+        builder.AddJwtAuthentication(options.Jwt); // JWT bearer authN + secure-by-default authZ + scope handler
         builder.AddCurrentUser(); // ICurrentUser over the ambient principal (application/domain-facing)
         builder.AddAuditLogging(); // IAuditLogger → structured audit trail on the OTel pipeline
-        builder.AddDefaultHealthChecks();
+        builder.AddDefaultHealthChecks(options.HealthChecks);
 
         return builder;
     }

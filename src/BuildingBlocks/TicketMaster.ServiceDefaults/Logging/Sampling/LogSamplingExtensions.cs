@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -13,34 +14,31 @@ namespace TicketMaster.ServiceDefaults;
 /// </summary>
 public static class LogSamplingExtensions
 {
-    public static WebApplicationBuilder AddLogSampling(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddLogSampling(this WebApplicationBuilder builder, Action<LogSamplingOptions> configure = null)
     {
-        builder.Services.AddOptions<LogSamplingOptions>()
+        var optionsBuilder = builder.Services.AddOptions<LogSamplingOptions>()
             .Bind(builder.Configuration.GetSection(LogSamplingOptions.SectionName));
+        if (configure is not null)
+            optionsBuilder.Configure(configure); // code-based config wins over the appsettings section
 
-        if (!SamplingActive(builder))
+        // Effective options for the registration-time decisions below (IOptions isn't built yet); UseLogSampling
+        // later reads the resolved IOptions so it honors the same code config.
+        var effective = builder.Configuration.GetSection(LogSamplingOptions.SectionName).Get<LogSamplingOptions>() ?? new LogSamplingOptions();
+        configure?.Invoke(effective);
+
+        if (builder.Environment.IsDevelopment() || !effective.Enabled)
             return builder;
 
-        var level = builder.Configuration.GetSection(LogSamplingOptions.SectionName).Get<LogSamplingOptions>()?.BufferBelowLevel
-                    ?? LogLevel.Information;
-
-        builder.Logging.AddPerIncomingRequestBuffer(level);
+        builder.Logging.AddPerIncomingRequestBuffer(effective.BufferBelowLevel);
         return builder;
     }
 
     public static WebApplication UseLogSampling(this WebApplication app)
     {
-        if (SamplingActive(app))
+        var options = app.Services.GetRequiredService<IOptions<LogSamplingOptions>>().Value;
+        if (!app.Environment.IsDevelopment() && options.Enabled)
             app.UseMiddleware<LogSamplingMiddleware>();
-        
+
         return app;
     }
-
-    private static bool SamplingActive(IHostApplicationBuilder builder) =>
-        !builder.Environment.IsDevelopment()
-        && (builder.Configuration.GetSection(LogSamplingOptions.SectionName).Get<LogSamplingOptions>()?.Enabled ?? true);
-
-    private static bool SamplingActive(WebApplication app) =>
-        !app.Environment.IsDevelopment()
-        && (app.Configuration.GetSection(LogSamplingOptions.SectionName).Get<LogSamplingOptions>()?.Enabled ?? true);
 }

@@ -19,8 +19,9 @@ internal static class HealthCheckExtensions
     /// Liveness (thread-pool) + readiness component checks (postgres/redis/kafka/debezium-connect), one
     /// AspNetCore.HealthChecks.* check per dependency, all configured from the standard connection settings.
     /// </summary>
-    public static WebApplicationBuilder AddDefaultHealthChecks(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddDefaultHealthChecks(this WebApplicationBuilder builder, HealthCheckSettings settings = null)
     {
+        settings ??= new HealthCheckSettings();
         var cfg = builder.Configuration;
         
         
@@ -48,14 +49,14 @@ internal static class HealthCheckExtensions
             failureStatus: HealthStatus.Unhealthy,
             tags: [Ready]));
 
-        if (cfg.GetConnectionString("Postgres") is { Length: > 0 } postgres)
+        if (cfg.GetConnectionString(settings.PostgresConnectionName) is { Length: > 0 } postgres)
             checks.AddNpgSql(postgres, name: "postgres", tags: [Ready], timeout: TimeSpan.FromSeconds(3));
-        if (cfg.GetConnectionString("Redis") is { Length: > 0 } redis)
+        if (cfg.GetConnectionString(settings.RedisConnectionName) is { Length: > 0 } redis)
             checks.AddRedis(redis, name: "redis", tags: [Ready], timeout: TimeSpan.FromSeconds(3));
-        if (cfg["Kafka:BootstrapServers"] is { Length: > 0 } bootstrap)
-            checks.AddKafka(new ProducerConfig { BootstrapServers = bootstrap }, topic: "healthchecks", name: "kafka",
+        if (cfg[settings.KafkaBootstrapKey] is { Length: > 0 } bootstrap)
+            checks.AddKafka(new ProducerConfig { BootstrapServers = bootstrap }, topic: settings.KafkaHealthTopic, name: "kafka",
                 tags: [Ready], timeout: TimeSpan.FromSeconds(5));
-        if (cfg["Debezium:ConnectUrl"] is { Length: > 0 } connect)
+        if (cfg[settings.DebeziumConnectUrlKey] is { Length: > 0 } connect)
             checks.AddUrlGroup(new Uri(connect), name: "debezium-connect", tags: [Ready],
                 timeout: TimeSpan.FromSeconds(3));
 
