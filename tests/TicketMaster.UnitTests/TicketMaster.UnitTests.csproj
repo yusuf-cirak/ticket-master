@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Infrastructure\YC.BuildingBlocks.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Configuration.Secrets\YC.BuildingBlocks.Configuration.Secrets.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
   </ItemGroup>

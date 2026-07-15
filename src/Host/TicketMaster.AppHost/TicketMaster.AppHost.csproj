@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Configuration.Secrets\YC.BuildingBlocks.Configuration.Secrets.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Caching\YC.BuildingBlocks.Caching.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace YC.BuildingBlocks.Web.Configuration.Secrets;
+namespace YC.BuildingBlocks.Configuration.Secrets;
 
 /// <summary>
 /// Symmetric crypto for configuration secrets. Pluggable so the AES-GCM default can later be swapped for a

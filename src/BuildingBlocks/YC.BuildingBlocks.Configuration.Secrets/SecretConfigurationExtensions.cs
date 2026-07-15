@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
-namespace YC.BuildingBlocks.Web.Configuration.Secrets;
+namespace YC.BuildingBlocks.Configuration.Secrets;
 
 public static class SecretConfigurationExtensions
 {

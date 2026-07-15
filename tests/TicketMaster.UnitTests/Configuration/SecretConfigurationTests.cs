@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using YC.BuildingBlocks.Web.Configuration.Secrets;
+using YC.BuildingBlocks.Configuration.Secrets;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Configuration;
