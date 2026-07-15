@@ -21,7 +21,7 @@ namespace TicketMaster.BuildingBlocks.Infrastructure.Messaging.Kafka;
 public sealed class MessageContextFilter<T> : IFilter<ConsumeContext<T>>
     where T : class
 {
-    public static readonly ActivitySource Source = new("TicketMaster.Messaging");
+    public static readonly ActivitySource Source = new(TelemetryConstants.MessagingActivitySourceName);
 
     public async Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
     {

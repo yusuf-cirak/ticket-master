@@ -12,7 +12,7 @@ namespace TicketMaster.ServiceDefaults.Modularity;
 /// </summary>
 public interface IModule
 {
-    /// <summary>Short module name (matches the <c>TicketMaster.Modules.{Name}</c> assembly).</summary>
+    /// <summary>Short module name (maps to an assembly via <see cref="ModularityOptions.AssemblyNameFormat"/>, by default <c>{RootNamespace}.Modules.{Name}</c>).</summary>
     string Name { get; }
 
     /// <summary>The module assembly — scanned for MediatR handlers and FluentValidation validators.</summary>

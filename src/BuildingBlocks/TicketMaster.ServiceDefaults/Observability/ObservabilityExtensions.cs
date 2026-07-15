@@ -9,6 +9,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using TicketMaster.BuildingBlocks.Domain.Observability;
 
 namespace TicketMaster.ServiceDefaults;
 
@@ -42,7 +43,7 @@ internal static class ObservabilityExtensions
                 .AddHttpClientInstrumentation()
                 .AddSource("Npgsql") // EF Core / Npgsql database spans
                 .AddSource("MassTransit") // Kafka rider produce/consume spans
-                .AddSource("TicketMaster.Messaging") // consume spans re-parented across the outbox boundary
+                .AddSource(TelemetryConstants.MessagingActivitySourceName) // consume spans re-parented across the outbox boundary
                 .AddOtlpExporter())
             .WithMetrics(m => m
                 .AddAspNetCoreInstrumentation() // HTTP server: rate, errors, duration (RED)
@@ -51,7 +52,7 @@ internal static class ObservabilityExtensions
                 .AddProcessInstrumentation() // process CPU + memory (USE)
                 .AddMeter("MassTransit")
                 .AddMeter("Npgsql")
-                .AddMeter("TicketMaster.RateLimiting")
+                .AddMeter(TelemetryConstants.RateLimitingMeterName)
                 .AddOtlpExporter());
 
         // Logs: ILogger → OTLP, same Resource, trace_id/span_id auto-attached, keys snake_cased.

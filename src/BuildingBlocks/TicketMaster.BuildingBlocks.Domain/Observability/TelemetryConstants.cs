@@ -26,4 +26,15 @@ public static class TelemetryConstants
 
     /// <summary>Activity-baggage and log-attribute key for the client IP (post forwarded-headers resolution).</summary>
     public const string ClientIpKey = "client_ip";
+
+    /// <summary>
+    /// OpenTelemetry instrument (Meter / ActivitySource) names for the building blocks. Per OTel convention an
+    /// instrument name identifies the <b>library</b> that emits it, not the host app — so these stay product-neutral
+    /// (the app's identity is the Resource <c>service.name</c>). Defined once here so the emitter and the OTel
+    /// pipeline registration agree without duplicated literals across projects that don't reference each other.
+    /// </summary>
+    public const string RateLimitingMeterName = "YC.BuildingBlocks.RateLimiting";
+
+    /// <summary>ActivitySource name for messaging spans re-parented across the outbox boundary.</summary>
+    public const string MessagingActivitySourceName = "YC.BuildingBlocks.Messaging";
 }

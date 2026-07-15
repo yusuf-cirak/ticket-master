@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using System.Threading;
+using TicketMaster.BuildingBlocks.Domain.Observability;
 
 namespace TicketMaster.BuildingBlocks.RateLimiting;
 
@@ -9,7 +10,7 @@ namespace TicketMaster.BuildingBlocks.RateLimiting;
 /// </summary>
 internal static class RateLimitingMeter
 {
-    public const string MeterName = "TicketMaster.RateLimiting";
+    public const string MeterName = TelemetryConstants.RateLimitingMeterName;
 
     private static readonly Meter Meter = new(MeterName);
 
