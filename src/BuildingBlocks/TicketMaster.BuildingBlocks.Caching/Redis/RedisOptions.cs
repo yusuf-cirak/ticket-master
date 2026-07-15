@@ -17,8 +17,8 @@ public sealed class RedisOptions
     /// <summary>Sentinel endpoints (<c>host:port</c>), used when <see cref="Mode"/> is Sentinel.</summary>
     public string[] Sentinels { get; init; } = [];
 
-    /// <summary>Sentinel master set name (the monitored master), e.g. <c>tm-master</c>.</summary>
-    public string ServiceName { get; init; } = "tm-master";
+    /// <summary>Sentinel master set name (the monitored master). Defaults to the Redis Sentinel convention; override per app.</summary>
+    public string ServiceName { get; init; } = "mymaster";
 
     /// <summary>Optional auth password for the data nodes (master/replicas).</summary>
     public string Password { get; init; }
