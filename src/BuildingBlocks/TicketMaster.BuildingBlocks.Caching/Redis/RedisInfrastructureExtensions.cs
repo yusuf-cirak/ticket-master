@@ -13,9 +13,10 @@ namespace TicketMaster.BuildingBlocks.Caching.Redis;
 /// </summary>
 public static class RedisInfrastructureExtensions
 {
-    public static WebApplicationBuilder AddRedisInfrastructure(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddRedisInfrastructure(this WebApplicationBuilder builder, Action<RedisOptions> configure = null)
     {
         var options = builder.Configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>() ?? new RedisOptions();
+        configure?.Invoke(options); // code-based config wins over the appsettings section
         var serviceName = builder.Configuration["ServiceName"] ?? builder.Environment.ApplicationName;
 
         var multiplexer = RedisConnectionFactory.Create(options);

@@ -19,9 +19,12 @@ namespace TicketMaster.BuildingBlocks.Caching.FusionCache;
 /// </summary>
 public static class FusionCacheExtensions
 {
-    public static WebApplicationBuilder AddAppCache(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddAppCache(this WebApplicationBuilder builder, Action<AppCacheOptions> configure = null)
     {
         var serviceName = builder.Configuration["ServiceName"] ?? builder.Environment.ApplicationName;
+
+        var cacheOptions = new AppCacheOptions();
+        configure?.Invoke(cacheOptions);
 
         // Backplane on the same shared multiplexer (sentinel-aware), resolved from DI.
         builder.Services.AddSingleton<IFusionCacheBackplane>(sp =>
@@ -34,12 +37,12 @@ public static class FusionCacheExtensions
             .WithOptions(o => o.CacheKeyPrefix = $"{serviceName}:cache:")
             .WithDefaultEntryOptions(o =>
             {
-                o.Duration = TimeSpan.FromMinutes(5);            // L1 + L2 logical TTL
-                o.JitterMaxDuration = TimeSpan.FromSeconds(10);  // anti herd / cache stampede
-                o.IsFailSafeEnabled = true;                      // serve stale if L2 errors
-                o.FailSafeMaxDuration = TimeSpan.FromHours(1);
-                o.FactorySoftTimeout = TimeSpan.FromMilliseconds(100);
-                o.DistributedCacheDuration = TimeSpan.FromMinutes(10);
+                o.Duration = cacheOptions.Duration;                          // L1 + L2 logical TTL
+                o.JitterMaxDuration = cacheOptions.JitterMaxDuration;        // anti herd / cache stampede
+                o.IsFailSafeEnabled = cacheOptions.IsFailSafeEnabled;        // serve stale if L2 errors
+                o.FailSafeMaxDuration = cacheOptions.FailSafeMaxDuration;
+                o.FactorySoftTimeout = cacheOptions.FactorySoftTimeout;
+                o.DistributedCacheDuration = cacheOptions.DistributedCacheDuration;
             })
             .WithSerializer(new FusionCacheNeueccMessagePackSerializer())
             .WithRegisteredDistributedCache()

@@ -5,22 +5,22 @@ public sealed class RateLimitingOptions
 {
     public const string SectionName = "RateLimiting";
 
-    public bool Enabled { get; init; } = true;
+    public bool Enabled { get; set; } = true;
 
     /// <summary>
     /// Where the limiter's counters and burst-ban state live: <see cref="RateLimitingMode.Distributed"/> (Redis,
     /// shared across instances) or <see cref="RateLimitingMode.Local"/> (per-node, in-memory). Defaults to Distributed.
     /// </summary>
-    public RateLimitingMode Mode { get; init; } = RateLimitingMode.Distributed;
+    public RateLimitingMode Mode { get; set; } = RateLimitingMode.Distributed;
 
     /// <summary>Redis key prefix; defaults to the application's <c>ServiceName</c> when not set.</summary>
     public string KeyPrefix { get; set; }
 
     /// <summary>Named policies. Only <c>burst</c> is used now.</summary>
-    public Dictionary<string, PolicyDefinition> Policies { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, PolicyDefinition> Policies { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Per-tier permit multipliers (e.g. anon 0.25, authenticated 1, internal 5).</summary>
-    public Dictionary<string, double> Tiers { get; init; } = new(StringComparer.OrdinalIgnoreCase)
+    public Dictionary<string, double> Tiers { get; set; } = new(StringComparer.OrdinalIgnoreCase)
     {
         ["anon"] = 0.25,
         ["authenticated"] = 1.0,
@@ -28,10 +28,10 @@ public sealed class RateLimitingOptions
     };
 
     /// <summary>Burst-ban: exceeding the burst window arms a fixed soft-ban for <see cref="BurstBanOptions.Duration"/>.</summary>
-    public BurstBanOptions BurstBan { get; init; } = new();
+    public BurstBanOptions BurstBan { get; set; } = new();
 
     /// <summary>Layer-2 adaptive admission control (system-wide AIMD concurrency gate).</summary>
-    public AdaptiveOptions Adaptive { get; init; } = new();
+    public AdaptiveOptions Adaptive { get; set; } = new();
 }
 
 /// <summary>
@@ -45,51 +45,51 @@ public sealed class RateLimitingOptions
 public sealed class AdaptiveOptions
 {
     /// <summary>Floor for the admission limit (must be ≥ 1).</summary>
-    public int MinLimit { get; init; } = 10;
+    public int MinLimit { get; set; } = 10;
 
     /// <summary>Ceiling for the admission limit (must be ≥ <see cref="MinLimit"/>). Also the initial limit.</summary>
-    public int MaxLimit { get; init; } = 1000;
+    public int MaxLimit { get; set; } = 1000;
 
     /// <summary>Additive-increase step applied each healthy control tick.</summary>
-    public int Step { get; init; } = 10;
+    public int Step { get; set; } = 10;
 
     /// <summary>How often the AIMD controller re-evaluates the load score and adjusts the limit.</summary>
-    public TimeSpan ControlInterval { get; init; } = TimeSpan.FromSeconds(1);
+    public TimeSpan ControlInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     /// <summary>Composite score below this ⇒ additive increase.</summary>
-    public double HealthyThreshold { get; init; } = 0.70;
+    public double HealthyThreshold { get; set; } = 0.70;
 
     /// <summary>Composite score above this ⇒ multiplicative decrease.</summary>
-    public double OverloadThreshold { get; init; } = 0.85;
+    public double OverloadThreshold { get; set; } = 0.85;
 
     /// <summary>Multiplicative-decrease factor on overload (0..1). 0.7 = gentler than halving; smoother recovery.</summary>
-    public double DecreaseFactor { get; init; } = 0.7;
+    public double DecreaseFactor { get; set; } = 0.7;
 
     /// <summary>EWMA smoothing on the load score (0..1]. Lower = smoother (a single spike won't slam the limit); 1 = no smoothing.</summary>
-    public double ScoreSmoothing { get; init; } = 0.4;
+    public double ScoreSmoothing { get; set; } = 0.4;
 
     /// <summary>Expected p50-ish request latency (ms); the latency signal normalizes against this.</summary>
-    public int LatencyBaselineMs { get; init; } = 200;
+    public int LatencyBaselineMs { get; set; } = 200;
 
-    public double CpuWeight { get; init; } = 1;
-    public double ThreadPoolWeight { get; init; } = 1;
-    public double LatencyWeight { get; init; } = 1;
-    public double ErrorWeight { get; init; } = 1;
+    public double CpuWeight { get; set; } = 1;
+    public double ThreadPoolWeight { get; set; } = 1;
+    public double LatencyWeight { get; set; } = 1;
+    public double ErrorWeight { get; set; } = 1;
 }
 
 public sealed class PolicyDefinition
 {
-    public int PermitLimit { get; init; }
-    public TimeSpan Window { get; init; }
+    public int PermitLimit { get; set; }
+    public TimeSpan Window { get; set; }
     /// <summary>&gt; 1 ⇒ sliding window (otherwise fixed window).</summary>
-    public int SegmentsPerWindow { get; init; } = 1;
-    public int QueueLimit { get; init; }
+    public int SegmentsPerWindow { get; set; } = 1;
+    public int QueueLimit { get; set; }
 }
 
 public sealed class BurstBanOptions
 {
     /// <summary>How long a caller stays banned after exceeding the burst limit. Must be ≥ 10s (validated on start).</summary>
-    public TimeSpan Duration { get; init; } = TimeSpan.FromSeconds(10);
+    public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(10);
 }
 
 public enum RateLimitingMode

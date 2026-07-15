@@ -19,10 +19,13 @@ namespace TicketMaster.ServiceDefaults;
 /// </summary>
 public static class JwtAuthenticationExtensions
 {
-    public static WebApplicationBuilder AddJwtAuthentication(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddJwtAuthentication(this WebApplicationBuilder builder, Action<JwtOptions> configure = null)
     {
-        builder.Services.AddOptions<JwtOptions>()
-            .BindConfiguration(JwtOptions.SectionName)
+        var optionsBuilder = builder.Services.AddOptions<JwtOptions>()
+            .BindConfiguration(JwtOptions.SectionName);
+        if (configure is not null)
+            optionsBuilder.Configure(configure); // code-based config wins over the appsettings section
+        optionsBuilder
             .ValidateDataAnnotations()
             .Validate(o => o.Mode != JwtMode.Symmetric || !string.IsNullOrWhiteSpace(o.SigningKey),
                 "Authentication:SigningKey is required when Mode=Symmetric.")
@@ -31,6 +34,7 @@ public static class JwtAuthenticationExtensions
             .ValidateOnStart();
 
         var opts = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+        configure?.Invoke(opts); // keep the eager copy (drives JwtBearer wiring below) in sync with code config
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(o =>

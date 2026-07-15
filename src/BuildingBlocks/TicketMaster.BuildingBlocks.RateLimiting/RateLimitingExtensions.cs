@@ -28,13 +28,16 @@ public static class RateLimitingExtensions
     private const string BurstPolicy = "burst";
     private const string RetryAfterItemKey = "__ratelimit_retry_after";
 
-    public static WebApplicationBuilder AddRateLimiting(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddRateLimiting(this WebApplicationBuilder builder, Action<RateLimitingOptions> configure = null)
     {
         var section = builder.Configuration.GetSection(RateLimitingOptions.SectionName);
         var serviceName = builder.Configuration["ServiceName"] ?? builder.Environment.ApplicationName;
 
-        builder.Services.AddOptions<RateLimitingOptions>()
-            .Bind(section)
+        var optionsBuilder = builder.Services.AddOptions<RateLimitingOptions>()
+            .Bind(section);
+        if (configure is not null)
+            optionsBuilder.Configure(configure); // code-based config wins over the appsettings section
+        optionsBuilder
             .PostConfigure(o => o.KeyPrefix ??= serviceName)
             .Validate(o => o.BurstBan.Duration >= TimeSpan.FromSeconds(10),
                 "RateLimiting:BurstBan:Duration must be at least 10 seconds.")
@@ -53,7 +56,10 @@ public static class RateLimitingExtensions
         builder.Services.AddSingleton<RateLimitPolicyStore>();
         builder.Services.TryAddSingleton(TimeProvider.System);
 
+        // Eagerly materialize options to branch DI (Mode: Local vs Distributed) at registration time; apply the same
+        // code-based override so the two paths (this and the IOptions pipeline above) agree.
         var options = section.Get<RateLimitingOptions>() ?? new RateLimitingOptions();
+        configure?.Invoke(options);
 
         if (options.Mode == RateLimitingMode.Local)
             builder.Services.AddSingleton<IBurstBanStore, LocalBurstBanStore>();
