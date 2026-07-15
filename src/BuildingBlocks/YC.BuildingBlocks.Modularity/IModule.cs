@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace YC.BuildingBlocks.Web.Modularity;
+namespace YC.BuildingBlocks.Modularity;
 
 /// <summary>
 /// A self-contained feature module. Each module owns its service registration and endpoint mapping so the host does

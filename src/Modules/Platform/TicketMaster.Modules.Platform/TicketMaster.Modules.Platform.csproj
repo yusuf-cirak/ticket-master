@@ -6,6 +6,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Persistence\YC.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Messaging.Kafka\YC.BuildingBlocks.Messaging.Kafka.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Modularity\YC.BuildingBlocks.Modularity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using YC.BuildingBlocks.Application;
 
-namespace YC.BuildingBlocks.Web.Modularity;
+namespace YC.BuildingBlocks.Modularity;
 
 /// <summary>Holds the discovered modules so endpoint mapping can iterate them after the app is built.</summary>
 public sealed class ModuleRegistry

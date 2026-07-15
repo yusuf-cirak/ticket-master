@@ -14,6 +14,7 @@
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Domain/YC.BuildingBlocks.Domain.csproj" />
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Persistence/YC.BuildingBlocks.Persistence.csproj" />
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Messaging.Kafka/YC.BuildingBlocks.Messaging.Kafka.csproj" />
+    <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Modularity/YC.BuildingBlocks.Modularity.csproj" />
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Caching/YC.BuildingBlocks.Caching.csproj" />
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.Locking/YC.BuildingBlocks.Locking.csproj" />
     <Project Path="src/BuildingBlocks/YC.BuildingBlocks.RateLimiting/YC.BuildingBlocks.RateLimiting.csproj" />

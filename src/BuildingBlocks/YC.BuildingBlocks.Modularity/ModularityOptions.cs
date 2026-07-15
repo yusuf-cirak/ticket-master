@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Web.Modularity;
+namespace YC.BuildingBlocks.Modularity;
 
 /// <summary>
 /// Configures how <c>AddModules</c> resolves a module short-name (e.g. <c>"Iam"</c>) to its assembly name.

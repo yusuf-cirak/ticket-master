@@ -7,7 +7,7 @@ using YC.BuildingBlocks.Persistence.Inbox;
 using YC.BuildingBlocks.Persistence.Outbox;
 using YC.BuildingBlocks.Persistence.EfCore;
 using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
-using YC.BuildingBlocks.Web.Modularity;
+using YC.BuildingBlocks.Modularity;
 
 namespace TicketMaster.Modules.Platform;
 

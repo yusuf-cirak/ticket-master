@@ -12,7 +12,7 @@ using TicketMaster.Modules.Iam.Application.Abstractions;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.Modules.Iam.Host;
 using TicketMaster.Modules.Iam.Infrastructure;
-using YC.BuildingBlocks.Web.Modularity;
+using YC.BuildingBlocks.Modularity;
 
 namespace TicketMaster.Modules.Iam;
 
