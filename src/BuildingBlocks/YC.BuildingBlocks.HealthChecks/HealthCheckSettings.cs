@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.HealthChecks;
 
 /// <summary>
 /// Names of the configuration entries the default readiness checks probe. Product-neutral: an app that keys its

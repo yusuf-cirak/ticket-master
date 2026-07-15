@@ -1,3 +1,4 @@
+using YC.BuildingBlocks.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using YC.BuildingBlocks.Domain.Diagnostics;

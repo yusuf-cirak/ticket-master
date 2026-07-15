@@ -17,6 +17,8 @@
     <ProjectReference Include="..\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
     <!-- Umbrella wires OTel + log sampling/http-logging/correlation. -->
     <ProjectReference Include="..\YC.BuildingBlocks.Observability\YC.BuildingBlocks.Observability.csproj" />
+    <!-- Umbrella wires the default liveness/readiness checks + endpoints. -->
+    <ProjectReference Include="..\YC.BuildingBlocks.HealthChecks\YC.BuildingBlocks.HealthChecks.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,12 +28,6 @@
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
-    <!-- Health -->
-    <PackageReference Include="AspNetCore.HealthChecks.Kafka" />
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
-    <PackageReference Include="AspNetCore.HealthChecks.Uris" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.HealthChecks;
 
 /// <summary>
 /// Flips readiness to Unhealthy the moment shutdown begins (SIGTERM → <see cref="IHostApplicationLifetime.ApplicationStopping"/>),

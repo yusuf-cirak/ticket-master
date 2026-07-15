@@ -1,3 +1,4 @@
+using YC.BuildingBlocks.HealthChecks;
 using YC.BuildingBlocks.Observability;
 using YC.BuildingBlocks.Security;
 

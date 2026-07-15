@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.HealthChecks;
 
 /// <summary>
 /// Liveness signal: detects thread-pool starvation by measuring whether the pool can schedule a trivial

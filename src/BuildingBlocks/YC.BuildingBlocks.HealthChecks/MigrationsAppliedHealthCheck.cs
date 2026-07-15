@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using YC.BuildingBlocks.Domain.Diagnostics;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.HealthChecks;
 
 /// <summary>
 /// Startup health check: Healthy once every module's EF migrations have been applied (so the schema exists).

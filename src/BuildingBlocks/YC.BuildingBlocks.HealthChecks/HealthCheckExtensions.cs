@@ -8,9 +8,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using YC.BuildingBlocks.Observability;
 using YC.BuildingBlocks.Domain.Diagnostics;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.HealthChecks;
 
-internal static class HealthCheckExtensions
+public static class HealthCheckExtensions
 {
     private const string Ready = "ready";
     private const string Live = "live";
