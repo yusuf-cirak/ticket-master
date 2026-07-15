@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace YC.BuildingBlocks.Persistence.EfCore;
 
 public static class VogenEfCoreExtensions
 {

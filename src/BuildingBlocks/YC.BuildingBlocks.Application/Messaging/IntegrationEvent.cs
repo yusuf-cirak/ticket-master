@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Infrastructure.Messaging;
+namespace YC.BuildingBlocks.Application.Messaging;
 
 public abstract record IntegrationEvent
 {

@@ -1,7 +1,7 @@
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace YC.BuildingBlocks.Infrastructure.Inbox;
+namespace YC.BuildingBlocks.Persistence.Inbox;
 
 public sealed class InboxStore(DbContext dbContext) : IInboxStore
 {

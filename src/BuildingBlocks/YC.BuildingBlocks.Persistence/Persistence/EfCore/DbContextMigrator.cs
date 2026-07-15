@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using YC.BuildingBlocks.Domain.Diagnostics;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace YC.BuildingBlocks.Persistence.EfCore;
 
 /// <summary>
 /// Applies a module's EF Core migrations once at startup (before the app serves traffic). Registered

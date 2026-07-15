@@ -31,7 +31,8 @@ public class DependencyRuleTests
             .ShouldNot()
             .HaveDependencyOnAny(
                 "YC.BuildingBlocks.Application",
-                "YC.BuildingBlocks.Infrastructure")
+                "YC.BuildingBlocks.Persistence",
+                "YC.BuildingBlocks.Messaging.Kafka")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue(

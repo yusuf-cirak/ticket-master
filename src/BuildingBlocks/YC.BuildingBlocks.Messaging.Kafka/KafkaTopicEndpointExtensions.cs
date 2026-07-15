@@ -1,7 +1,7 @@
 using Confluent.Kafka;
 using MassTransit;
 
-namespace YC.BuildingBlocks.Infrastructure.Messaging.Kafka;
+namespace YC.BuildingBlocks.Messaging.Kafka;
 
 public static class KafkaTopicEndpointExtensions
 {

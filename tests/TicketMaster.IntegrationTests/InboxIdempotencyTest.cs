@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using YC.BuildingBlocks.Infrastructure.Inbox;
-using YC.BuildingBlocks.Infrastructure.Outbox;
+using YC.BuildingBlocks.Persistence.Inbox;
+using YC.BuildingBlocks.Persistence.Outbox;
 using TicketMaster.Modules.Platform;
 using Xunit;
 

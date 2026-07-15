@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Infrastructure.Inbox;
+namespace YC.BuildingBlocks.Persistence.Inbox;
 
 public interface IInboxStore
 {

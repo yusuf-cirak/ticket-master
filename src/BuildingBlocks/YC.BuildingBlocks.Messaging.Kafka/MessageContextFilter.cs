@@ -3,7 +3,7 @@ using System.Text;
 using MassTransit;
 using YC.BuildingBlocks.Domain.Observability;
 
-namespace YC.BuildingBlocks.Infrastructure.Messaging.Kafka;
+namespace YC.BuildingBlocks.Messaging.Kafka;
 
 /// <summary>
 /// Minimal consume-pipeline filter for the two things MassTransit can't do for our raw-JSON, non-MassTransit

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using YC.BuildingBlocks.Domain.Auditing;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+namespace YC.BuildingBlocks.Persistence.EfCore.Interceptors;
 
 /// <summary>
 /// Stamps <see cref="IAuditable"/> entities with create/modify actor + UTC timestamp on save, from the scoped

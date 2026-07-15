@@ -26,7 +26,7 @@ namespace TicketMaster.Modules.Platform.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("YC.BuildingBlocks.Infrastructure.Inbox.InboxMessage", b =>
+            modelBuilder.Entity("YC.BuildingBlocks.Persistence.Inbox.InboxMessage", b =>
                 {
                     b.Property<Guid>("MessageId")
                         .HasColumnType("uuid")
@@ -46,7 +46,7 @@ namespace TicketMaster.Modules.Platform.Migrations
                     b.ToTable("inbox", "platform");
                 });
 
-            modelBuilder.Entity("YC.BuildingBlocks.Infrastructure.Outbox.OutboxMessage", b =>
+            modelBuilder.Entity("YC.BuildingBlocks.Persistence.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

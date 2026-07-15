@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using YC.BuildingBlocks.Application.Pagination;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace YC.BuildingBlocks.Persistence.EfCore;
 
 public static class PaginationExtensions
 {

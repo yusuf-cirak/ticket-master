@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Infrastructure.Messaging;
+namespace YC.BuildingBlocks.Messaging.Kafka;
 
 /// <summary>
 /// Kafka message-header names emitted by the Debezium Outbox Event Router (see

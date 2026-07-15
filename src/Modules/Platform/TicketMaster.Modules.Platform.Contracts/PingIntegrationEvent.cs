@@ -1,4 +1,4 @@
-using YC.BuildingBlocks.Infrastructure.Messaging;
+using YC.BuildingBlocks.Application.Messaging;
 
 namespace TicketMaster.Modules.Platform.Contracts;
 

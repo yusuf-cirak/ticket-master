@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace YC.BuildingBlocks.Persistence.EfCore;
 
 public static class ConcurrencyExtensions
 {

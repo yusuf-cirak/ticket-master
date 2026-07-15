@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+namespace YC.BuildingBlocks.Persistence.EfCore.Interceptors;
 
 public static class DomainEventDispatchExtensions
 {

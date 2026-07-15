@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+namespace YC.BuildingBlocks.Persistence.EfCore;
 
 /// <summary>
 /// Normalizes string columns: on write a null (or whitespace-only) value is stored as a trimmed, non-null string;

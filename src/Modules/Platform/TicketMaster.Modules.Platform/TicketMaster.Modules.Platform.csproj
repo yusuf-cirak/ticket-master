@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\TicketMaster.Modules.Platform.Contracts\TicketMaster.Modules.Platform.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Persistence\YC.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Messaging.Kafka\YC.BuildingBlocks.Messaging.Kafka.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
   </ItemGroup>
 

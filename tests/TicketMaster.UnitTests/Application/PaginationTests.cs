@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using YC.BuildingBlocks.Application.Pagination;
-using YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
+using YC.BuildingBlocks.Persistence.EfCore;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Application;

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using YC.BuildingBlocks.Infrastructure.Inbox;
-using YC.BuildingBlocks.Infrastructure.Outbox;
+using YC.BuildingBlocks.Persistence.Inbox;
+using YC.BuildingBlocks.Persistence.Outbox;
 
 namespace TicketMaster.Modules.Platform;
 

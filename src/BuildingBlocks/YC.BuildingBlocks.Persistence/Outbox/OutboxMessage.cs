@@ -1,4 +1,4 @@
-namespace YC.BuildingBlocks.Infrastructure.Outbox;
+namespace YC.BuildingBlocks.Persistence.Outbox;
 
 // One row per integration event. Column names match the Debezium Outbox Event Router config.
 public sealed class OutboxMessage

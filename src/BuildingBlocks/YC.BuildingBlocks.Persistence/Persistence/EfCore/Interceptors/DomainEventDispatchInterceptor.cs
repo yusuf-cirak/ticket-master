@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using YC.BuildingBlocks.Domain;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+namespace YC.BuildingBlocks.Persistence.EfCore.Interceptors;
 
 /// <summary>
 /// Dispatches aggregates' domain events on save so no developer has to remember to publish them by hand.

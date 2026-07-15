@@ -1,6 +1,6 @@
-using YC.BuildingBlocks.Infrastructure.Messaging;
+using YC.BuildingBlocks.Application.Messaging;
 
-namespace YC.BuildingBlocks.Infrastructure.Outbox;
+namespace YC.BuildingBlocks.Persistence.Outbox;
 
 public interface IOutboxWriter
 {

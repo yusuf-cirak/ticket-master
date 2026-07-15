@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using YC.BuildingBlocks.Domain;
 using YC.BuildingBlocks.Domain.Auditing;
 using YC.BuildingBlocks.Domain.Security;
-using YC.BuildingBlocks.Infrastructure.Persistence.EfCore;
-using YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+using YC.BuildingBlocks.Persistence.EfCore;
+using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Infrastructure;

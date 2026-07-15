@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using YC.BuildingBlocks.Domain;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Infrastructure.Persistence.EfCore.Interceptors;
+namespace YC.BuildingBlocks.Persistence.EfCore.Interceptors;
 
 /// <summary>
 /// Turns a hard delete of an <see cref="ISoftDeletable"/> entity into a soft delete: the entry is rewritten from

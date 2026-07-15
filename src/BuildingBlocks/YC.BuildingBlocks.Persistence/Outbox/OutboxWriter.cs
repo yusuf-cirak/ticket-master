@@ -2,9 +2,9 @@ using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using YC.BuildingBlocks.Domain.Observability;
-using YC.BuildingBlocks.Infrastructure.Messaging;
+using YC.BuildingBlocks.Application.Messaging;
 
-namespace YC.BuildingBlocks.Infrastructure.Outbox;
+namespace YC.BuildingBlocks.Persistence.Outbox;
 
 public sealed class OutboxWriter(DbContext dbContext) : IOutboxWriter
 {

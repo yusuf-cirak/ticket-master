@@ -8,7 +8,7 @@ using YC.BuildingBlocks.Caching.Redis;
 using YC.BuildingBlocks.Locking;
 using YC.BuildingBlocks.RateLimiting;
 using YC.BuildingBlocks.Web;
-using YC.BuildingBlocks.Infrastructure.Messaging.Kafka;
+using YC.BuildingBlocks.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 
