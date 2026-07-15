@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Persistence\YC.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Modularity\YC.BuildingBlocks.Modularity.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\TicketMaster.Modules.Iam.Contracts\TicketMaster.Modules.Iam.Contracts.csproj" />
   </ItemGroup>
 

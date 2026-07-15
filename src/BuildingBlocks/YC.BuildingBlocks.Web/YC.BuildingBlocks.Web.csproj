@@ -13,11 +13,12 @@
     <ProjectReference Include="..\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
     <!-- Module discovery wires MediatR/validators across module assemblies. -->
     <ProjectReference Include="..\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+    <!-- Umbrella AddServiceDefaults wires JWT authN/authZ + current-user + audit. -->
+    <ProjectReference Include="..\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Cross-cutting -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />

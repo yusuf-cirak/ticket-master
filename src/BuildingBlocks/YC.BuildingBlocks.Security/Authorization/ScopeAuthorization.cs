@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Security;
 
 /// <summary>Requires the principal to carry at least one of the listed OAuth scopes.</summary>
 public sealed class ScopeRequirement(IReadOnlyCollection<string> scopes) : IAuthorizationRequirement

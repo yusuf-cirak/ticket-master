@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TicketMaster.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ITokenBlacklist / IAuditLogger; ICurrentUser abstraction + anonymous default. -->
+    <ProjectReference Include="..\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+</Project>

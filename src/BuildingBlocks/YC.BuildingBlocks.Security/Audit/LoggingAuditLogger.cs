@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using YC.BuildingBlocks.Domain.Auditing;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Security;
 
 /// <summary>
 /// Default <see cref="IAuditLogger"/> that writes each audit event as a dedicated structured log record (its own

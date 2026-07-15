@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Security;
 
 /// <summary>
 /// JWT bearer authentication + secure-by-default authorization. One configuration drives both signing strategies

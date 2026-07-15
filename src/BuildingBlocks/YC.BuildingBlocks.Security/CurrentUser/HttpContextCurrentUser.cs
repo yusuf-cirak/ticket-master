@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using YC.BuildingBlocks.Domain.Security;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Security;
 
 /// <summary>
 /// <see cref="ICurrentUser"/> backed by the ambient <see cref="HttpContext"/> principal. Reads the hardened claim

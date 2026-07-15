@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace YC.BuildingBlocks.Web;
+namespace YC.BuildingBlocks.Security;
 
 /// <summary>How the JWT signing key is established and validated.</summary>
 public enum JwtMode

@@ -8,6 +8,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Locking\YC.BuildingBlocks.Locking.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Messaging.Kafka\YC.BuildingBlocks.Messaging.Kafka.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Modularity\YC.BuildingBlocks.Modularity.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
     <ProjectReference Include="..\..\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />

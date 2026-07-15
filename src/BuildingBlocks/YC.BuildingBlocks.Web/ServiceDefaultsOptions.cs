@@ -1,3 +1,5 @@
+using YC.BuildingBlocks.Security;
+
 namespace YC.BuildingBlocks.Web;
 
 /// <summary>

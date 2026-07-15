@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using MassTransit;
 using Scalar.AspNetCore;
+using YC.BuildingBlocks.Security;
 using YC.BuildingBlocks.Modularity;
 using YC.BuildingBlocks.Configuration.Secrets;
 using YC.BuildingBlocks.Caching.FusionCache;
