@@ -27,8 +27,10 @@ public static class HttpLoggingExtensions
     private const string EnabledKey = "Logging:HttpDetailed:Enabled";
 
     // Safe, non-sensitive headers added to the framework's already-safe defaults. Never add Authorization,
-    // Cookie, Set-Cookie, Proxy-Authorization, or API-key headers here.
-    private static readonly string[] ExtraRequestHeaders = ["X-Correlation-Id", "X-Request-Id", "Origin", "Referer"];
+    // Cookie, Set-Cookie, Proxy-Authorization, or API-key headers here. Referer is deliberately excluded: its value
+    // is the full previous-page URL (query string included), which can carry OAuth codes, signed-URL signatures, or
+    // tokens that SensitiveQueryLogInterceptor cannot redact (it only sees the current request's own query).
+    private static readonly string[] ExtraRequestHeaders = ["X-Correlation-Id", "X-Request-Id", "Origin"];
     private static readonly string[] ExtraResponseHeaders = ["X-Correlation-Id", "X-Trace-Id"];
 
     public static WebApplicationBuilder AddDetailedHttpLogging(this WebApplicationBuilder builder)
