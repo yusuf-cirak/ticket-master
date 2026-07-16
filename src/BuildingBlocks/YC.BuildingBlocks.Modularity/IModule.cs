@@ -7,12 +7,12 @@ namespace YC.BuildingBlocks.Modularity;
 
 /// <summary>
 /// A self-contained feature module. Each module owns its service registration and endpoint mapping so the host does
-/// not hand-wire them — <c>AddModules("Platform","Iam")</c> discovers implementations by assembly and drives this
-/// contract. Adding a module then means adding its name to that list, nothing more.
+/// not hand-wire them — the host registers modules by type (<c>AddModules(m =&gt; m.Add&lt;PlatformModule&gt;())</c>) and
+/// this contract drives the rest. Adding a module means adding one <c>.Add&lt;T&gt;()</c> line, nothing more.
 /// </summary>
 public interface IModule
 {
-    /// <summary>Short module name (maps to an assembly via <see cref="ModularityOptions.AssemblyNameFormat"/>, by default <c>{RootNamespace}.Modules.{Name}</c>).</summary>
+    /// <summary>Short module name, for diagnostics/logging (discovery is by type, not by this name).</summary>
     string Name { get; }
 
     /// <summary>The module assembly — scanned for MediatR handlers and FluentValidation validators.</summary>

@@ -12,6 +12,8 @@ using YC.BuildingBlocks.Web;
 using YC.BuildingBlocks.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
+using TicketMaster.Modules.Iam;
+using YC.BuildingBlocks.Security.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +30,9 @@ builder.AddAppCache();
 builder.AddRateLimiting();
 
 // Named opt-in; each module's services + endpoints + MediatR/validators are auto-discovered (IModule).
-builder.AddModules("Platform", "Iam");
+builder.AddModules(m => m
+    .Add<PlatformModule>()
+    .Add<IamModule>());
 builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
@@ -78,6 +82,7 @@ api.MapGet("/whoami", (ClaimsPrincipal user) =>
         .SelectMany(c => c.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         .Distinct()
         .ToArray();
+    
     return Results.Ok(new { sub = user.FindFirst("sub")?.Value, scopes });
 }).RequireScope("platform:read");
 
