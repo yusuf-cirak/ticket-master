@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using YC.BuildingBlocks.Security;
 using YC.BuildingBlocks.Web;
 using Xunit;
+using YC.BuildingBlocks.Security.Authorization;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;
 

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using YC.BuildingBlocks.Domain.Security;
+using YC.BuildingBlocks.Security.Authorization;
 
 namespace YC.BuildingBlocks.Security;
 
