@@ -11,13 +11,12 @@ namespace YC.BuildingBlocks.Application.Behaviors;
 /// </summary>
 public sealed class LockBehavior<TRequest, TResponse>(IDistributedLock distributedLock)
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+    where TRequest : ILockRequest
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (request is not ILockRequest lockRequest)
-            return await next();
-
+        ILockRequest lockRequest = request;
+        
         await using var handle = await distributedLock.AcquireAsync(lockRequest.LockKey, lockRequest.LockExpiration, cancellationToken);
         if (handle is null)
             return ResultFailureFactory<TResponse>.Create(

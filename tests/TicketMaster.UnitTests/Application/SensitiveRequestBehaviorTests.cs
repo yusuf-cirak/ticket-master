@@ -15,22 +15,12 @@ namespace TicketMaster.UnitTests.Application;
 public class SensitiveRequestBehaviorTests
 {
     private sealed record SensitiveCommand : ISensitiveRequest;
-    private sealed record PlainCommand;
 
     private static RequestHandlerDelegate<Result<string>> Handler(Action onCalled)
         => () => { onCalled(); return Task.FromResult(Result.Success("ok")); };
 
-    [Fact]
-    public async Task Plain_request_passes_through_even_when_anonymous()
-    {
-        var called = false;
-        var behavior = Behavior<PlainCommand>(authenticated: false, revoked: false);
-
-        var result = await behavior.Handle(new PlainCommand(), Handler(() => called = true), CancellationToken.None);
-
-        called.Should().BeTrue();
-        result.IsSuccess.Should().BeTrue();
-    }
+    // Note: the behavior is constrained to ISensitiveRequest (where TRequest : ISensitiveRequest), so MediatR never
+    // invokes it for a plain request — there is no runtime pass-through path left to test at this level.
 
     [Fact]
     public async Task Sensitive_request_by_anonymous_is_rejected()
@@ -70,8 +60,7 @@ public class SensitiveRequestBehaviorTests
     }
 
     private static SensitiveRequestBehavior<TRequest, Result<string>> Behavior<TRequest>(bool authenticated, bool revoked)
-        where TRequest : notnull
-        => new(new FakeUser(authenticated), new FakeBlacklist(revoked));
+        where TRequest : notnull, ISensitiveRequest => new(new FakeUser(authenticated), new FakeBlacklist(revoked));
 
     private sealed class FakeUser(bool authenticated) : ICurrentUser
     {

@@ -13,22 +13,10 @@ namespace TicketMaster.UnitTests.Application;
 public class LockBehaviorTests
 {
     private sealed record LockedCommand(string LockKey) : ILockRequest;
-    private sealed record PlainCommand;
+    private sealed record PlainCommand(string LockKey) : ILockRequest;
 
     private static RequestHandlerDelegate<Result<string>> Handler(Action onCalled)
         => () => { onCalled(); return Task.FromResult(Result.Success("ok")); };
-
-    [Fact]
-    public async Task Plain_request_passes_through()
-    {
-        var called = false;
-        var behavior = new LockBehavior<PlainCommand, Result<string>>(new FakeLock(acquired: true));
-
-        var result = await behavior.Handle(new PlainCommand(), Handler(() => called = true), CancellationToken.None);
-
-        called.Should().BeTrue();
-        result.IsSuccess.Should().BeTrue();
-    }
 
     [Fact]
     public async Task Lock_acquired_runs_handler()

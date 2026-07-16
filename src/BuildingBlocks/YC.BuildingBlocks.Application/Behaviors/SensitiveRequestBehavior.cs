@@ -12,13 +12,10 @@ namespace YC.BuildingBlocks.Application.Behaviors;
 /// </summary>
 public sealed class SensitiveRequestBehavior<TRequest, TResponse>(ICurrentUser currentUser, ITokenBlacklist blacklist)
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+    where TRequest : ISensitiveRequest
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (request is not ISensitiveRequest)
-            return await next();
-
         if (!currentUser.IsAuthenticated)
             return ResultFailureFactory<TResponse>.Create(
                 Error.Create("auth.required", "Authentication is required for this operation.", 401));
