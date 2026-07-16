@@ -62,9 +62,14 @@ public static class RateLimitingExtensions
         configure?.Invoke(options);
 
         if (options.Mode == RateLimitingMode.Local)
+        {
+            builder.Services.AddMemoryCache(); // backs LocalBurstBanStore with auto-expiring entries (idempotent)
             builder.Services.AddSingleton<IBurstBanStore, LocalBurstBanStore>();
+        }
         else
+        {
             builder.Services.AddSingleton<IBurstBanStore, RedisBurstBanStore>();
+        }
 
         // Layer 2 — system-wide adaptive admission control (AIMD). Enforcement is ALWAYS the in-process gate; the
         // Mode only picks the load SIGNAL: Local = this process, Distributed = fleet max via Redis (see AdaptiveOptions).

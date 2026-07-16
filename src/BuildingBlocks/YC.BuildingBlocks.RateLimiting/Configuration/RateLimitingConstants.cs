@@ -37,4 +37,7 @@ public static class RateLimitingConstants
     internal const string UserPrincipalPrefix = "user:";
     internal const string ApiKeyPrincipalPrefix = "apiKey:";
     internal const string AnonymousPrincipalPrefix = "anon:ip:";
+
+    /// <summary>Key prefix for local (in-memory) burst-ban entries, namespacing them within the shared IMemoryCache.</summary>
+    internal const string BanCacheKeyPrefix = "ratelimit:ban:";
 }

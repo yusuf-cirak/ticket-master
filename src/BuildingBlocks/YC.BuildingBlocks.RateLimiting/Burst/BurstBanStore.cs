@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
@@ -17,20 +17,24 @@ internal interface IBurstBanStore
     Task BanAsync(string key, TimeSpan duration, CancellationToken ct);
 }
 
-/// <summary>Per-node in-memory ban store (used in <see cref="RateLimitingMode.Local"/>).</summary>
-internal sealed class LocalBurstBanStore(TimeProvider clock) : IBurstBanStore
+/// <summary>
+/// Per-node in-memory ban store (used in <see cref="RateLimitingMode.Local"/>). Backed by <see cref="IMemoryCache"/>
+/// with an absolute expiration equal to the ban duration, so an entry is evicted automatically when the ban lapses —
+/// even for a one-time offender who never returns (a plain <c>ConcurrentDictionary</c> only sweeps on read, so an
+/// idle expired entry would leak forever). The stored value is the ban's end instant, so <see cref="GetRemainingBanAsync"/>
+/// reports the exact remaining time and treats an elapsed-but-not-yet-evicted entry as unbanned via the injected clock.
+/// </summary>
+internal sealed class LocalBurstBanStore(IMemoryCache cache, TimeProvider clock) : IBurstBanStore
 {
-    private readonly ConcurrentDictionary<string, long> _bannedUntil = new();
+    private static string CacheKey(string key) => $"{RateLimitingConstants.BanCacheKeyPrefix}{key}";
 
     public Task<TimeSpan?> GetRemainingBanAsync(string key, CancellationToken ct)
     {
-        if (_bannedUntil.TryGetValue(key, out var untilTicks))
+        if (cache.TryGetValue(CacheKey(key), out DateTimeOffset until))
         {
-            var remaining = new DateTimeOffset(untilTicks, TimeSpan.Zero) - clock.GetUtcNow();
+            var remaining = until - clock.GetUtcNow();
             if (remaining > TimeSpan.Zero)
                 return Task.FromResult<TimeSpan?>(remaining);
-
-            _bannedUntil.TryRemove(key, out _); // expired — sweep it
         }
 
         return Task.FromResult<TimeSpan?>(null);
@@ -38,7 +42,8 @@ internal sealed class LocalBurstBanStore(TimeProvider clock) : IBurstBanStore
 
     public Task BanAsync(string key, TimeSpan duration, CancellationToken ct)
     {
-        _bannedUntil[key] = clock.GetUtcNow().Add(duration).UtcTicks;
+        // Absolute expiration = ban duration → MemoryCache evicts the entry when the ban lapses (no idle leak).
+        cache.Set(CacheKey(key), clock.GetUtcNow().Add(duration), absoluteExpirationRelativeToNow: duration);
         return Task.CompletedTask;
     }
 }
