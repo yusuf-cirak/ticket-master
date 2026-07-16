@@ -20,7 +20,7 @@ public sealed class SensitiveRequestBehavior<TRequest, TResponse>(ICurrentUser c
             return ResultFailureFactory<TResponse>.Create(
                 Error.Create("auth.required", "Authentication is required for this operation.", 401));
 
-        if (!string.IsNullOrEmpty(currentUser.TokenId) && await blacklist.IsRevokedAsync(currentUser.TokenId, cancellationToken))
+        if (currentUser.TokenId.TryGetValue(out var jti) && await blacklist.IsRevokedAsync(jti, cancellationToken))
             return ResultFailureFactory<TResponse>.Create(
                 Error.Create("auth.revoked", "Your session is no longer valid. Please sign in again.", 401));
 

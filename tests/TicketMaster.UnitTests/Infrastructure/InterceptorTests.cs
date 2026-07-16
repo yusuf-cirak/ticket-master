@@ -1,3 +1,4 @@
+using YC.Monad;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,9 +115,9 @@ public class InterceptorTests
     private sealed class StubCurrentUser(string userId) : ICurrentUser
     {
         public bool IsAuthenticated => userId is not null;
-        public string UserId => userId ?? string.Empty;
-        public string TokenId => string.Empty;
-        public string UserName => userId ?? string.Empty;
+        public Option<string> UserId => userId.ToOption();
+        public Option<string> TokenId => Option<string>.None();
+        public Option<string> UserName => userId.ToOption();
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
         public bool HasPermission(string permission) => false;

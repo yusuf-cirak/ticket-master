@@ -36,8 +36,7 @@ public static class LogoutCommand
             await db.SaveChangesAsync(cancellationToken);
 
             // Blacklist the current access token so it is rejected before its natural expiry.
-            var jti = currentUser.TokenId;
-            if (!string.IsNullOrEmpty(jti))
+            if (currentUser.TokenId.TryGetValue(out var jti))
             {
                 var principal = httpContextAccessor.HttpContext?.User;
                 var exp = long.TryParse(principal?.FindFirstValue("exp"), out var unix)

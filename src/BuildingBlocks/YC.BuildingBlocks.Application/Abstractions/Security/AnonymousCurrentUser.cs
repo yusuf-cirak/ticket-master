@@ -1,4 +1,5 @@
 using YC.BuildingBlocks.Domain.Security;
+using YC.Monad;
 
 namespace YC.BuildingBlocks.Application.Abstractions.Security;
 
@@ -10,9 +11,9 @@ namespace YC.BuildingBlocks.Application.Abstractions.Security;
 public sealed class AnonymousCurrentUser : ICurrentUser
 {
     public bool IsAuthenticated => false;
-    public string UserId => string.Empty;
-    public string TokenId => string.Empty;
-    public string UserName => string.Empty;
+    public Option<string> UserId => Option<string>.None();
+    public Option<string> TokenId => Option<string>.None();
+    public Option<string> UserName => Option<string>.None();
     public IReadOnlyCollection<string> Roles => [];
     public IReadOnlyCollection<string> Permissions => [];
     public bool HasPermission(string permission) => false;

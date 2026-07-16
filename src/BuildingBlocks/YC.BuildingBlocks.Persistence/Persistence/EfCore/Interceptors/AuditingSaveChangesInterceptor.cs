@@ -31,7 +31,7 @@ public sealed class AuditingSaveChangesInterceptor(ICurrentUser currentUser, Tim
             return;
 
         var now = clock.GetUtcNow();
-        var actor = string.IsNullOrEmpty(currentUser.UserId) ? "system" : currentUser.UserId;
+        var actor = currentUser.UserId.Match(() => "system", id => id);
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
         {

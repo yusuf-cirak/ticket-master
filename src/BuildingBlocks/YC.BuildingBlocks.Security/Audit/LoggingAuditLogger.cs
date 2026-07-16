@@ -22,7 +22,7 @@ internal sealed partial class LoggingAuditLogger(ILogger<LoggingAuditLogger> log
         CancellationToken cancellationToken = default)
     {
         using var scope = data is { Count: > 0 } ? logger.BeginScope(data) : null;
-        Emit(logger, action, string.IsNullOrEmpty(currentUser.UserId) ? "anonymous" : currentUser.UserId, entityType, entityId);
+        Emit(logger, action, currentUser.UserId.Match(() => "anonymous", id => id), entityType, entityId);
         return Task.CompletedTask;
     }
 

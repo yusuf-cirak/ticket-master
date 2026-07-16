@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using YC.BuildingBlocks.Domain.Security;
+using YC.Monad;
 
 namespace YC.BuildingBlocks.Security;
 
@@ -19,11 +20,11 @@ internal sealed class HttpContextCurrentUser(IHttpContextAccessor accessor) : IC
 
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
 
-    public string UserId => Principal?.FindFirstValue("sub") ?? string.Empty;
-    public string TokenId => Principal?.FindFirstValue("jti") ?? string.Empty;
+    public Option<string> UserId => (Principal?.FindFirstValue("sub")).ToOption();
+    public Option<string> TokenId => (Principal?.FindFirstValue("jti")).ToOption();
 
-    public string UserName =>
-        Principal?.FindFirstValue("name") ?? Principal?.FindFirstValue("preferred_username") ?? string.Empty;
+    public Option<string> UserName =>
+        (Principal?.FindFirstValue("name") ?? Principal?.FindFirstValue("preferred_username")).ToOption();
 
     public IReadOnlyCollection<string> Roles =>
         Principal?.FindAll("role").Select(c => c.Value).ToArray() ?? [];

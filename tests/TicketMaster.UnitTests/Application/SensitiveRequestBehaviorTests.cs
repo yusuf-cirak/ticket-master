@@ -65,9 +65,9 @@ public class SensitiveRequestBehaviorTests
     private sealed class FakeUser(bool authenticated) : ICurrentUser
     {
         public bool IsAuthenticated => authenticated;
-        public string UserId => authenticated ? "u1" : string.Empty;
-        public string TokenId => authenticated ? "jti-1" : string.Empty;
-        public string UserName => UserId;
+        public Option<string> UserId => authenticated ? Option<string>.Some("u1") : Option<string>.None();
+        public Option<string> TokenId => authenticated ? Option<string>.Some("jti-1") : Option<string>.None();
+        public Option<string> UserName => UserId;
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
         public bool HasPermission(string permission) => false;

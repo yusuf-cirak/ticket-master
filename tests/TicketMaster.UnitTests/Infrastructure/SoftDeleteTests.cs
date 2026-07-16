@@ -1,3 +1,4 @@
+using YC.Monad;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -58,9 +59,9 @@ public class SoftDeleteTests
     private sealed class StubUser(string userId) : ICurrentUser
     {
         public bool IsAuthenticated => userId.Length > 0;
-        public string UserId => userId;
-        public string TokenId => string.Empty;
-        public string UserName => userId;
+        public Option<string> UserId => userId.Length > 0 ? Option<string>.Some(userId) : Option<string>.None();
+        public Option<string> TokenId => Option<string>.None();
+        public Option<string> UserName => UserId;
         public IReadOnlyCollection<string> Roles => [];
         public IReadOnlyCollection<string> Permissions => [];
         public bool HasPermission(string permission) => false;
