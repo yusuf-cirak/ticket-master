@@ -28,6 +28,7 @@ public sealed class OutboxWriter(DbContext dbContext) : IOutboxWriter
             TraceParent = Activity.Current?.Id,
             Payload = JsonSerializer.Serialize(@event, @event.GetType())
         };
+        
         dbContext.Set<OutboxMessage>().Add(row);
         return row;
     }

@@ -60,7 +60,7 @@ public sealed class MessageContextFilter<T> : IFilter<ConsumeContext<T>>
 
     private static string Header(ConsumeContext context, string key)
     {
-        if (!context.Headers.TryGetHeader(key, out var raw) || raw is null)
+        if (!context.Headers.TryGetHeader(key, out var raw))
             return null;
 
         return raw switch
