@@ -27,7 +27,7 @@ public class PaginationTests
     [Fact]
     public void PagedResult_computes_pages_and_navigation()
     {
-        var result = new PagedResult<int>([1, 2, 3], Page: 2, PageSize: 10, TotalCount: 25);
+        var result = new PagedResult<int>(AsyncEnumerable.Range(1,3), Page: 2, PageSize: 10, TotalCount: 25);
         result.TotalPages.Should().Be(3);
         result.HasPrevious.Should().BeTrue();
         result.HasNext.Should().BeTrue();
@@ -45,7 +45,9 @@ public class PaginationTests
 
         page.TotalCount.Should().Be(25);
         page.Page.Should().Be(2);
-        page.Items.Select(n => n.Id).Should().Equal(Enumerable.Range(11, 10));
+
+        var items = await page.Items.Select(s => s.Id).ToArrayAsync();
+        items.Should().Equal(Enumerable.Range(11, 10));
     }
 
     private sealed class Number

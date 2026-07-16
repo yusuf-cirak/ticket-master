@@ -13,10 +13,10 @@ public static class PaginationExtensions
         this IQueryable<T> query, PageRequest page, CancellationToken cancellationToken = default)
     {
         var total = await query.LongCountAsync(cancellationToken);
-        var items = await query
+        var items =  query
             .Skip(page.Skip)
             .Take(page.NormalizedPageSize)
-            .ToListAsync(cancellationToken);
+            .AsAsyncEnumerable();
 
         return new PagedResult<T>(items, page.NormalizedPage, page.NormalizedPageSize, total);
     }
