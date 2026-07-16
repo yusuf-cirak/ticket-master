@@ -34,7 +34,12 @@ public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
         if (!string.IsNullOrEmpty(sub))
             return ($"{RateLimitingConstants.UserPrincipalPrefix}{sub}", ResolveTier(context));
 
-        if (context.Request.Headers.TryGetValue(ApiKeyHeader, out var apiKey) && !string.IsNullOrEmpty(apiKey))
+        // Only an API key on the configured allowlist elevates to its own bucket + authenticated tier. An unrecognized
+        // key must NOT elevate: otherwise an attacker rotates arbitrary keys, mints unlimited fresh high-tier buckets,
+        // and evades the limit — so an unknown key falls through to the per-IP anonymous bucket below.
+        if (context.Request.Headers.TryGetValue(ApiKeyHeader, out var apiKey)
+            && !string.IsNullOrEmpty(apiKey)
+            && options.Value.ApiKeys.Contains(apiKey!))
             return ($"{RateLimitingConstants.ApiKeyPrincipalPrefix}{Hash(apiKey!)}", PrincipalTier.Authenticated);
 
         // Anonymous: bucket on the server-observed IP only. The User-Agent is attacker-controlled and must not

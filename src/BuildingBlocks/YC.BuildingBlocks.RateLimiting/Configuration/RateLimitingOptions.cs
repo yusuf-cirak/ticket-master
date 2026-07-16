@@ -22,6 +22,14 @@ public sealed class RateLimitingOptions
     /// </summary>
     public string TierClaim { get; set; } = RateLimitingConstants.DefaultTierClaim;
 
+    /// <summary>
+    /// Allowlist of valid API keys (supply via secret configuration). Only a caller whose <c>X-Api-Key</c> matches an
+    /// entry here is granted the elevated per-key bucket + <c>authenticated</c> tier; an unrecognized key falls through
+    /// to the per-IP anonymous bucket. <b>Empty (default) means no key elevates</b> — otherwise any attacker could mint
+    /// unlimited fresh high-tier buckets by rotating arbitrary keys and evade rate limiting entirely.
+    /// </summary>
+    public HashSet<string> ApiKeys { get; set; } = [];
+
     /// <summary>Named policies. Only <c>burst</c> is used now.</summary>
     public Dictionary<string, PolicyDefinition> Policies { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

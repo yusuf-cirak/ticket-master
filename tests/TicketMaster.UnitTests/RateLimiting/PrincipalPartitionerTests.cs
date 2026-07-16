@@ -13,7 +13,8 @@ public class PrincipalPartitionerTests
         new(Options.Create(new RateLimitingOptions
         {
             KeyPrefix = "ticket.master",
-            Tiers = new(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 }
+            Tiers = new(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 },
+            ApiKeys = ["super-secret"]
         }));
 
     private static DefaultHttpContext Authenticated(string scheme, params Claim[] claims)
@@ -49,13 +50,26 @@ public class PrincipalPartitionerTests
     }
 
     [Fact]
-    public void Api_key_resolves_to_hashed_key_when_unauthenticated()
+    public void Registered_api_key_resolves_to_hashed_key_and_authenticated_tier()
     {
         var ctx = new DefaultHttpContext();
-        ctx.Request.Headers["X-Api-Key"] = "super-secret";
+        ctx.Request.Headers["X-Api-Key"] = "super-secret"; // on the allowlist (see Sut)
         var (id, tier) = Sut().ResolvePrincipal(ctx);
         id.Should().StartWith("apiKey:").And.NotContain("super-secret");
         tier.Should().Be(PrincipalTier.Authenticated);
+    }
+
+    [Fact]
+    public void Unregistered_api_key_does_not_elevate_and_falls_through_to_ip()
+    {
+        // Security: an arbitrary (unallowlisted) key must not mint a fresh authenticated bucket — it falls through
+        // to the per-IP anonymous bucket, so rotating bogus keys can't evade the rate limit.
+        var ctx = new DefaultHttpContext();
+        ctx.Request.Headers["X-Api-Key"] = "attacker-supplied";
+        ctx.Connection.RemoteIpAddress = System.Net.IPAddress.Parse("203.0.113.7");
+        var (id, tier) = Sut().ResolvePrincipal(ctx);
+        id.Should().StartWith("anon:ip:");
+        tier.Should().Be(PrincipalTier.Anonymous);
     }
 
     [Fact]
