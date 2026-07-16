@@ -1,8 +1,8 @@
-using YC.BuildingBlocks.HealthChecks;
+using BuildingBlocks.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using YC.BuildingBlocks.Domain.Diagnostics;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Domain.Diagnostics;
+using BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.BuildingBlocks;

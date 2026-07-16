@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Persistence\YC.BuildingBlocks.Persistence.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Modularity\YC.BuildingBlocks.Modularity.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Infrastructure\BuildingBlocks.Persistence\BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Presentation\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Presentation\BuildingBlocks.Modularity\BuildingBlocks.Modularity.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Presentation\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\TicketMaster.Modules.Iam.Contracts\TicketMaster.Modules.Iam.Contracts.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 using MediatR;
-using YC.BuildingBlocks.Domain.Security;
+using BuildingBlocks.Domain.Security;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Queries;

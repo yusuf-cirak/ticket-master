@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using YC.BuildingBlocks.Domain;
-using YC.BuildingBlocks.Domain.Auditing;
-using YC.BuildingBlocks.Domain.Security;
-using YC.BuildingBlocks.Persistence.EfCore;
-using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
+using BuildingBlocks.Domain;
+using BuildingBlocks.Domain.Auditing;
+using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Persistence.EfCore;
+using BuildingBlocks.Persistence.EfCore.Interceptors;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Infrastructure;

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 using TicketMaster.Modules.Iam.Application.Features.Authentication.Queries;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 
 namespace TicketMaster.Modules.Iam.Host;
 

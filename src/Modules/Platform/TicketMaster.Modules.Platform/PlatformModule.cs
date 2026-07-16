@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using YC.BuildingBlocks.Persistence.Inbox;
-using YC.BuildingBlocks.Persistence.Outbox;
-using YC.BuildingBlocks.Persistence.EfCore;
-using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
-using YC.BuildingBlocks.Modularity;
+using BuildingBlocks.Persistence.Inbox;
+using BuildingBlocks.Persistence.Outbox;
+using BuildingBlocks.Persistence.EfCore;
+using BuildingBlocks.Persistence.EfCore.Interceptors;
+using BuildingBlocks.Modularity;
 
 namespace TicketMaster.Modules.Platform;
 

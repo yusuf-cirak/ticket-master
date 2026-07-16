@@ -1,5 +1,5 @@
-using YC.BuildingBlocks.Domain;
-using YC.BuildingBlocks.Domain.ValueObjects;
+using BuildingBlocks.Domain;
+using BuildingBlocks.Domain.ValueObjects;
 
 namespace TicketMaster.Modules.Iam.Domain.Events;
 

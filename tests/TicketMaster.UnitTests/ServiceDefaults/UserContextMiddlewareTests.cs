@@ -1,11 +1,11 @@
-using YC.BuildingBlocks.Observability;
+using BuildingBlocks.Observability;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

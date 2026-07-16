@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using YC.BuildingBlocks.Persistence.EfCore;
+using BuildingBlocks.Persistence.EfCore;
 using TicketMaster.Modules.Iam.Domain;
 
 namespace TicketMaster.Modules.Iam.Infrastructure.Configurations;

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using YC.BuildingBlocks.Application.Pagination;
-using YC.BuildingBlocks.Persistence.EfCore;
+using BuildingBlocks.Application.Pagination;
+using BuildingBlocks.Persistence.EfCore;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Application;

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using FluentAssertions;
-using YC.BuildingBlocks.Domain.ValueObjects;
+using BuildingBlocks.Domain.ValueObjects;
 using Vogen;
 using Xunit;
 

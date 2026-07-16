@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
 using MediatR;
-using YC.BuildingBlocks.Application.Behaviors;
-using YC.BuildingBlocks.Domain.Errors;
+using BuildingBlocks.Application.Behaviors;
+using BuildingBlocks.Domain.Errors;
 using Xunit;
 using YC.Monad;
 

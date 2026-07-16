@@ -1,6 +1,6 @@
-using YC.BuildingBlocks.Observability;
+using BuildingBlocks.Observability;
 using FluentAssertions;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

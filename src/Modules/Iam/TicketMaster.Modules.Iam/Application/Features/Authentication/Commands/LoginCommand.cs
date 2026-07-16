@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using TicketMaster.Modules.Iam.Application.Abstractions;
 using TicketMaster.Modules.Iam.Application.Features.Authentication;
 using TicketMaster.Modules.Iam.Domain;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;

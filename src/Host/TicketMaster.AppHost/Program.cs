@@ -1,19 +1,19 @@
 using System.Security.Claims;
 using MassTransit;
 using Scalar.AspNetCore;
-using YC.BuildingBlocks.Security;
-using YC.BuildingBlocks.Modularity;
-using YC.BuildingBlocks.Configuration.Secrets;
-using YC.BuildingBlocks.Caching.FusionCache;
-using YC.BuildingBlocks.Caching.Redis;
-using YC.BuildingBlocks.Locking;
-using YC.BuildingBlocks.RateLimiting;
-using YC.BuildingBlocks.Web;
-using YC.BuildingBlocks.Messaging.Kafka;
+using BuildingBlocks.Security;
+using BuildingBlocks.Modularity;
+using BuildingBlocks.Configuration.Secrets;
+using BuildingBlocks.Caching.FusionCache;
+using BuildingBlocks.Caching.Redis;
+using BuildingBlocks.Locking;
+using BuildingBlocks.RateLimiting;
+using BuildingBlocks.Web;
+using BuildingBlocks.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 using TicketMaster.Modules.Iam;
-using YC.BuildingBlocks.Security.Authorization;
+using BuildingBlocks.Security.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 

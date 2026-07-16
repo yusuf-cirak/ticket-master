@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
-using YC.BuildingBlocks.Application.Abstractions.Security;
-using YC.BuildingBlocks.Application.Behaviors;
-using YC.BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Security;
+using BuildingBlocks.Application.Behaviors;
+using BuildingBlocks.Domain.Security;
 using Xunit;
 using YC.Monad;
 

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TicketMaster.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
+    <ProjectReference Include="..\..\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RedisRateLimiting" />
+    <PackageReference Include="RedisRateLimiting.AspNetCore" />
+  </ItemGroup>
+
+</Project>

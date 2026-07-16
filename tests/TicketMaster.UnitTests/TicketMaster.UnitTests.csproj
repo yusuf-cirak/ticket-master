@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -23,15 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Domain\YC.BuildingBlocks.Domain.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Application\YC.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Persistence\YC.BuildingBlocks.Persistence.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Web\YC.BuildingBlocks.Web.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Security\YC.BuildingBlocks.Security.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Observability\YC.BuildingBlocks.Observability.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.HealthChecks\YC.BuildingBlocks.HealthChecks.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.Configuration.Secrets\YC.BuildingBlocks.Configuration.Secrets.csproj" />
-    <ProjectReference Include="..\..\src\BuildingBlocks\YC.BuildingBlocks.RateLimiting\YC.BuildingBlocks.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Persistence\BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.Observability\BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.HealthChecks\BuildingBlocks.HealthChecks.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Configuration.Secrets\BuildingBlocks.Configuration.Secrets.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.RateLimiting\BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
   </ItemGroup>
 

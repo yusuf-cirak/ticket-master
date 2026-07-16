@@ -1,10 +1,10 @@
-using YC.BuildingBlocks.Observability;
+using BuildingBlocks.Observability;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

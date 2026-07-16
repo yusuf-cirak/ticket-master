@@ -1,10 +1,10 @@
-using YC.BuildingBlocks.HealthChecks;
+using BuildingBlocks.HealthChecks;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using YC.BuildingBlocks.Web;
+using BuildingBlocks.Web;
 using Xunit;
 
 namespace TicketMaster.UnitTests.ServiceDefaults;

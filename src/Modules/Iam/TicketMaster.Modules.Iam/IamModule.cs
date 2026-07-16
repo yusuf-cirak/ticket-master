@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using YC.BuildingBlocks.Persistence.EfCore;
-using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
+using BuildingBlocks.Persistence.EfCore;
+using BuildingBlocks.Persistence.EfCore.Interceptors;
 using TicketMaster.Modules.Iam.Application.Abstractions;
 using TicketMaster.Modules.Iam.Domain;
 using TicketMaster.Modules.Iam.Host;
 using TicketMaster.Modules.Iam.Infrastructure;
-using YC.BuildingBlocks.Modularity;
+using BuildingBlocks.Modularity;
 
 namespace TicketMaster.Modules.Iam;
 

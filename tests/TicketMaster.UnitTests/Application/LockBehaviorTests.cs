@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
-using YC.BuildingBlocks.Application.Abstractions.Locking;
-using YC.BuildingBlocks.Application.Behaviors;
+using BuildingBlocks.Application.Abstractions.Locking;
+using BuildingBlocks.Application.Behaviors;
 using Xunit;
 using YC.Monad;
 

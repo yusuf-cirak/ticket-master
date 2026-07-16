@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using YC.BuildingBlocks.Domain.ValueObjects;
+using BuildingBlocks.Domain.ValueObjects;
 
 namespace TicketMaster.Modules.Iam.Infrastructure;
 

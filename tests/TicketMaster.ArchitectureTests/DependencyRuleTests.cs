@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NetArchTest.Rules;
-using YC.BuildingBlocks.Domain;
+using BuildingBlocks.Domain;
 using Xunit;
 
 namespace TicketMaster.ArchitectureTests;
@@ -30,9 +30,9 @@ public class DependencyRuleTests
         var result = Types.InAssembly(DomainAsm)
             .ShouldNot()
             .HaveDependencyOnAny(
-                "YC.BuildingBlocks.Application",
-                "YC.BuildingBlocks.Persistence",
-                "YC.BuildingBlocks.Messaging.Kafka")
+                "BuildingBlocks.Application",
+                "BuildingBlocks.Persistence",
+                "BuildingBlocks.Messaging.Kafka")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue(

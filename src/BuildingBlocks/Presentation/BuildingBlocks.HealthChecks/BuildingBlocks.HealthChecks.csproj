@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TicketMaster.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- MigrationReadinessTracker (migrations-applied readiness). -->
+    <ProjectReference Include="..\..\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
+    <!-- SuppressLogging endpoint convention for the health endpoints. -->
+    <ProjectReference Include="..\..\Presentation\BuildingBlocks.Observability\BuildingBlocks.Observability.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.Kafka" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
+    <PackageReference Include="AspNetCore.HealthChecks.Uris" />
+  </ItemGroup>
+
+</Project>

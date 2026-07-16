@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using YC.BuildingBlocks.Domain;
-using YC.BuildingBlocks.Domain.Security;
-using YC.BuildingBlocks.Persistence.EfCore.Interceptors;
+using BuildingBlocks.Domain;
+using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Persistence.EfCore.Interceptors;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Infrastructure;
