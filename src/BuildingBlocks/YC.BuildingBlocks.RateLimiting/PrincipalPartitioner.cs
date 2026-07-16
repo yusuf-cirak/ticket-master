@@ -21,27 +21,26 @@ namespace YC.BuildingBlocks.RateLimiting;
 /// </summary>
 public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
 {
-    private const string ApiKeyHeader = "X-Api-Key";
-    private const string TierClaim = "urn:ticketmaster:tier";
-    private const string InternalTierValue = "internal";
+    private const string ApiKeyHeader = RateLimitingConstants.ApiKeyHeader;
+    private const string InternalTierValue = RateLimitingConstants.InternalTierValue;
 
     /// <summary>The auth scheme that is allowed to assert the internal tier (e.g. mTLS / internal issuer).</summary>
-    private const string InternalAuthScheme = "Internal";
+    private const string InternalAuthScheme = RateLimitingConstants.InternalAuthScheme;
 
 
     public (string Id, PrincipalTier Tier) ResolvePrincipal(HttpContext context)
     {
         var sub = context.User.FindFirst("sub")?.Value ?? context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!string.IsNullOrEmpty(sub))
-            return ($"user:{sub}", ResolveTier(context));
+            return ($"{RateLimitingConstants.UserPrincipalPrefix}{sub}", ResolveTier(context));
 
         if (context.Request.Headers.TryGetValue(ApiKeyHeader, out var apiKey) && !string.IsNullOrEmpty(apiKey))
-            return ($"apiKey:{Hash(apiKey!)}", PrincipalTier.Authenticated);
+            return ($"{RateLimitingConstants.ApiKeyPrincipalPrefix}{Hash(apiKey!)}", PrincipalTier.Authenticated);
 
         // Anonymous: bucket on the server-observed IP only. The User-Agent is attacker-controlled and must not
         // influence the partition (varying it would otherwise mint unlimited buckets and bypass the limit).
         var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        return ($"anon:ip:{Hash(ip)}", PrincipalTier.Anonymous);
+        return ($"{RateLimitingConstants.AnonymousPrincipalPrefix}{Hash(ip)}", PrincipalTier.Anonymous);
     }
 
     /// <summary>Redis partition key: <c>{prefix}:ratelimit:{policy}:{principal}|{routeScope}</c>.</summary>
@@ -59,17 +58,17 @@ public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
 
     internal static string TierKey(PrincipalTier tier) => tier switch
     {
-        PrincipalTier.Anonymous => "anon",
-        PrincipalTier.Internal => "internal",
-        _ => "authenticated"
+        PrincipalTier.Anonymous => RateLimitingConstants.Tiers.Anonymous,
+        PrincipalTier.Internal => RateLimitingConstants.Tiers.Internal,
+        _ => RateLimitingConstants.Tiers.Authenticated
     };
 
     // The internal tier (5× limits) is gated on a server-trusted authentication scheme, not just a claim value,
     // so a token from any other issuer cannot self-assert it.
-    private static PrincipalTier ResolveTier(HttpContext context)
+    private PrincipalTier ResolveTier(HttpContext context)
     {
         var trustedScheme = string.Equals(context.User.Identity?.AuthenticationType, InternalAuthScheme, StringComparison.Ordinal);
-        var asserted = context.User.FindFirst(TierClaim)?.Value == InternalTierValue;
+        var asserted = context.User.FindFirst(options.Value.TierClaim)?.Value == InternalTierValue;
         return trustedScheme && asserted ? PrincipalTier.Internal : PrincipalTier.Authenticated;
     }
 

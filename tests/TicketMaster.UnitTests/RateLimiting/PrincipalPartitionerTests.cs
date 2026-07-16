@@ -35,7 +35,7 @@ public class PrincipalPartitionerTests
     public void Internal_tier_requires_the_trusted_internal_scheme_and_namespaced_claim()
     {
         var (_, tier) = Sut().ResolvePrincipal(
-            Authenticated("Internal", new Claim("sub", "svc-1"), new Claim("urn:ticketmaster:tier", "internal")));
+            Authenticated("Internal", new Claim("sub", "svc-1"), new Claim(RateLimitingConstants.DefaultTierClaim, RateLimitingConstants.InternalTierValue)));
         tier.Should().Be(PrincipalTier.Internal);
     }
 
@@ -44,7 +44,7 @@ public class PrincipalPartitionerTests
     {
         // Same claim, but the identity was authenticated by an external scheme → stays Authenticated.
         var (_, tier) = Sut().ResolvePrincipal(
-            Authenticated("oidc", new Claim("sub", "attacker"), new Claim("urn:ticketmaster:tier", "internal")));
+            Authenticated("oidc", new Claim("sub", "attacker"), new Claim(RateLimitingConstants.DefaultTierClaim, RateLimitingConstants.InternalTierValue)));
         tier.Should().Be(PrincipalTier.Authenticated);
     }
 

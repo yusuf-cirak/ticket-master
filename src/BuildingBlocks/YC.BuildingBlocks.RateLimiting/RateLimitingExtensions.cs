@@ -25,7 +25,7 @@ namespace YC.BuildingBlocks.RateLimiting;
 /// </summary>
 public static class RateLimitingExtensions
 {
-    private const string BurstPolicy = "burst";
+    private const string BurstPolicy = RateLimitingConstants.Policies.Burst;
     private const string RetryAfterItemKey = "__ratelimit_retry_after";
 
     public static WebApplicationBuilder AddRateLimiting(this WebApplicationBuilder builder, Action<RateLimitingOptions> configure = null)
@@ -94,74 +94,14 @@ public static class RateLimitingExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds the native rate-limiter middleware. It only limits endpoints that opt in via
+    /// <see cref="RateLimitingEndpointExtensions"/> (<c>RequireBurst/Adaptive/ApiRateLimiting</c>) — there is no global
+    /// per-request middleware; the burst soft-ban and the adaptive gate run as endpoint filters on those endpoints only.
+    /// </summary>
     public static WebApplication UseRateLimiting(this WebApplication app)
     {
-        var metrics = app.Services.GetRequiredService<RequestMetricsCollector>();
-        var gate = app.Services.GetRequiredService<IAdmissionGate>();
-
-        // Outermost: time every request and record latency + 5xx rate, feeding the adaptive load signal. Runs on the
-        // whole pipeline so it captures true end-to-end latency (including any short-circuited 429/503).
-        app.Use(async (context, next) =>
-        {
-            var start = Stopwatch.GetTimestamp();
-            try
-            {
-                await next(context);
-            }
-            finally
-            {
-                metrics.Record(Stopwatch.GetElapsedTime(start).TotalMilliseconds, context.Response.StatusCode);
-            }
-        });
-
-        // Runs BEFORE the rate limiter consumes a permit: a banned caller is short-circuited with 429 regardless of
-        // whether the sliding window has since reset. Only endpoints carrying the burst policy metadata are checked
-        // (health/docs stay untouched). Routing has already run in a WebApplication pipeline, so GetEndpoint() is set.
-        app.Use(async (context, next) =>
-        {
-            var meta = context.GetEndpoint()?.Metadata.GetMetadata<EnableRateLimitingAttribute>();
-            if (meta?.PolicyName != BurstPolicy)
-            {
-                await next(context);
-                return;
-            }
-
-            var key = BurstBanScope(context);
-            var store = context.RequestServices.GetRequiredService<IBurstBanStore>();
-            var remaining = await store.GetRemainingBanAsync(key, context.RequestAborted);
-
-            if (remaining is { } ban)
-            {
-                await Write429Async(context, ban, context.RequestAborted);
-                return;
-            }
-
-            await next(context);
-        });
-
         app.UseRateLimiter();
-
-        // Runs AFTER the rate limiter (per-caller shedding first) but before the endpoint: the system-wide AIMD gate.
-        // Same burst-policy endpoints as Layer 1 (health/docs skipped). Over the current admission limit ⇒ 503.
-        app.Use(async (context, next) =>
-        {
-            var meta = context.GetEndpoint()?.Metadata.GetMetadata<EnableRateLimitingAttribute>();
-            if (meta?.PolicyName != BurstPolicy)
-            {
-                await next(context);
-                return;
-            }
-
-            if (!gate.TryEnter(out var lease))
-            {
-                await Write503Async(context, context.RequestAborted);
-                return;
-            }
-
-            using (lease)
-                await next(context);
-        });
-
         return app;
     }
 
@@ -226,7 +166,7 @@ public static class RateLimitingExtensions
     // The burst-ban scope: principal + route (the same bucket the burst limiter breached), WITHOUT the limiter's
     // key prefix — the ban store adds its own "{prefix}:ban:" prefix, so this stays a clean single-namespaced key.
     // Shared by OnRejected (arm) and the ban middleware (enforce).
-    private static string BurstBanScope(HttpContext context)
+    internal static string BurstBanScope(HttpContext context)
     {
         var partitioner = context.RequestServices.GetRequiredService<PrincipalPartitioner>();
         var (principalId, _) = partitioner.ResolvePrincipal(context);
@@ -256,7 +196,7 @@ public static class RateLimitingExtensions
     }
 
     // The shared RFC-7807 429 shape used by both the rate limiter's OnRejected and the ban middleware.
-    private static async Task Write429Async(HttpContext httpContext, TimeSpan retryAfter, CancellationToken ct)
+    internal static async Task Write429Async(HttpContext httpContext, TimeSpan retryAfter, CancellationToken ct)
     {
         RateLimitingMeter.Rejected.Add(1);
 
@@ -277,7 +217,7 @@ public static class RateLimitingExtensions
     }
 
     // The RFC-7807 503 shape emitted by the adaptive admission gate when the system is shedding load.
-    private static async Task Write503Async(HttpContext httpContext, CancellationToken ct)
+    internal static async Task Write503Async(HttpContext httpContext, CancellationToken ct)
     {
         RateLimitingMeter.AdaptiveRejected.Add(1);
 

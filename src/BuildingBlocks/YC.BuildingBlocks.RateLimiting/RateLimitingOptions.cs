@@ -11,10 +11,16 @@ public sealed class RateLimitingOptions
     /// Where the limiter's counters and burst-ban state live: <see cref="RateLimitingMode.Distributed"/> (Redis,
     /// shared across instances) or <see cref="RateLimitingMode.Local"/> (per-node, in-memory). Defaults to Distributed.
     /// </summary>
-    public RateLimitingMode Mode { get; set; } = RateLimitingMode.Distributed;
+    public RateLimitingMode Mode { get; set; } = RateLimitingMode.Local;
 
     /// <summary>Redis key prefix; defaults to the application's <c>ServiceName</c> when not set.</summary>
     public string KeyPrefix { get; set; }
+
+    /// <summary>
+    /// Claim type that carries the caller's rate-limit tier (only honored from a trusted internal auth scheme).
+    /// Product-neutral default; override to match your IdP's namespaced claim.
+    /// </summary>
+    public string TierClaim { get; set; } = RateLimitingConstants.DefaultTierClaim;
 
     /// <summary>Named policies. Only <c>burst</c> is used now.</summary>
     public Dictionary<string, PolicyDefinition> Policies { get; set; } = new(StringComparer.OrdinalIgnoreCase);

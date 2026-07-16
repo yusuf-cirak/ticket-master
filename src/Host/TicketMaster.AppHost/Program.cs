@@ -68,7 +68,7 @@ if (app.Environment.IsDevelopment())
 app.MapDefaultEndpoints(); // /health/liveness, /health/readiness, /health
 
 // Business endpoints opt into the burst policy; health/docs stay unthrottled.
-var api = app.MapGroup("/api").RequireRateLimiting("burst");
+var api = app.MapGroup("/api").RequireApiRateLimiting(); // burst (per-caller) + adaptive (system-wide) on all /api endpoints
 api.MapModuleEndpoints();
 
 // Diagnostic identity probe — scope-protected; exercises JWT auth + user_id/client_ip log enrichment.
