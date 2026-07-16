@@ -15,6 +15,19 @@
   <!-- ZLinq: zero-allocation LINQ, default in every project. Global using enables .AsValueEnumerable() everywhere. -->
   <ItemGroup>
     <PackageReference Include="ZLinq" />
+    <!-- Source generator that emits the drop-in LINQ from the assembly attribute below (analyzer-only). -->
+    <PackageReference Include="ZLinq.DropInGenerator" PrivateAssets="all" />
     <Using Include="ZLinq" />
+  </ItemGroup>
+
+  <!-- ZLinq drop-in: generate zero-alloc LINQ that shadows System.Linq for concrete collection types
+       (Array | Span | Memory | List) in every assembly — NOT IEnumerable, to avoid the aggressive overload-resolution
+       shadowing that DropInGenerateTypes.Everything brings. _Parameter2_IsLiteral emits the enum unquoted. -->
+  <ItemGroup>
+    <AssemblyAttribute Include="ZLinq.ZLinqDropInAttribute">
+      <_Parameter1></_Parameter1>
+      <_Parameter2>ZLinq.DropInGenerateTypes.Collection</_Parameter2>
+      <_Parameter2_IsLiteral>true</_Parameter2_IsLiteral>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>
