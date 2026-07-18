@@ -1,7 +1,7 @@
 name: ci
 
 on:
-  push: { branches: [main, master] }
+  push: { branches: [main, master, framework] }
   pull_request: {}
 
 jobs:
@@ -19,3 +19,21 @@ jobs:
       - run: dotnet test tests/TicketMaster.ArchitectureTests --no-build -c Release
       # ubuntu-latest ships with Docker; Testcontainers spins up Postgres + Kafka + Debezium Connect.
       - run: dotnet test tests/TicketMaster.IntegrationTests --no-build -c Release
+
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet restore TicketMaster.slnx
+      - name: Fail on high/critical vulnerable packages
+        run: |
+          out=$(dotnet list TicketMaster.slnx package --vulnerable --include-transitive 2>&1)
+          echo "$out"
+          if echo "$out" | grep -qiE '\b(High|Critical)\b'; then
+            echo "::error::High/Critical vulnerable packages found"; exit 1
+          fi
+          echo "No high/critical vulnerabilities."
