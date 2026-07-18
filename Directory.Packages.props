@@ -47,6 +47,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.8" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
+    <PackageVersion Include="EntityFrameworkCore.Projectables" Version="6.0.5" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
 

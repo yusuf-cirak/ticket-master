@@ -1,5 +1,6 @@
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Errors;
+using EntityFrameworkCore.Projectables;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Domain;
@@ -12,11 +13,19 @@ public sealed class Event : AggregateRoot<EventId>
 {
     public const int MaxNameLength = 200;
     public const int MaxVenueLength = 200;
+    public const int LargeVenueThreshold = 1000;
 
     public string Name { get; private set; } = string.Empty;
     public string Venue { get; private set; } = string.Empty;
     public DateTimeOffset StartsOn { get; private set; }
     public int Capacity { get; private set; }
+
+    /// <summary>
+    /// A computed flag. Marked <see cref="ProjectableAttribute"/> so the same expression runs both in memory and,
+    /// translated to SQL, inside an EF query (<c>WHERE/SELECT capacity &gt;= 1000</c>) — no duplicated predicate.
+    /// </summary>
+    [Projectable]
+    public bool IsLargeVenue => Capacity >= LargeVenueThreshold;
 
     private Event() { } // EF
 

@@ -16,7 +16,8 @@ public sealed class EventsEndpointTest(SpineFixture fixture)
     private sealed record ScheduleBody(string Name, string Venue, DateTimeOffset StartsOn, int Capacity);
     private sealed record CreatedResponse(Guid Id);
     private sealed record EventView(Guid Id, string Name, string Venue, DateTimeOffset StartsOn, int Capacity);
-    private sealed record PagedView(List<EventView> Items, int Page, int PageSize, long TotalCount);
+    private sealed record ListItem(Guid Id, string Name, string Venue, DateTimeOffset StartsOn, int Capacity, bool IsLargeVenue);
+    private sealed record PagedView(List<ListItem> Items, int Page, int PageSize, long TotalCount);
 
     [Fact]
     public async Task Schedule_then_get_and_list_roundtrips_through_http()
@@ -32,7 +33,10 @@ public sealed class EventsEndpointTest(SpineFixture fixture)
         got.Capacity.Should().Be(5000);
 
         var page = await fixture.Client.GetFromJsonAsync<PagedView>("/api/events?page=1&pageSize=200");
-        page!.Items.Should().Contain(e => e.Id == created.Id);
+        // IsLargeVenue is an EF [Projectable] computed server-side (capacity 5000 >= 1000) — proves UseProjectables()
+        // translated the domain expression to SQL rather than evaluating it on the client.
+        page!.Items.Should().ContainSingle(e => e.Id == created.Id)
+            .Which.IsLargeVenue.Should().BeTrue();
     }
 
     [Fact]

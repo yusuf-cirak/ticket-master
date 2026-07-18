@@ -13,15 +13,16 @@ public static class ListEventsQuery
     public sealed record Query(PageRequest Page) : IRequest<PagedResult<Item>>;
 
     // Id kept as EventId so EF selects the converted column directly (projecting .Value doesn't translate); the Vogen
-    // System.Text.Json converter serializes it back to a plain GUID on the wire.
-    public sealed record Item(EventId Id, string Name, string Venue, DateTimeOffset StartsOn, int Capacity);
+    // System.Text.Json converter serializes it back to a plain GUID on the wire. IsLargeVenue is a [Projectable] member
+    // on Event — UseProjectables() rewrites it to SQL, so the flag is computed server-side, not client-side.
+    public sealed record Item(EventId Id, string Name, string Venue, DateTimeOffset StartsOn, int Capacity, bool IsLargeVenue);
 
     public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, PagedResult<Item>>
     {
         public Task<PagedResult<Item>> Handle(Query request, CancellationToken cancellationToken) =>
             db.Events
                 .OrderByDescending(e => e.StartsOn)
-                .Select(e => new Item(e.Id, e.Name, e.Venue, e.StartsOn, e.Capacity))
+                .Select(e => new Item(e.Id, e.Name, e.Venue, e.StartsOn, e.Capacity, e.IsLargeVenue))
                 .ToPagedResultAsync(request.Page, cancellationToken);
     }
 }

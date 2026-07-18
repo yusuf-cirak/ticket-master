@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Routing;
+using EntityFrameworkCore.Projectables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,8 @@ public sealed class EventsModule : IModule
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
                     npg => npg.MigrationsHistoryTable("__ef_migrations", EventsDbContext.Schema))
                 .UseSnakeCaseNamingConvention()
+                // Translates [Projectable] members (e.g. Event.IsLargeVenue) to SQL inside EF queries.
+                .UseProjectables()
                 .AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>()));
 
         // Keyed by this module's DbContext so it never collides with another module's outbox writer (see PlatformModule).
