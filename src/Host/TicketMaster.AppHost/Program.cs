@@ -13,6 +13,7 @@ using BuildingBlocks.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 using TicketMaster.Modules.Iam;
+using TicketMaster.Modules.Events;
 using BuildingBlocks.Security.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,8 @@ builder.AddRateLimiting();
 // Named opt-in; each module's services + endpoints + MediatR/validators are auto-discovered (IModule).
 builder.AddModules(m => m
     .Add<PlatformModule>()
-    .Add<IamModule>());
+    .Add<IamModule>()
+    .Add<EventsModule>());
 builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";

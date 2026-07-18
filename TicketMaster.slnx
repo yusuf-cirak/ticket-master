@@ -31,6 +31,10 @@
     <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform.Contracts/TicketMaster.Modules.Platform.Contracts.csproj" />
     <Project Path="src/Modules/Platform/TicketMaster.Modules.Platform/TicketMaster.Modules.Platform.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Events/">
+    <Project Path="src/Modules/Events/TicketMaster.Modules.Events.Contracts/TicketMaster.Modules.Events.Contracts.csproj" />
+    <Project Path="src/Modules/Events/TicketMaster.Modules.Events/TicketMaster.Modules.Events.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TicketMaster.ArchitectureTests/TicketMaster.ArchitectureTests.csproj" />
     <Project Path="tests/TicketMaster.IntegrationTests/TicketMaster.IntegrationTests.csproj" />

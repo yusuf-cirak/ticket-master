@@ -27,7 +27,10 @@ public sealed class PlatformModule : IModule
                 .UseSnakeCaseNamingConvention()
                 .AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>()));
 
-        services.AddScoped<IOutboxWriter>(sp => new OutboxWriter(sp.GetRequiredService<PlatformDbContext>()));
+        // Keyed by this module's DbContext: an unkeyed IOutboxWriter would collide across modules (last registration
+        // wins), so a second module's writer would silently hijack this one and write to the wrong outbox table.
+        services.AddKeyedScoped<IOutboxWriter>(nameof(PlatformDbContext),
+            (sp, _) => new OutboxWriter(sp.GetRequiredService<PlatformDbContext>()));
         services.AddScoped<IInboxStore>(sp => new InboxStore(sp.GetRequiredService<PlatformDbContext>()));
 
         // Auto-apply this module's migrations at startup.

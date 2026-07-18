@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Configuration.Secrets\BuildingBlocks.Configuration.Secrets.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.RateLimiting\BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Events\TicketMaster.Modules.Events\TicketMaster.Modules.Events.csproj" />
   </ItemGroup>
 
 </Project>

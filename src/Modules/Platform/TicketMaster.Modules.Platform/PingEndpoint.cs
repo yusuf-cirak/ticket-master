@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Persistence.Outbox;
 using TicketMaster.Modules.Platform.Contracts;
 
@@ -14,7 +15,8 @@ public static class PingEndpoint
     {
         var group = app.MapGroup("/platform").WithTags("Platform");
         group.MapPost("/ping",
-            async (PingRequest body, PlatformDbContext db, IOutboxWriter outbox, CancellationToken ct) =>
+            async (PingRequest body, PlatformDbContext db,
+                [FromKeyedServices(nameof(PlatformDbContext))] IOutboxWriter outbox, CancellationToken ct) =>
             {
                 // Validate at the boundary before anything reaches the outbox payload.
                 if (string.IsNullOrWhiteSpace(body.Note))

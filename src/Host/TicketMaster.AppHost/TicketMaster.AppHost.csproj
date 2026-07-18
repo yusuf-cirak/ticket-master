@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\Presentation\BuildingBlocks.RateLimiting\BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
     <ProjectReference Include="..\..\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
+    <ProjectReference Include="..\..\Modules\Events\TicketMaster.Modules.Events\TicketMaster.Modules.Events.csproj" />
   </ItemGroup>
 
   <ItemGroup>
