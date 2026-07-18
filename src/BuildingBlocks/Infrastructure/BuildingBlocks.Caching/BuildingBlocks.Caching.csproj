@@ -19,6 +19,9 @@
     <PackageReference Include="ZiggyCreatures.FusionCache" />
     <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" />
     <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" />
+    <!-- Direct ref so the central MessagePack pin (newest stable) applies instead of the vulnerable 3.1.4 the
+         serializer would pull transitively. -->
+    <PackageReference Include="MessagePack" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" />
   </ItemGroup>
 
