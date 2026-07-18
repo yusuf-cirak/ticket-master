@@ -21,6 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BuildingBlocks\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Persistence\BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Messaging.Kafka\BuildingBlocks.Messaging.Kafka.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Caching\BuildingBlocks.Caching.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Locking\BuildingBlocks.Locking.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Configuration.Secrets\BuildingBlocks.Configuration.Secrets.csproj" />
     <ProjectReference Include="..\..\src\Modules\Platform\TicketMaster.Modules.Platform\TicketMaster.Modules.Platform.csproj" />
   </ItemGroup>
 
