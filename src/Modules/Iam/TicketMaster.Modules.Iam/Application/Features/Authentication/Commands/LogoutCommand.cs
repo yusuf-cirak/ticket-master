@@ -30,7 +30,8 @@ public static class LogoutCommand
 
             // Revoke the presented refresh token if we still hold an active copy — but only its owner may revoke it.
             var hash = tokenService.HashRefreshToken(request.RefreshToken ?? string.Empty);
-            var existing = await db.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == hash, cancellationToken);
+            // Tracked: it's revoked below, and the context defaults to no-tracking.
+            var existing = await db.RefreshTokens.AsTracking().FirstOrDefaultAsync(t => t.TokenHash == hash, cancellationToken);
             if (existing is not null && existing.IsActive(now) && existing.UserId.Value.ToString() == currentUser.UserId)
                 existing.Revoke(now);
             await db.SaveChangesAsync(cancellationToken);

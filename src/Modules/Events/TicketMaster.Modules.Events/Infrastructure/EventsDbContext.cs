@@ -25,9 +25,6 @@ public sealed class EventsDbContext(DbContextOptions<EventsDbContext> options) :
         modelBuilder.Entity<OutboxMessage>(e => e.Property(x => x.Payload).HasColumnType("jsonb"));
     }
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        configurationBuilder.RegisterVogenEfCoreConverters(typeof(EventsDbContext).Assembly);
-        configurationBuilder.Properties<string>().HaveConversion<NullToEmptyStringConverter>();
-    }
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
+        configurationBuilder.ApplyAppConventions(GetType().Assembly);
 }

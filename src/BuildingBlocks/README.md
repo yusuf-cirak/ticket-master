@@ -23,7 +23,7 @@ Presentation/    Web · Security · Observability · HealthChecks · RateLimitin
 |-------|-------|---------|
 | **Domain** | Domain | Shared kernel: `AggregateRoot`/`Entity`, domain events, `Error`/`ValidationError`, common value objects. No EF, no framework. |
 | **Application** | Application | Cross-cutting app concerns: MediatR pipeline behaviors (validation, locking, sensitive-request), `Result`-based abstractions, `PageRequest`/`PagedResult` streaming pagination, `IntegrationEvent`, `ICurrentUser` abstraction. |
-| **Persistence** | Infrastructure | EF Core plumbing: snake_case convention, auditing/soft-delete/domain-event interceptors, transactional **outbox** + **inbox** (idempotent consume), Vogen converter registration, `ToPagedResultAsync`, startup migration runner. |
+| **Persistence** | Infrastructure | EF Core plumbing: `UseModuleConventions()` (snake_case + **no-tracking by default**; load-to-mutate opts back in with `.AsTracking()`) + `ApplyAppConventions()` (Vogen + null→empty string), auditing/soft-delete/domain-event interceptors, transactional **outbox** + **inbox** (idempotent consume), `ToPagedResultAsync`, startup migration runner. |
 | **Messaging.Kafka** | Infrastructure | MassTransit 8 Kafka rider: publish/consume integration events, message headers, OTel trace propagation + correlation/causation baggage. |
 | **Caching** | Infrastructure | FusionCache (L1 in-memory + L2 Redis, MessagePack) on a sentinel-aware connection; health check. |
 | **Locking** | Infrastructure | Distributed lock over Redis (`IDistributedLock`), consumed by the Application `LockBehavior`. |

@@ -24,7 +24,7 @@ public sealed class PlatformModule : IModule
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
                     npg => npg.MigrationsHistoryTable("__ef_migrations", PlatformDbContext.Schema))
                 // snake_case tables/columns derived from CLR names — no hand-written HasColumnName.
-                .UseSnakeCaseNamingConvention()
+                .UseModuleConventions() // snake_case + no-tracking default
                 .AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>()));
 
         // Keyed by this module's DbContext: an unkeyed IOutboxWriter would collide across modules (last registration

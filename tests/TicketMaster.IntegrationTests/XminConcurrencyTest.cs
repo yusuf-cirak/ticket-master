@@ -34,8 +34,9 @@ public sealed class XminConcurrencyTest(SpineFixture fixture)
         var ctxA = scopeA.ServiceProvider.GetRequiredService<IamDbContext>();
         var ctxB = scopeB.ServiceProvider.GetRequiredService<IamDbContext>();
 
-        var roleA = await ctxA.Set<Role>().SingleAsync(r => r.Id == role.Id);
-        var roleB = await ctxB.Set<Role>().SingleAsync(r => r.Id == role.Id);
+        // AsTracking: the context defaults to no-tracking, but this exercises a tracked load-modify-save update.
+        var roleA = await ctxA.Set<Role>().AsTracking().SingleAsync(r => r.Id == role.Id);
+        var roleB = await ctxB.Set<Role>().AsTracking().SingleAsync(r => r.Id == role.Id);
 
         roleA.Grant("catalog:read");
         await ctxA.SaveChangesAsync(); // wins — Postgres advances xmin

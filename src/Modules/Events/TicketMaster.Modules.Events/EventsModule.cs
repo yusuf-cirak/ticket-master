@@ -29,7 +29,7 @@ public sealed class EventsModule : IModule
         services.AddDbContext<EventsDbContext>((sp, o) =>
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
                     npg => npg.MigrationsHistoryTable("__ef_migrations", EventsDbContext.Schema))
-                .UseSnakeCaseNamingConvention()
+                .UseModuleConventions() // snake_case + no-tracking default
                 // Translates [Projectable] members (e.g. Event.IsLargeVenue) to SQL inside EF queries.
                 .UseProjectables()
                 .AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>()));

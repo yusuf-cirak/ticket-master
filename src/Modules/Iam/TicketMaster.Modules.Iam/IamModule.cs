@@ -35,7 +35,7 @@ public sealed class IamModule : IModule
         services.AddDbContext<IamDbContext>((sp, o) =>
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
                     npg => npg.MigrationsHistoryTable("__ef_migrations", IamDbContext.Schema))
-                .UseSnakeCaseNamingConvention()
+                .UseModuleConventions() // snake_case + no-tracking default
                 .AddInterceptors(
                     sp.GetRequiredService<DomainEventDispatchInterceptor>(),
                     sp.GetRequiredService<AuditingSaveChangesInterceptor>(),

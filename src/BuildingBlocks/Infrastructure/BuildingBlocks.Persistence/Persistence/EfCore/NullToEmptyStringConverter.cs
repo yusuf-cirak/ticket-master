@@ -9,10 +9,7 @@ namespace BuildingBlocks.Persistence.EfCore;
 /// non-null domain string properties (initialized to <see cref="string.Empty"/>), the database never stores or
 /// returns null for these columns, and stored values carry no surrounding whitespace.
 /// </summary>
-public sealed class NullToEmptyStringConverter : ValueConverter<string, string>
+public sealed class NullToEmptyStringConverter()
+    : ValueConverter<string, string>(model => string.IsNullOrEmpty(model) ? string.Empty : model.Trim(), provider => provider ?? string.Empty)
 {
-    public NullToEmptyStringConverter()
-        : base(model => (model ?? string.Empty).Trim(), provider => provider ?? string.Empty)
-    {
-    }
 }

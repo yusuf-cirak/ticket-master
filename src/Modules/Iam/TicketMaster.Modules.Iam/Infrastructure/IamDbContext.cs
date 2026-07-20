@@ -30,11 +30,7 @@ public sealed class IamDbContext(DbContextOptions<IamDbContext> options)
         modelBuilder.ApplySoftDeleteFilters(); // global !IsDeleted filter for ISoftDeletable entities
     }
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        // Register each Vogen value object's generated (reflection-free) EF converter; the scan is a one-time startup cost.
-        configurationBuilder.RegisterVogenEfCoreConverters(typeof(IamDbContext).Assembly);
-        // Domain string columns are never null — null ⇄ empty string on both read and write.
-        configurationBuilder.Properties<string>().HaveConversion<NullToEmptyStringConverter>();
-    }
+    // Vogen (reflection-free) converters + null⇄empty string, shared with every module context.
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
+        configurationBuilder.ApplyAppConventions(GetType().Assembly);
 }

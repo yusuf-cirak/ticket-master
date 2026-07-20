@@ -32,7 +32,8 @@ public static class RefreshCommand
             var now = timeProvider.GetUtcNow();
             var hash = tokenService.HashRefreshToken(request.RefreshToken ?? string.Empty);
 
-            var existing = await db.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == hash, cancellationToken);
+            // Tracked: it's rotated (revoked) below, and the context defaults to no-tracking.
+            var existing = await db.RefreshTokens.AsTracking().FirstOrDefaultAsync(t => t.TokenHash == hash, cancellationToken);
             if (existing is null || !existing.IsActive(now))
                 return AuthErrors.InvalidCredentials;
 
