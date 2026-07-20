@@ -30,7 +30,7 @@ Presentation/    Web · Security · Observability · HealthChecks · RateLimitin
 | **Configuration.Secrets** | Infrastructure | AES-GCM-encrypted configuration values decrypted at load from a `CONFIG_SECRET_KEY`. |
 | **Web** | Presentation | Minimal-API helpers: `Result` → RFC9457 `ToApiResult`/`ToCreatedResult`, **idempotency** endpoint filter (`RequireIdempotency`), request logging opt-ins. |
 | **Security** | Presentation | JWT auth (hardened claim layout), `HttpContext`-backed `ICurrentUser`, scope/permission authorization, audit logging. |
-| **Observability** | Presentation | OTel-native traces + metrics + logs over OTLP (no Serilog/fluent-bit), snake_case log records, PII/log sampling. |
+| **Observability** | Presentation | OTel traces + metrics; logs over OTLP via a selectable backend (`Observability:LoggingBackend` = OpenTelemetry \| Serilog), snake_case records, baggage enrichment, PII masking. |
 | **HealthChecks** | Presentation | Liveness/readiness endpoints + standard checks. |
 | **RateLimiting** | Presentation | Native `UseRateLimiter` + per-endpoint opt-ins (`RequireApiRateLimiting`, burst-ban, adaptive admission); Redis or local mode; tiered per-principal partitioning. |
 | **Modularity** | Presentation | `IModule` contract + type-based registration (`AddModules(m => m.Add<XModule>())`) and endpoint mounting. |
