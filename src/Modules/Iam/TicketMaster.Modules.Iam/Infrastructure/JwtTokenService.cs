@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -64,6 +65,21 @@ public sealed class JwtTokenService(
         return (raw, HashRefreshToken(raw));
     }
 
+    // Hashed on every issue, rotation and lookup; `raw` is client-supplied on the validation path, so guard the stack
+    // buffer with a pooled fallback. Same bytes as before → identical base64, so stored hashes stay comparable.
     public string HashRefreshToken(string raw)
-        => Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
+    {
+        var maxBytes = Encoding.UTF8.GetMaxByteCount(raw.Length);
+        var rented = maxBytes > 256 ? ArrayPool<byte>.Shared.Rent(maxBytes) : null;
+        Span<byte> utf8 = rented ?? stackalloc byte[256];
+        var written = Encoding.UTF8.GetBytes(raw, utf8);
+
+        Span<byte> hash = stackalloc byte[SHA256.HashSizeInBytes];
+        SHA256.HashData(utf8[..written], hash);
+
+        if (rented is not null)
+            ArrayPool<byte>.Shared.Return(rented);
+
+        return Convert.ToBase64String(hash);
+    }
 }

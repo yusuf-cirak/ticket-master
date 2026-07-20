@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -78,9 +79,21 @@ public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
     }
 
     // Short, stable, non-reversible partition component — avoids unbounded cardinality from raw IP/API-key.
+    // Runs on every rate-limited request, so it stays allocation-free until the returned string: UTF-8 bytes and the
+    // digest live on the stack (a pooled buffer covers the rare over-long input), and the hex is written lowercased.
     private static string Hash(string input)
     {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-        return Convert.ToHexString(bytes.AsSpan(0, 8)).ToLowerInvariant();
+        var maxBytes = Encoding.UTF8.GetMaxByteCount(input.Length);
+        var rented = maxBytes > 256 ? ArrayPool<byte>.Shared.Rent(maxBytes) : null;
+        Span<byte> utf8 = rented ?? stackalloc byte[256];
+        var written = Encoding.UTF8.GetBytes(input, utf8);
+
+        Span<byte> hash = stackalloc byte[SHA256.HashSizeInBytes];
+        SHA256.HashData(utf8[..written], hash);
+
+        if (rented is not null)
+            ArrayPool<byte>.Shared.Return(rented);
+
+        return Convert.ToHexStringLower(hash[..8]); // 8 bytes → 16 lowercase hex chars
     }
 }

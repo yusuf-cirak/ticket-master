@@ -13,7 +13,12 @@ public static class HttpContextExtensions
     {
         var forwardedFor = context.Request.Headers["X-Forwarded-For"].ToString();
         if (!string.IsNullOrWhiteSpace(forwardedFor))
-            return forwardedFor.Split(',')[0].Trim();
+        {
+            // First hop only, without splitting the whole header into an array of substrings.
+            var comma = forwardedFor.IndexOf(',');
+            var firstHop = comma < 0 ? forwardedFor.AsSpan() : forwardedFor.AsSpan(0, comma);
+            return firstHop.Trim().ToString();
+        }
 
         var realIp = context.Request.Headers["X-Real-IP"].ToString();
         if (!string.IsNullOrWhiteSpace(realIp))

@@ -18,21 +18,32 @@ internal sealed class ScopeAuthorizationHandler : AuthorizationHandler<ScopeRequ
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ScopeRequirement requirement)
     {
-        var granted = GrantedScopes(context.User);
-        if (requirement.Scopes.Any(granted.Contains))
+        if (HasAnyRequiredScope(context.User, requirement.Scopes))
             context.Succeed(requirement);
 
         return Task.CompletedTask;
     }
 
-    private static HashSet<string> GrantedScopes(ClaimsPrincipal user)
+    // Runs on every authorized request. Tokenizes the space-delimited scope claim(s) as spans and compares each token
+    // to the required set — no HashSet and no per-scope substrings, ordinal like before, and stops at the first match.
+    private static bool HasAnyRequiredScope(ClaimsPrincipal user, IReadOnlyCollection<string> required)
     {
-        var scopes = new HashSet<string>(StringComparer.Ordinal);
         foreach (var claim in user.FindAll("scope").Concat(user.FindAll("scp")))
-            foreach (var scope in claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-                scopes.Add(scope);
+        {
+            var value = claim.Value.AsSpan();
+            foreach (var range in value.Split(' '))
+            {
+                var token = value[range].Trim();
+                if (token.IsEmpty)
+                    continue;
 
-        return scopes;
+                foreach (var req in required)
+                    if (token.SequenceEqual(req))
+                        return true;
+            }
+        }
+
+        return false;
     }
 }
 
