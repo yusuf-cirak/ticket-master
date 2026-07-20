@@ -26,13 +26,16 @@ public sealed class EventsModule : IModule
     public void Add(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDomainEventDispatch();
+        services.AddScoped<TenantSaveChangesInterceptor>();
         services.AddDbContext<EventsDbContext>((sp, o) =>
             o.UseNpgsql(configuration.GetConnectionString("Postgres"),
                     npg => npg.MigrationsHistoryTable("__ef_migrations", EventsDbContext.Schema))
                 .UseModuleConventions() // snake_case + no-tracking default
                 // Translates [Projectable] members (e.g. Event.IsLargeVenue) to SQL inside EF queries.
                 .UseProjectables()
-                .AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>()));
+                .AddInterceptors(
+                    sp.GetRequiredService<DomainEventDispatchInterceptor>(),
+                    sp.GetRequiredService<TenantSaveChangesInterceptor>())); // stamp + guard tenant on write
 
         // Keyed by this module's DbContext so it never collides with another module's outbox writer (see PlatformModule).
         services.AddKeyedScoped<IOutboxWriter>(nameof(EventsDbContext),

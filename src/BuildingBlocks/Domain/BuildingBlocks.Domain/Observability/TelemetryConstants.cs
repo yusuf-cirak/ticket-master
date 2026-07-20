@@ -27,6 +27,9 @@ public static class TelemetryConstants
     /// <summary>Activity-baggage and log-attribute key for the client IP (post forwarded-headers resolution).</summary>
     public const string ClientIpKey = "client_ip";
 
+    /// <summary>Activity-baggage and log-attribute key for the resolved tenant id.</summary>
+    public const string TenantIdKey = "tenant_id";
+
     /// <summary>
     /// OpenTelemetry instrument (Meter / ActivitySource) names for the building blocks. Per OTel convention an
     /// instrument name identifies the <b>library</b> that emits it, not the host app — so these stay product-neutral

@@ -91,6 +91,10 @@ namespace TicketMaster.Modules.Events.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("starts_on");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
                     b.Property<string>("Venue")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")

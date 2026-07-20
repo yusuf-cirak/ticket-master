@@ -1,5 +1,6 @@
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Errors;
+using BuildingBlocks.Domain.Tenancy;
 using EntityFrameworkCore.Projectables;
 using YC.Monad;
 
@@ -9,11 +10,16 @@ namespace TicketMaster.Modules.Events.Domain;
 /// A schedulable event (a show/match/concert) with a venue, start time, and seating capacity. Created through the
 /// <see cref="Schedule"/> factory so every instance is valid; EF rehydrates via the private parameterless ctor.
 /// </summary>
-public sealed class Event : AggregateRoot<EventId>
+public sealed class Event : AggregateRoot<EventId>, ITenantOwned
 {
     public const int MaxNameLength = 200;
     public const int MaxVenueLength = 200;
     public const int LargeVenueThreshold = 1000;
+
+    /// <summary>Owning tenant — stamped by the persistence layer on insert, never set by the domain.</summary>
+    public Guid TenantId { get; private set; }
+
+    void ITenantOwned.SetTenantId(Guid tenantId) => TenantId = tenantId;
 
     public string Name { get; private set; } = string.Empty;
     public string Venue { get; private set; } = string.Empty;

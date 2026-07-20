@@ -18,7 +18,8 @@ internal sealed class BaggageEnricher : ILogEventEnricher
         TelemetryConstants.CorrelationIdKey,
         TelemetryConstants.CausationIdKey,
         TelemetryConstants.UserIdKey,
-        TelemetryConstants.ClientIpKey
+        TelemetryConstants.ClientIpKey,
+        TelemetryConstants.TenantIdKey
     ];
 
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)

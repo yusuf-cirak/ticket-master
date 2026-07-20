@@ -41,6 +41,7 @@ public static class ServiceDefaultsExtensions
         builder.AddForwardedHeaders(); // trust edge proxy X-Forwarded-* → real client IP + scheme
         builder.AddJwtAuthentication(options.Jwt); // JWT bearer authN + secure-by-default authZ + scope handler
         builder.AddCurrentUser(); // ICurrentUser over the ambient principal (application/domain-facing)
+        builder.Services.AddTenancy(); // ITenantContext + resolver chain (claim → header) for multi-tenant scoping
         builder.AddAuditLogging(); // IAuditLogger → structured audit trail on the OTel pipeline
         builder.AddDefaultHealthChecks(options.HealthChecks);
 
@@ -79,6 +80,7 @@ public static class ServiceDefaultsExtensions
             // Enrichment runs right after authentication so user_id/client_ip reach the request log and every line.
             app.UseAuthentication();
             app.UseMiddleware<UserContextMiddleware>();
+            app.UseTenantResolution(); // resolve tenant after auth (claim available), before authorization
             app.UseAuthorization();
 
             app.UseOutputCache();

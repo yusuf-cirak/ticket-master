@@ -28,7 +28,8 @@ internal sealed class BaggageLogRecordProcessor : BaseProcessor<LogRecord>
         TelemetryConstants.CorrelationIdKey,
         TelemetryConstants.CausationIdKey,
         TelemetryConstants.UserIdKey,
-        TelemetryConstants.ClientIpKey
+        TelemetryConstants.ClientIpKey,
+        TelemetryConstants.TenantIdKey
     ];
 
     public override void OnEnd(LogRecord record)
