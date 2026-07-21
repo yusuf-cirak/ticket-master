@@ -18,4 +18,9 @@ public sealed class OutboxMessage
     public string CausationId { get; init; } // id of the message that directly caused this one
     public string TraceParent { get; init; } // W3C traceparent captured at write time -> Kafka header
     public string Payload { get; init; } = default!; // jsonb
+
+    // Polling-relay bookkeeping (unused by the Debezium path, which tracks its own replication offset).
+    public DateTimeOffset? ProcessedOn { get; init; } // set once published; null = pending
+    public DateTimeOffset? LockedUntil { get; init; } // claim lease; a row is claimable when null or past
+    public int Attempts { get; init; } // publish attempts, for poison detection
 }

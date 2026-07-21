@@ -58,6 +58,10 @@ namespace TicketMaster.Modules.Platform.Migrations
                         .HasColumnType("text")
                         .HasColumnName("aggregate_type");
 
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
                     b.Property<string>("CausationId")
                         .HasColumnType("text")
                         .HasColumnName("causation_id");
@@ -70,6 +74,10 @@ namespace TicketMaster.Modules.Platform.Migrations
                         .HasColumnType("text")
                         .HasColumnName("event_type");
 
+                    b.Property<DateTimeOffset?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("locked_until");
+
                     b.Property<DateTimeOffset>("OccurredOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_on");
@@ -77,6 +85,10 @@ namespace TicketMaster.Modules.Platform.Migrations
                     b.Property<string>("Payload")
                         .HasColumnType("jsonb")
                         .HasColumnName("payload");
+
+                    b.Property<DateTimeOffset?>("ProcessedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on");
 
                     b.Property<string>("TraceParent")
                         .HasColumnType("text")

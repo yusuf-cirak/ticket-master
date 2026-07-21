@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\Presentation\BuildingBlocks.RateLimiting\BuildingBlocks.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Modules\Iam\TicketMaster.Modules.Iam\TicketMaster.Modules.Iam.csproj" />
     <ProjectReference Include="..\..\src\Modules\Events\TicketMaster.Modules.Events\TicketMaster.Modules.Events.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Infrastructure\BuildingBlocks.Messaging.Kafka\BuildingBlocks.Messaging.Kafka.csproj" />
   </ItemGroup>
 
 </Project>

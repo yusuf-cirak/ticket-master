@@ -3,6 +3,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
     <ProjectReference Include="..\..\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\BuildingBlocks.Persistence\BuildingBlocks.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TicketMaster.UnitTests" />
   </ItemGroup>
 
   <ItemGroup>

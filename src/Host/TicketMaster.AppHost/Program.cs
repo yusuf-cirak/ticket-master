@@ -14,6 +14,7 @@ using TicketMaster.Modules.Platform;
 using TicketMaster.Modules.Platform.Contracts;
 using TicketMaster.Modules.Iam;
 using TicketMaster.Modules.Events;
+using BuildingBlocks.Persistence.Outbox;
 using BuildingBlocks.Security.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,15 @@ builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
 var platformTopic = builder.Configuration["Kafka:PlatformTopic"] ?? "tm.platform.events";
+
+// Outbox relay: Debezium (default, CDC) or Polling (the app claims + produces to Kafka — no Debezium/CDC needed).
+builder.Services.Configure<OutboxOptions>(builder.Configuration.GetSection(OutboxOptions.SectionName));
+if (builder.Configuration.GetValue<OutboxRelay>("Outbox:Relay") == OutboxRelay.Polling)
+{
+    builder.Services.AddKafkaOutboxPublisher(bootstrap);
+    builder.Services.AddOutboxPolling<TicketMaster.Modules.Platform.PlatformDbContext>("platform");
+    builder.Services.AddOutboxPolling<TicketMaster.Modules.Events.Infrastructure.EventsDbContext>("events");
+}
 
 builder.Services.AddMassTransit(x =>
 {
