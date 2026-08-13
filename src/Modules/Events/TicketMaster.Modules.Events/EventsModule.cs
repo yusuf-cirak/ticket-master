@@ -43,6 +43,9 @@ public sealed class EventsModule : IModule
 
         // Auto-apply this module's migrations at startup.
         services.AddDbContextMigration<EventsDbContext>();
+
+        // Self-register the polling relay for this module's outbox (no-op unless Outbox:Relay = Polling).
+        services.AddOutboxPollingIfEnabled<EventsDbContext>(configuration, "events");
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints) => endpoints.MapEventEndpoints();

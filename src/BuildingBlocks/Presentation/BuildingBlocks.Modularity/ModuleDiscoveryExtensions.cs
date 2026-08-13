@@ -54,6 +54,15 @@ public static class ModuleDiscoveryExtensions
         return builder;
     }
 
+    /// <summary>
+    /// The registered <see cref="ModuleRegistry"/>, retrievable at build time (before the container is built) so host
+    /// wiring can enumerate module instances — e.g. to filter those that contribute Kafka consumers. Requires
+    /// <see cref="AddModules"/> to have run first.
+    /// </summary>
+    public static ModuleRegistry GetModuleRegistry(this IServiceCollection services) =>
+        services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as ModuleRegistry
+            ?? throw new InvalidOperationException("AddModules must be called before GetModuleRegistry.");
+
     /// <summary>Maps every registered module's endpoints into <paramref name="endpoints"/> (the shared <c>/api</c> group).</summary>
     public static IEndpointRouteBuilder MapModuleEndpoints(this IEndpointRouteBuilder endpoints)
     {

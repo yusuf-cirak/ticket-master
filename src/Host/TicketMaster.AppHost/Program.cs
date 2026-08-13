@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using MassTransit;
 using Scalar.AspNetCore;
 using BuildingBlocks.Security;
 using BuildingBlocks.Modularity;
@@ -11,7 +10,6 @@ using BuildingBlocks.RateLimiting;
 using BuildingBlocks.Web;
 using BuildingBlocks.Messaging.Kafka;
 using TicketMaster.Modules.Platform;
-using TicketMaster.Modules.Platform.Contracts;
 using TicketMaster.Modules.Iam;
 using TicketMaster.Modules.Events;
 using BuildingBlocks.Persistence.Outbox;
@@ -39,36 +37,17 @@ builder.AddModules(m => m
 builder.Services.AddOpenApi();
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
-var platformTopic = builder.Configuration["Kafka:PlatformTopic"] ?? "tm.platform.events";
 
-// Outbox relay: Debezium (default, CDC) or Polling (the app claims + produces to Kafka — no Debezium/CDC needed).
+// Outbox relay: Debezium (default, CDC) or Polling (the app claims + produces to Kafka — no Debezium/CDC needed). Each
+// module self-registers polling for its own DbContext (AddOutboxPollingIfEnabled); the host only wires the shared publisher.
 builder.Services.Configure<OutboxOptions>(builder.Configuration.GetSection(OutboxOptions.SectionName));
 if (builder.Configuration.GetValue<OutboxRelay>("Outbox:Relay") == OutboxRelay.Polling)
-{
     builder.Services.AddKafkaOutboxPublisher(bootstrap);
-    builder.Services.AddOutboxPolling<TicketMaster.Modules.Platform.PlatformDbContext>("platform");
-    builder.Services.AddOutboxPolling<TicketMaster.Modules.Events.Infrastructure.EventsDbContext>("events");
-}
 
-builder.Services.AddMassTransit(x =>
-{
-    // Inert, but required: MassTransit 8's Kafka rider must attach to a bus; nothing flows through it
-    // (integration events arrive via the outbox → Debezium → Kafka and are consumed by the rider below).
-    x.UsingInMemory();
-    x.AddRider(rider =>
-    {
-        rider.AddConsumer<PingConsumer>();
-        rider.UsingKafka((context, k) =>
-        {
-            k.Host(bootstrap);
-            k.TopicEndpoint<PingIntegrationEvent>(platformTopic, "platform", e =>
-            {
-                e.ApplyDefaults(context); // offset, raw-JSON, context-propagation filter, retry
-                e.ConfigureConsumer<PingConsumer>(context);
-            });
-        });
-    });
-});
+// Kafka rider wired generically from the modules that consume Kafka — the host names no consumer or topic. A new
+// Kafka-consuming module implements IKafkaConsumerModule and is picked up here with no host change.
+var kafkaModules = builder.Services.GetModuleRegistry().Modules.OfType<IKafkaConsumerModule>().ToList();
+builder.Services.AddModuleMessaging(bootstrap, kafkaModules);
 
 var app = builder.Build();
 
