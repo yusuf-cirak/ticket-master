@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 using BuildingBlocks.Application.Messaging;
 
 namespace BuildingBlocks.Persistence.Outbox;

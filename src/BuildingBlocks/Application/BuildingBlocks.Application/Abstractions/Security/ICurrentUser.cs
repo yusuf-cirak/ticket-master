@@ -1,6 +1,6 @@
 using YC.Monad;
 
-namespace BuildingBlocks.Domain.Security;
+namespace BuildingBlocks.Application.Abstractions.Security;
 
 /// <summary>
 /// The authenticated caller, as seen by the application/domain layers — an injectable abstraction over the raw

@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Auditing;
-using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Security;
 using BuildingBlocks.Persistence.EfCore;
 using BuildingBlocks.Persistence.EfCore.Interceptors;
 using Xunit;

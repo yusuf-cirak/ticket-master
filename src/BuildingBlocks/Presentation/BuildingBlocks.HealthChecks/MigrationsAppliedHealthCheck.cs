@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using BuildingBlocks.Domain.Diagnostics;
+using BuildingBlocks.Application.Diagnostics;
 
 namespace BuildingBlocks.HealthChecks;
 

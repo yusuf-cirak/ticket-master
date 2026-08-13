@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.Observability;
 

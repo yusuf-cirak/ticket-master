@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using BuildingBlocks.Domain.Auditing;
-using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Security;
 
 namespace BuildingBlocks.Persistence.EfCore.Interceptors;
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Application.Abstractions.Tenancy;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.Web;
 

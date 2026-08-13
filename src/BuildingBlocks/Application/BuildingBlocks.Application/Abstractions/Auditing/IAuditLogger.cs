@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Domain.Auditing;
+namespace BuildingBlocks.Application.Abstractions.Auditing;
 
 /// <summary>
 /// Append-only audit trail for security-relevant actions (login, role/permission change, sensitive mutations) —

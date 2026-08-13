@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Serilog.Core;
 using Serilog.Events;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.Observability;
 

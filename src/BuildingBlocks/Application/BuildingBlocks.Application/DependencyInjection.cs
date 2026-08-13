@@ -6,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using BuildingBlocks.Application.Abstractions.Locking;
 using BuildingBlocks.Application.Abstractions.Security;
 using BuildingBlocks.Application.Behaviors;
-using BuildingBlocks.Domain.Security;
-
 namespace BuildingBlocks.Application;
 
 public static class DependencyInjection

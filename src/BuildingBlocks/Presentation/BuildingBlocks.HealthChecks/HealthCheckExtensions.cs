@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using BuildingBlocks.Observability;
-using BuildingBlocks.Domain.Diagnostics;
+using BuildingBlocks.Application.Diagnostics;
 
 namespace BuildingBlocks.HealthChecks;
 

@@ -1,7 +1,7 @@
 using BuildingBlocks.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using BuildingBlocks.Domain.Diagnostics;
+using BuildingBlocks.Application.Diagnostics;
 using BuildingBlocks.Web;
 using Xunit;
 

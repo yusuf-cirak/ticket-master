@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Application.Abstractions.Locking;
-using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Security;
 
 namespace BuildingBlocks.Locking;
 

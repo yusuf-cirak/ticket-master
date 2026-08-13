@@ -67,7 +67,11 @@ public class DependencyRuleTests
     {
         // Application only knows Domain. It must not reach into any Infrastructure (persistence/messaging/caching/…)
         // or Presentation (web/security/observability/…) building block — those depend on it, not the reverse.
+        // TelemetryConstants is excluded: it is a compile-time `const string` bag whose OTel instrument-name values
+        // (e.g. "BuildingBlocks.RateLimiting") coincide with layer namespaces, which NetArchTest reads out of IL as a
+        // false-positive "dependency". A constants class references no type, so it cannot depend on any layer.
         var result = Types.InAssembly(ApplicationAsm)
+            .That().DoNotHaveName("TelemetryConstants")
             .ShouldNot()
             .HaveDependencyOnAny([.. InfrastructureNamespaces, .. PresentationNamespaces])
             .GetResult();

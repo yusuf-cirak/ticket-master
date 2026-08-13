@@ -1,6 +1,6 @@
 using System.Diagnostics.Metrics;
 using System.Threading;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.RateLimiting;
 

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.Observability;
 

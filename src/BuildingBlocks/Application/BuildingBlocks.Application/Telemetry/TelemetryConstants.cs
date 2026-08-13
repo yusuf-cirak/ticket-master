@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Domain.Observability;
+namespace BuildingBlocks.Application.Telemetry;
 
 /// <summary>
 /// Cross-cutting telemetry/correlation names shared across the host defaults (the HTTP boundary) and the

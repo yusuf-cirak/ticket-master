@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using BuildingBlocks.Domain.Diagnostics;
+using BuildingBlocks.Application.Diagnostics;
 
 namespace BuildingBlocks.Persistence.EfCore;
 

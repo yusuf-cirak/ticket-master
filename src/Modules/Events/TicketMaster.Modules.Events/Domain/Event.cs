@@ -2,6 +2,7 @@ using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Errors;
 using BuildingBlocks.Domain.Tenancy;
 using EntityFrameworkCore.Projectables;
+using TicketMaster.Modules.Events.Domain.Events;
 using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Domain;
@@ -56,6 +57,8 @@ public sealed class Event : AggregateRoot<EventId>, ITenantOwned
         if (capacity < 1)
             return Error.Create("event.capacity_invalid", "Capacity must be a positive number.", 400);
 
-        return new Event(EventId.New(), name.Trim(), venue.Trim(), startsOn, capacity);
+        var scheduled = new Event(EventId.New(), name.Trim(), venue.Trim(), startsOn, capacity);
+        scheduled.Raise(new EventScheduledDomainEvent(scheduled.Id, scheduled.Name, scheduled.StartsOn, scheduled.Capacity));
+        return scheduled;
     }
 }

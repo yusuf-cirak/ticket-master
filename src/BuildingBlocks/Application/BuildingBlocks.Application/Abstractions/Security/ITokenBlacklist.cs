@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Domain.Security;
+namespace BuildingBlocks.Application.Abstractions.Security;
 
 /// <summary>
 /// Revocation list for still-valid-but-cancelled access tokens (logout / forced sign-out). A token is revoked by its

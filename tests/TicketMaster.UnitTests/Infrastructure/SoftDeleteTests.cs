@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Domain;
-using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Security;
 using BuildingBlocks.Persistence.EfCore.Interceptors;
 using Xunit;
 

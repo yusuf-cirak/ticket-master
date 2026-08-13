@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using BuildingBlocks.Domain.Auditing;
-using BuildingBlocks.Domain.Security;
+using BuildingBlocks.Application.Abstractions.Auditing;
+using BuildingBlocks.Application.Abstractions.Security;
 
 namespace BuildingBlocks.Security;
 

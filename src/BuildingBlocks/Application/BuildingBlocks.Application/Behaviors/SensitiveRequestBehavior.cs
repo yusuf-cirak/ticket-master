@@ -1,6 +1,5 @@
 using MediatR;
 using BuildingBlocks.Application.Abstractions.Security;
-using BuildingBlocks.Domain.Security;
 using YC.Monad;
 
 namespace BuildingBlocks.Application.Behaviors;

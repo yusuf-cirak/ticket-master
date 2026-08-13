@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using MassTransit;
-using BuildingBlocks.Domain.Observability;
+using BuildingBlocks.Application.Telemetry;
 
 namespace BuildingBlocks.Messaging.Kafka;
 

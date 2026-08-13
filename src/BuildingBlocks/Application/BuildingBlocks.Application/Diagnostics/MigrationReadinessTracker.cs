@@ -1,4 +1,4 @@
-namespace BuildingBlocks.Domain.Diagnostics;
+namespace BuildingBlocks.Application.Diagnostics;
 
 /// <summary>
 /// Tracks whether every module's EF migrations have been applied at startup. Each module registers its
