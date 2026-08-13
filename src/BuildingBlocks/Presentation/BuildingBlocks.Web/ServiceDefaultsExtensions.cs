@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using BuildingBlocks.Application.Http;
 using BuildingBlocks.HealthChecks;
 using BuildingBlocks.Observability;
 using BuildingBlocks.Security;
@@ -42,6 +44,7 @@ public static class ServiceDefaultsExtensions
         builder.AddJwtAuthentication(options.Jwt); // JWT bearer authN + secure-by-default authZ + scope handler
         builder.AddCurrentUser(); // ICurrentUser over the ambient principal (application/domain-facing)
         builder.Services.AddTenancy(); // ITenantContext + resolver chain (claim → header) for multi-tenant scoping
+        builder.Services.AddHttpContextAccessor(); // backs ThreadHttpContextAccessor (ambient pagination etc.)
         builder.AddAuditLogging(); // IAuditLogger → structured audit trail on the OTel pipeline
         builder.AddDefaultHealthChecks(options.HealthChecks);
 
@@ -53,6 +56,9 @@ public static class ServiceDefaultsExtensions
         /// <summary>Pipeline defaults: establish + echo the correlation id (X-Correlation-ID). Call first.</summary>
         public WebApplication UseServiceDefaults()
         {
+            // Capture the DI HttpContext accessor so ThreadHttpContextAccessor can reach the ambient request statically.
+            ThreadHttpContextAccessor.Configure(app.Services.GetRequiredService<IHttpContextAccessor>());
+
             // Forwarded headers first: every downstream component (logging, rate limiter, auth) sees the real
             // client IP and request scheme, not the edge proxy's.
             app.UseForwardedHeaders();

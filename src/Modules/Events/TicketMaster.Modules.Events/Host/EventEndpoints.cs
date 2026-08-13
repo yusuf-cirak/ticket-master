@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using BuildingBlocks.Application.Pagination;
 using BuildingBlocks.Web;
 using TicketMaster.Modules.Events.Application.Commands;
 using TicketMaster.Modules.Events.Application.Queries;
@@ -29,9 +28,9 @@ public static class EventEndpoints
                 : result.ToApiResult();
         }).RequireIdempotency();
 
-        group.MapGet("/", async (int? page, int? pageSize, ISender sender) =>
-            Results.Ok(await sender.Send(
-                new ListEventsQuery.Query(new PageRequest(page ?? 1, pageSize ?? PageRequest.DefaultPageSize)))));
+        // page/pageSize are read from the query string by ToPagedResultAsync() — the endpoint threads nothing.
+        group.MapGet("/", async (ISender sender) =>
+            Results.Ok(await sender.Send(new ListEventsQuery.Query())));
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
             (await sender.Send(new GetEventQuery.Query(id))).ToApiResult());

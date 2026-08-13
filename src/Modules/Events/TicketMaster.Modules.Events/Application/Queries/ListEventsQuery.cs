@@ -10,7 +10,7 @@ namespace TicketMaster.Modules.Events.Application.Queries;
 /// <see cref="PaginationExtensions.ToPagedResultAsync"/> helper.</summary>
 public static class ListEventsQuery
 {
-    public sealed record Query(PageRequest Page) : IRequest<PagedResult<Item>>;
+    public sealed record Query() : IRequest<PagedResult<Item>>;
 
     // Id kept as EventId so EF selects the converted column directly (projecting .Value doesn't translate); the Vogen
     // System.Text.Json converter serializes it back to a plain GUID on the wire. IsLargeVenue is a [Projectable] member
@@ -23,6 +23,6 @@ public static class ListEventsQuery
             db.Events
                 .OrderByDescending(e => e.StartsOn)
                 .Select(e => new Item(e.Id, e.Name, e.Venue, e.StartsOn, e.Capacity, e.IsLargeVenue))
-                .ToPagedResultAsync(request.Page, cancellationToken);
+                .ToPagedResultAsync(cancellationToken);
     }
 }
