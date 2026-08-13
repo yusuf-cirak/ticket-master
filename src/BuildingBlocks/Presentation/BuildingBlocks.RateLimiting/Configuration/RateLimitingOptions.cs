@@ -17,6 +17,13 @@ public sealed class RateLimitingOptions
     public string KeyPrefix { get; set; }
 
     /// <summary>
+    /// Distributed mode only: put a per-node in-memory limiter (cap = the global limit) in front of the Redis limiter,
+    /// so a single-node flood is shed locally without a Redis round-trip. Redis stays authoritative; the local tier
+    /// never rejects traffic Redis would allow. Escape hatch — set <c>false</c> to hit Redis on every request.
+    /// </summary>
+    public bool LocalPreLimit { get; set; } = true;
+
+    /// <summary>
     /// Claim type that carries the caller's rate-limit tier (only honored from a trusted internal auth scheme).
     /// Product-neutral default; override to match your IdP's namespaced claim.
     /// </summary>

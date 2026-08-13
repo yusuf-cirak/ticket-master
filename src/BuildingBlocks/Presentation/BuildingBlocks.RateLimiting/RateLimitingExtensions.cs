@@ -68,7 +68,9 @@ public static class RateLimitingExtensions
         }
         else
         {
-            builder.Services.AddSingleton<IBurstBanStore, RedisBurstBanStore>();
+            builder.Services.AddMemoryCache(); // backs the HybridBurstBanStore local mirror (idempotent)
+            builder.Services.AddSingleton<IBurstBanStore, HybridBurstBanStore>();
+            builder.Services.AddHostedService<BurstBanSubscriber>(); // mirrors pub/sub bans into the local cache
         }
 
         // Layer 2 — system-wide adaptive admission control (AIMD). Enforcement is ALWAYS the in-process gate; the
@@ -116,6 +118,7 @@ public static class RateLimitingExtensions
         var mux = services.GetRequiredService<IConnectionMultiplexer>();
         var partitioner = services.GetRequiredService<PrincipalPartitioner>();
         var store = services.GetRequiredService<RateLimitPolicyStore>();
+        var options = services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RateLimitingOptions>>().Value;
 
         var (principalId, tier) = partitioner.ResolvePrincipal(httpContext);
         var policy = store.Resolve(policyName, httpContext, principalId, tier);
@@ -131,6 +134,11 @@ public static class RateLimitingExtensions
             RateLimitingMeter.Fallback.Add(1);
             return LocalFallback(key, policy);
         }
+
+        // Two-tier: a per-node local limiter (cap = global) fronts the Redis limiter so single-node floods never
+        // reach Redis. Redis stays authoritative for the true cross-node count.
+        if (options.LocalPreLimit)
+            return RateLimitPartition.Get(key, _ => new TwoTierRateLimiter(policy, key, mux));
 
         if (policy.SegmentsPerWindow > 1)
             return RedisRateLimitPartition.GetSlidingWindowRateLimiter(key, _ => new RedisSlidingWindowRateLimiterOptions

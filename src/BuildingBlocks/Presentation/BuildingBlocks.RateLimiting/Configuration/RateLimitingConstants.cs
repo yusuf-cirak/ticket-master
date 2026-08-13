@@ -40,4 +40,7 @@ public static class RateLimitingConstants
 
     /// <summary>Key prefix for local (in-memory) burst-ban entries, namespacing them within the shared IMemoryCache.</summary>
     internal const string BanCacheKeyPrefix = "ratelimit:ban:";
+
+    /// <summary>Redis pub/sub channel suffix (appended to the key prefix) that broadcasts burst bans to every node.</summary>
+    internal const string BanChannelSuffix = ":ban:events";
 }

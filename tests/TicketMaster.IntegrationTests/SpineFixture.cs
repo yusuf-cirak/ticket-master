@@ -8,6 +8,7 @@ using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.Kafka;
 using Testcontainers.PostgreSql;
@@ -152,6 +153,10 @@ public sealed class SpineFixture : IAsyncLifetime
                 // Standalone Redis for the rate limiter (no Sentinel in tests).
                 host.UseSetting("Redis:Mode", "Standalone");
                 host.UseSetting("Redis:ConnectionString", RedisConnectionString);
+                // Keep the rate limiter Redis-authoritative in tests so a FlushDatabase fully resets it. The two-tier
+                // local pre-limiter (prod default) keeps per-node window state that FlushDatabase can't reach, which
+                // would leak across the assembly's shared host; it is covered by unit tests instead.
+                host.UseSetting("RateLimiting:LocalPreLimit", "false");
                 // No SigNoz in the test/CI environment — don't spin up OTLP exporters against a dead
                 // localhost:4317 (avoids connection-refused noise and a flush delay on shutdown).
                 host.UseSetting("OTEL_SDK_DISABLED", "true");
@@ -186,6 +191,11 @@ public sealed class SpineFixture : IAsyncLifetime
             $"{RedisConnectionString},allowAdmin=true");
         foreach (var endpoint in mux.GetEndPoints())
             await mux.GetServer(endpoint).FlushDatabaseAsync();
+
+        // The burst-ban mirror now lives in the host's local IMemoryCache (not Redis), so flushing Redis alone would
+        // leave a prior test's ban visible. Clear it too, keeping rate-limit-sensitive tests isolated.
+        if (Factory?.Services.GetService<IMemoryCache>() is MemoryCache memoryCache)
+            memoryCache.Clear();
     }
 
     public async Task DisposeAsync()

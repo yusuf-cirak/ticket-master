@@ -1,6 +1,4 @@
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
 
 namespace BuildingBlocks.RateLimiting;
 
@@ -45,49 +43,5 @@ internal sealed class LocalBurstBanStore(IMemoryCache cache, TimeProvider clock)
         // Absolute expiration = ban duration → MemoryCache evicts the entry when the ban lapses (no idle leak).
         cache.Set(CacheKey(key), clock.GetUtcNow().Add(duration), absoluteExpirationRelativeToNow: duration);
         return Task.CompletedTask;
-    }
-}
-
-/// <summary>
-/// Redis-backed ban store (used in <see cref="RateLimitingMode.Distributed"/>). The ban is a plain key with a TTL:
-/// presence ⇒ banned, PTTL ⇒ remaining. FAILS OPEN — a Redis outage never turns into a hard 429 (GetRemaining
-/// returns "not banned", Ban is a no-op).
-/// </summary>
-internal sealed class RedisBurstBanStore(IConnectionMultiplexer mux, IOptions<RateLimitingOptions> options) : IBurstBanStore
-{
-    private string Prefix => options.Value.KeyPrefix ?? "app";
-
-    private RedisKey BanKey(string key) => $"{Prefix}:ban:{key}";
-
-    public async Task<TimeSpan?> GetRemainingBanAsync(string key, CancellationToken ct)
-    {
-        if (!mux.IsConnected)
-            return null; // fail-open
-
-        try
-        {
-            var ttl = await mux.GetDatabase().KeyTimeToLiveAsync(BanKey(key));
-            return ttl is { } t && t > TimeSpan.Zero ? t : null;
-        }
-        catch (RedisException)
-        {
-            return null; // fail-open
-        }
-    }
-
-    public async Task BanAsync(string key, TimeSpan duration, CancellationToken ct)
-    {
-        if (!mux.IsConnected)
-            return; // fail-open
-
-        try
-        {
-            // Overwrite so a repeat breach re-arms the full duration.
-            await mux.GetDatabase().StringSetAsync(BanKey(key), "1", duration);
-        }
-        catch (RedisException)
-        {
-            // fail-open — no-op
-        }
     }
 }
