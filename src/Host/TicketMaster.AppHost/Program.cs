@@ -13,6 +13,7 @@ using TicketMaster.Modules.Iam;
 using TicketMaster.Modules.Events;
 using BuildingBlocks.Persistence.Outbox;
 using BuildingBlocks.Security.Authorization;
+using TicketMaster.AppHost;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,11 @@ builder.AddModules(m => m
     .Add<IamModule>()
     .Add<EventsModule>());
 builder.Services.AddOpenApi();
+
+// Source-gen JSON metadata first, reflection fallback second — precompiled metadata for the hot boundary DTOs
+// without losing the shared runtime JSON contract (AddJsonDefaults) or breaking on unlisted types.
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o =>
+    o.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonContext.Default));
 
 var bootstrap = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092";
 
