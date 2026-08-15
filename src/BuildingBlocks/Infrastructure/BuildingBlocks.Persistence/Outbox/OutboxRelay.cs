@@ -42,12 +42,13 @@ public sealed class ClaimedOutboxMessage
 }
 
 /// <summary>
-/// Publishes a claimed outbox row to the broker. The polling relay calls this <b>outside any database transaction</b>,
-/// so an implementation must never assume an ambient DB connection. The Kafka implementation lives in the messaging
-/// block and produces the exact same topic/key/value/headers Debezium's outbox router would, so consumers can't tell
-/// the two relays apart.
+/// Publishes a claimed batch of outbox rows to the broker in one pipelined pass and returns the ids that were
+/// acknowledged — the caller marks only those processed; the rest keep their lease and are retried. The polling relay
+/// calls this <b>outside any database transaction</b>, so an implementation must never assume an ambient DB connection.
+/// The Kafka implementation lives in the messaging block and produces the exact same topic/key/value/headers Debezium's
+/// outbox router would, so consumers can't tell the two relays apart.
 /// </summary>
 public interface IOutboxEventPublisher
 {
-    Task PublishAsync(ClaimedOutboxMessage message, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Guid>> PublishBatchAsync(IReadOnlyList<ClaimedOutboxMessage> messages, CancellationToken cancellationToken);
 }

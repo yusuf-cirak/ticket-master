@@ -90,16 +90,22 @@ public sealed class OutboxPollingTest(SpineFixture fixture)
     private sealed class RecordingPublisher : IOutboxEventPublisher
     {
         public ConcurrentBag<ClaimedOutboxMessage> Published { get; } = new();
-        public Task PublishAsync(ClaimedOutboxMessage message, CancellationToken cancellationToken)
+        public Task<IReadOnlyList<Guid>> PublishBatchAsync(IReadOnlyList<ClaimedOutboxMessage> messages, CancellationToken cancellationToken)
         {
-            Published.Add(message);
-            return Task.CompletedTask;
+            var ids = new List<Guid>(messages.Count);
+            foreach (var message in messages)
+            {
+                Published.Add(message);
+                ids.Add(message.Id);
+            }
+            return Task.FromResult<IReadOnlyList<Guid>>(ids);
         }
     }
 
     private sealed class FailingPublisher : IOutboxEventPublisher
     {
-        public Task PublishAsync(ClaimedOutboxMessage message, CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("broker down");
+        // Models a broker-down poll: nothing is acknowledged, so every claimed row keeps its lease and is retried.
+        public Task<IReadOnlyList<Guid>> PublishBatchAsync(IReadOnlyList<ClaimedOutboxMessage> messages, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Guid>>([]);
     }
 }

@@ -67,20 +67,10 @@ public sealed class OutboxPollingService<TContext>(
         if (claimed.Count == 0)
             return 0;
 
-        // Publish outside any transaction — no DB connection is held during the broker round-trips.
-        var publishedIds = new List<Guid>(claimed.Count);
-        foreach (var message in claimed)
-        {
-            try
-            {
-                await publisher.PublishAsync(message, ct);
-                publishedIds.Add(message.Id);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Outbox publish failed for {Id}; it stays leased and is retried later", message.Id);
-            }
-        }
+        // Publish outside any transaction — no DB connection is held during the broker round-trips. The batch is
+        // pipelined (all rows enqueued, then the acks harvested), so a 100-row batch is a few produce requests, not
+        // 100 blocking round-trips. Only the acknowledged ids come back; the rest keep their lease and retry.
+        var publishedIds = await publisher.PublishBatchAsync(claimed, ct);
 
         if (publishedIds.Count > 0)
             await CompleteAsync(db, publishedIds, ct);
@@ -107,7 +97,7 @@ public sealed class OutboxPollingService<TContext>(
         return db.Database.SqlQueryRaw<ClaimedOutboxMessage>(sql, _options.LeaseDuration, _options.BatchSize).ToListAsync(ct);
     }
 
-    private Task CompleteAsync(TContext db, List<Guid> ids, CancellationToken ct)
+    private Task CompleteAsync(TContext db, IReadOnlyList<Guid> ids, CancellationToken ct)
     {
         var sql = $"UPDATE {schema}.outbox SET processed_on = now(), locked_until = NULL WHERE id = ANY({{0}})";
         return db.Database.ExecuteSqlRawAsync(sql, [ids.ToArray()], ct);

@@ -1,8 +1,10 @@
 #nullable enable
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using Confluent.Kafka;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using BuildingBlocks.Messaging.Kafka;
 using BuildingBlocks.Persistence.Outbox;
 using Xunit;
@@ -52,6 +54,22 @@ public class KafkaOutboxPublisherTests
 
         message.Headers.TryGetLastBytes(MessageHeaders.CorrelationId, out _).Should().BeFalse();
         message.Headers.TryGetLastBytes(MessageHeaders.TraceParent, out _).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task CollectSucceeded_returns_only_acknowledged_ids_so_failed_rows_stay_leased()
+    {
+        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+        var inflight = new (Guid, Task)[]
+        {
+            (g1, Task.CompletedTask),
+            (g2, Task.FromException(new Exception("broker unavailable"))), // this row's produce failed
+            (g3, Task.CompletedTask)
+        };
+
+        var published = await KafkaOutboxEventPublisher.CollectSucceededAsync(inflight, NullLogger.Instance);
+
+        published.Should().Equal(g1, g3); // g2 omitted → not marked processed → retried after its lease lapses
     }
 
     private static string Header(Message<string, string> message, string key) =>
