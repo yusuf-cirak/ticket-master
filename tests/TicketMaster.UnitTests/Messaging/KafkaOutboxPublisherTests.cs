@@ -69,7 +69,8 @@ public class KafkaOutboxPublisherTests
 
         var published = await KafkaOutboxEventPublisher.CollectSucceededAsync(inflight, NullLogger.Instance);
 
-        published.Should().Equal(g1, g3); // g2 omitted → not marked processed → retried after its lease lapses
+        // Concurrent completion order isn't guaranteed (published is a ConcurrentBag), only membership.
+        published.Should().BeEquivalentTo([g1, g3]); // g2 omitted → not marked processed → retried after its lease lapses
     }
 
     private static string Header(Message<string, string> message, string key) =>

@@ -1,4 +1,6 @@
 #nullable enable
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Text;
 using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,27 +36,30 @@ internal sealed class KafkaOutboxEventPublisher(
     }
 
     /// <summary>
-    /// Awaits each delivery report and returns the ids that were acknowledged. A failed produce is logged and its id
+    /// Awaits every delivery report concurrently and returns the ids that were acknowledged. Each delivery is awaited
+    /// on its own — not one-after-another in list order — so a fast completion is recorded as soon as it happens
+    /// instead of behind whichever row happens to sit earlier in the batch. A failed produce is logged and its id
     /// omitted, so the row keeps its lease and is retried later (at-least-once; the consumer inbox dedups duplicates).
     /// </summary>
     internal static async Task<IReadOnlyList<Guid>> CollectSucceededAsync(
         IReadOnlyList<(Guid Id, Task Delivery)> inflight, ILogger logger)
     {
-        var published = new List<Guid>(inflight.Count);
-        foreach (var (id, delivery) in inflight)
+        var published = new ConcurrentBag<Guid>(); // safe for the concurrent Add calls below
+
+        await Task.WhenAll(inflight.Select(async item =>
         {
             try
             {
-                await delivery;
-                published.Add(id);
+                await item.Delivery;
+                published.Add(item.Id);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Outbox publish failed for {Id}; it stays leased and is retried later", id);
+                logger.LogWarning(ex, "Outbox publish failed for {Id}; it stays leased and is retried later", item.Id);
             }
-        }
+        }));
 
-        return published;
+        return published.ToList();
     }
 
     /// <summary>Builds the Debezium-parity topic + message; pure, so the wire format can be asserted without a broker.</summary>
