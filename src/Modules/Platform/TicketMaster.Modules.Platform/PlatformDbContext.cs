@@ -20,6 +20,9 @@ public sealed class PlatformDbContext(DbContextOptions<PlatformDbContext> option
         b.Entity<OutboxMessage>(e =>
         {
             e.Property(x => x.Payload).HasColumnType("jsonb");
+            // Partial index for the polling claim (WHERE processed_on IS NULL ORDER BY occurred_on): index scan
+            // instead of a full seq-scan + sort every poll.
+            e.HasIndex(x => x.OccurredOn).HasFilter("processed_on IS NULL");
         });
 
         b.Entity<InboxMessage>(e =>

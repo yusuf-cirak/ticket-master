@@ -101,6 +101,10 @@ namespace TicketMaster.Modules.Platform.Migrations
                     b.HasKey("Id")
                         .HasName("pk_outbox");
 
+                    b.HasIndex("OccurredOn")
+                        .HasDatabaseName("ix_outbox_occurred_on")
+                        .HasFilter("processed_on IS NULL");
+
                     b.ToTable("outbox", "platform");
                 });
 #pragma warning restore 612, 618

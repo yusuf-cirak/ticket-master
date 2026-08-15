@@ -26,8 +26,14 @@ public sealed class EventsDbContext(DbContextOptions<EventsDbContext> options, I
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventsDbContext).Assembly);
 
-        // Only what the snake_case convention can't infer: the Postgres jsonb payload column.
-        modelBuilder.Entity<OutboxMessage>(e => e.Property(x => x.Payload).HasColumnType("jsonb"));
+        // Only what the snake_case convention can't infer: the Postgres jsonb payload column + the polling-claim index.
+        modelBuilder.Entity<OutboxMessage>(e =>
+        {
+            e.Property(x => x.Payload).HasColumnType("jsonb");
+            // The polling relay claims WHERE processed_on IS NULL ORDER BY occurred_on. A partial index on the pending
+            // rows keeps it tiny and turns the per-poll seq-scan + sort into an index scan.
+            e.HasIndex(x => x.OccurredOn).HasFilter("processed_on IS NULL");
+        });
 
         // Global filter: every query on a tenant-owned entity (Event) is scoped to CurrentTenantId automatically.
         modelBuilder.ApplyTenantFilters(this);

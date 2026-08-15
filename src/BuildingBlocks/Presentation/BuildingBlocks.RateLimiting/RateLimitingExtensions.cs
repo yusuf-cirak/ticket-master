@@ -27,6 +27,7 @@ public static class RateLimitingExtensions
 {
     private const string BurstPolicy = RateLimitingConstants.Policies.Burst;
     private const string RetryAfterItemKey = "__ratelimit_retry_after";
+    private const string ResolvedPrincipalKey = "__ratelimit_principal"; // (principalId, routeScope) stashed by BuildPartition
 
     public static WebApplicationBuilder AddRateLimiting(this WebApplicationBuilder builder, Action<RateLimitingOptions> configure = null)
     {
@@ -121,10 +122,14 @@ public static class RateLimitingExtensions
         var options = services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RateLimitingOptions>>().Value;
 
         var (principalId, tier) = partitioner.ResolvePrincipal(httpContext);
-        var policy = store.Resolve(policyName, httpContext, principalId, tier);
         // Key on the matched route TEMPLATE, not the raw URL path: /api/items/1 and /api/items/2 must share a
         // bucket, otherwise path iteration multiplies a principal's effective limit.
-        var key = partitioner.PartitionKey(policyName, principalId, PrincipalPartitioner.RouteScope(httpContext));
+        var routeScope = PrincipalPartitioner.RouteScope(httpContext);
+        // Stash for the burst-ban filter (runs later, same request): it reuses this instead of re-resolving the
+        // principal — the hottest path pays ResolvePrincipal (claim scan + SHA-256) once, not twice.
+        httpContext.Items[ResolvedPrincipalKey] = (principalId, routeScope);
+        var policy = store.Resolve(policyName, httpContext, principalId, tier);
+        var key = partitioner.PartitionKey(policyName, principalId, routeScope);
 
         // Retry-After hint for OnRejected: a window-based policy frees a permit after at most one window.
         httpContext.Items[RetryAfterItemKey] = policy.Window;
@@ -181,6 +186,11 @@ public static class RateLimitingExtensions
     // Shared by OnRejected (arm) and the ban middleware (enforce).
     internal static string BurstBanScope(HttpContext context)
     {
+        // Reuse what BuildPartition resolved this request (the limiter runs before this filter). Only re-resolve if
+        // the limiter didn't run for this endpoint (defensive — burst ban and the limiter are always paired today).
+        if (context.Items.TryGetValue(ResolvedPrincipalKey, out var stashed) && stashed is (string principal, string route))
+            return $"{principal}|{route}";
+
         var partitioner = context.RequestServices.GetRequiredService<PrincipalPartitioner>();
         var (principalId, _) = partitioner.ResolvePrincipal(context);
         return $"{principalId}|{PrincipalPartitioner.RouteScope(context)}";

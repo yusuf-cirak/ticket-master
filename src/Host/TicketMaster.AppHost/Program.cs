@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Scalar.AspNetCore;
-using BuildingBlocks.Security;
 using BuildingBlocks.Modularity;
 using BuildingBlocks.Configuration.Secrets;
 using BuildingBlocks.Caching.FusionCache;

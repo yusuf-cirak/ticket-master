@@ -1,5 +1,6 @@
+using System.Buffers.Binary;
 using System.Security.Claims;
-using System.Text.Json;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -60,7 +61,7 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
         var cacheKey = $"idempotency:{scope}:{http.Request.Method}:{http.Request.Path}:{key}";
 
         if (await cache.GetAsync(cacheKey, http.RequestAborted) is { } cached)
-            return new ReplayedResult(JsonSerializer.Deserialize<StoredResponse>(cached)!);
+            return new ReplayedResult(cached);
 
         return await CaptureAndStore(context, next, cache, cacheKey);
     }
@@ -91,10 +92,10 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
         // Only cache a successful, reasonably sized response — errors must remain retryable.
         if (http.Response.StatusCode is >= 200 and < 300 && buffer.Length <= MaxStoredBodyBytes)
         {
-            var record = new StoredResponse(http.Response.StatusCode, http.Response.ContentType, buffer.ToArray());
+            buffer.TryGetBuffer(out var body); // MemoryStream's backing array — no extra copy
             await cache.SetAsync(
                 cacheKey,
-                JsonSerializer.SerializeToUtf8Bytes(record),
+                Encode(http.Response.StatusCode, http.Response.ContentType, body),
                 new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = Ttl },
                 http.RequestAborted);
         }
@@ -112,17 +113,33 @@ internal sealed class IdempotencyEndpointFilter(ILogger<IdempotencyEndpointFilte
         return key.Length is > 0 and <= MaxKeyLength;
     }
 
-    private sealed record StoredResponse(int StatusCode, string ContentType, byte[] Body);
+    // Binary cache blob: [statusCode i32][contentTypeLen i32][contentType utf8][body]. Replaces JSON-wrapping a
+    // record whose byte[] body was base64-encoded (~33% larger + reflection serialize) on the idempotent-write path.
+    private static byte[] Encode(int statusCode, string contentType, ArraySegment<byte> body)
+    {
+        var contentTypeBytes = Encoding.UTF8.GetBytes(contentType ?? string.Empty);
+        var blob = new byte[8 + contentTypeBytes.Length + body.Count];
+        BinaryPrimitives.WriteInt32LittleEndian(blob, statusCode);
+        BinaryPrimitives.WriteInt32LittleEndian(blob.AsSpan(4), contentTypeBytes.Length);
+        contentTypeBytes.CopyTo(blob.AsSpan(8));
+        body.AsSpan().CopyTo(blob.AsSpan(8 + contentTypeBytes.Length));
+        return blob;
+    }
 
-    /// <summary>Writes a previously-stored response, tagged with the replay header.</summary>
-    private sealed class ReplayedResult(StoredResponse record) : IResult
+    /// <summary>Writes a previously-stored response (see <see cref="Encode"/>), tagged with the replay header.</summary>
+    private sealed class ReplayedResult(byte[] blob) : IResult
     {
         public async Task ExecuteAsync(HttpContext httpContext)
         {
-            httpContext.Response.StatusCode = record.StatusCode;
-            httpContext.Response.ContentType = record.ContentType;
-            httpContext.Response.Headers[ReplayedHeader] = "true";
-            await httpContext.Response.Body.WriteAsync(record.Body, httpContext.RequestAborted);
+            var statusCode = BinaryPrimitives.ReadInt32LittleEndian(blob);
+            var contentTypeLength = BinaryPrimitives.ReadInt32LittleEndian(blob.AsSpan(4));
+
+            var response = httpContext.Response;
+            response.StatusCode = statusCode;
+            if (contentTypeLength > 0)
+                response.ContentType = Encoding.UTF8.GetString(blob, 8, contentTypeLength);
+            response.Headers[ReplayedHeader] = "true";
+            await response.Body.WriteAsync(blob.AsMemory(8 + contentTypeLength), httpContext.RequestAborted);
         }
     }
 }

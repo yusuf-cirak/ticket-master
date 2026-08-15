@@ -81,6 +81,10 @@ namespace TicketMaster.Modules.Events.Migrations
                     b.HasKey("Id")
                         .HasName("pk_outbox");
 
+                    b.HasIndex("OccurredOn")
+                        .HasDatabaseName("ix_outbox_occurred_on")
+                        .HasFilter("processed_on IS NULL");
+
                     b.ToTable("outbox", "events");
                 });
 
@@ -114,6 +118,9 @@ namespace TicketMaster.Modules.Events.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_events");
+
+                    b.HasIndex("TenantId", "StartsOn")
+                        .HasDatabaseName("ix_events_tenant_id_starts_on");
 
                     b.ToTable("events", "events");
                 });
