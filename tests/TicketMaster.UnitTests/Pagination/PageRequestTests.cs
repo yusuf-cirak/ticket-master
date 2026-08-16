@@ -7,6 +7,7 @@ using Xunit;
 
 namespace TicketMaster.UnitTests.Pagination;
 
+[Collection(ThreadHttpContextAccessorCollection.Name)]
 public class PageRequestTests
 {
     [Fact]
