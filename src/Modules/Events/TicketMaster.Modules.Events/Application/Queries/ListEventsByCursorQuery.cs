@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Pagination;
 using BuildingBlocks.Persistence.EfCore;
 using TicketMaster.Modules.Events.Domain;
@@ -19,7 +19,7 @@ public static class ListEventsByCursorQuery
 
     public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, Result<CursorResult<ListEventsQuery.Item>>>
     {
-        public async Task<Result<CursorResult<ListEventsQuery.Item>>> Handle(Query request, CancellationToken cancellationToken)
+        public async ValueTask<Result<CursorResult<ListEventsQuery.Item>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var parsed = CursorRequest.Create();
             if (!parsed.IsSuccess)

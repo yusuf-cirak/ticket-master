@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using BuildingBlocks.Domain;
 

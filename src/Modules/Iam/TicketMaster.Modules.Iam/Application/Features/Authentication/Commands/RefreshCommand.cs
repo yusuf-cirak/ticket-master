@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ public static class RefreshCommand
         TimeProvider timeProvider,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<Command, Result<AuthTokensResponse>>
     {
-        public async Task<Result<AuthTokensResponse>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<Result<AuthTokensResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             var now = timeProvider.GetUtcNow();
             var hash = tokenService.HashRefreshToken(request.RefreshToken ?? string.Empty);

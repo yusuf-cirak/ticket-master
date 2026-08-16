@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Abstractions.Security;
 using BuildingBlocks.Application.Behaviors;
 using YC.Monad;
@@ -12,12 +12,12 @@ namespace TicketMaster.UnitTests.Application;
 
 public class SensitiveRequestBehaviorTests
 {
-    private sealed record SensitiveCommand : ISensitiveRequest;
+    private sealed record SensitiveCommand : ISensitiveRequest, IMessage;
 
-    private static RequestHandlerDelegate<Result<string>> Handler(Action onCalled)
-        => () => { onCalled(); return Task.FromResult(Result.Success("ok")); };
+    private static MessageHandlerDelegate<SensitiveCommand, Result<string>> Handler(Action onCalled)
+        => (request, ct) => { onCalled(); return new ValueTask<Result<string>>(Result.Success("ok")); };
 
-    // Note: the behavior is constrained to ISensitiveRequest (where TRequest : ISensitiveRequest), so MediatR never
+    // Note: the behavior is constrained to ISensitiveRequest (where TRequest : ISensitiveRequest), so Mediator never
     // invokes it for a plain request — there is no runtime pass-through path left to test at this level.
 
     [Fact]
@@ -58,7 +58,7 @@ public class SensitiveRequestBehaviorTests
     }
 
     private static SensitiveRequestBehavior<TRequest, Result<string>> Behavior<TRequest>(bool authenticated, bool revoked)
-        where TRequest : notnull, ISensitiveRequest => new(new FakeUser(authenticated), new FakeBlacklist(revoked));
+        where TRequest : notnull, ISensitiveRequest, IMessage => new(new FakeUser(authenticated), new FakeBlacklist(revoked));
 
     private sealed class FakeUser(bool authenticated) : ICurrentUser
     {

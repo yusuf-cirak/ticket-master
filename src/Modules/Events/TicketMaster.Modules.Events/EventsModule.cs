@@ -15,7 +15,7 @@ namespace TicketMaster.Modules.Events;
 
 /// <summary>
 /// The Events bounded context — a full vertical slice that demonstrates the template's building blocks: a Vogen-keyed
-/// aggregate, MediatR CQRS, snake_case EF, the transactional outbox, streamed pagination, and idempotent writes.
+/// aggregate, Mediator CQRS, snake_case EF, the transactional outbox, streamed pagination, and idempotent writes.
 /// </summary>
 public sealed class EventsModule : IModule
 {

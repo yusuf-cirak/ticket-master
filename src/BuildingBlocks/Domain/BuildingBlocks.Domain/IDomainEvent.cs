@@ -1,9 +1,9 @@
-using MediatR;
+using Mediator;
 
 namespace BuildingBlocks.Domain;
 
 /// <summary>
-/// A domain event. Extends MediatR's <see cref="INotification"/> so it can be published through the mediator
+/// A domain event. Extends Mediator's <see cref="INotification"/> so it can be published through the mediator
 /// to any number of in-process handlers. Prefer the timing-specific <see cref="IPreDomainEvent"/> /
 /// <see cref="IPostDomainEvent"/> markers so the dispatch interceptor knows when to publish it.
 /// </summary>

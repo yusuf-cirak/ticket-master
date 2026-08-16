@@ -1,5 +1,5 @@
 using FluentValidation;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TicketMaster.Modules.Iam.Application.Abstractions;
@@ -29,7 +29,7 @@ public static class LoginCommand
         IAuthTokenIssuer issuer,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<Command, Result<AuthTokensResponse>>
     {
-        public async Task<Result<AuthTokensResponse>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<Result<AuthTokensResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user is null || await userManager.IsLockedOutAsync(user))

@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -9,7 +9,7 @@ using TicketMaster.Modules.Events.Application.Queries;
 namespace TicketMaster.Modules.Events.Host;
 
 /// <summary>
-/// The Events HTTP surface — a thin translation layer: bind, send to MediatR, map the Result. Shows the reusable
+/// The Events HTTP surface — a thin translation layer: bind, send to Mediator, map the Result. Shows the reusable
 /// building blocks in action: idempotent create (<c>Idempotency-Key</c> replay), streamed paged list, RFC9457 errors.
 /// </summary>
 public static class EventEndpoints

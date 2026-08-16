@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Behaviors;
 using BuildingBlocks.Domain.Errors;
 using Xunit;
@@ -12,10 +12,10 @@ namespace TicketMaster.UnitTests.Application;
 
 public class ValidationBehaviorTests
 {
-    private sealed record Command(string Name);
+    private sealed record Command(string Name) : IMessage;
 
-    private static RequestHandlerDelegate<Result<string>> Next(Result<string> value = null)
-        => () => Task.FromResult(value ?? Result.Success("ok"));
+    private static MessageHandlerDelegate<Command, Result<string>> Next(Result<string> value = null)
+        => (request, ct) => new ValueTask<Result<string>>(value ?? Result.Success("ok"));
 
     [Fact]
     public async Task Passes_through_when_no_validators()

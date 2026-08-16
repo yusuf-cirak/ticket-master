@@ -38,7 +38,7 @@ internal sealed class GlobalExceptionHandler(
             return false;
         }
 
-        // Boundary validation failures (from the MediatR ValidationBehavior) → RFC 9457 400 with a field→errors map.
+        // Boundary validation failures (from the Mediator ValidationBehavior) → RFC 9457 400 with a field→errors map.
         if (exception is ValidationException validation)
         {
             logger.LogWarning("Validation failed: {Count} error(s).", validation.Errors.Count());

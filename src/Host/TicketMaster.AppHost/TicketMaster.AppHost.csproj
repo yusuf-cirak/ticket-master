@@ -16,6 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Only the outermost project may install this — it source-generates AddMediator() from every referenced
+         assembly (Events/Iam/Application/etc.); installing it in more than one project in the deployed app conflicts.
+         PrivateAssets=all: analyzer/generator packages flow transitively through a ProjectReference by default, so
+         without this, TicketMaster.IntegrationTests (which references this project) would run the generator a
+         second time and get duplicate-type errors against this project's own already-compiled generated code. -->
+    <PackageReference Include="Mediator.SourceGenerator" PrivateAssets="all" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.Kafka" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
@@ -30,6 +36,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- MSG0005: Mediator warns when a discovered notification (e.g. a domain event) has no registered handler.
+         This repo raises domain events for future extensibility before any subscriber exists — intentional, not a bug. -->
+    <NoWarn>$(NoWarn);MSG0005</NoWarn>
   </PropertyGroup>
 
 </Project>

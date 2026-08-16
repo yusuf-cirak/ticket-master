@@ -1,13 +1,13 @@
 using System.Reflection;
 using FluentValidation;
-using MediatR;
+using Mediator;
 using BuildingBlocks.Domain.Errors;
 using YC.Monad;
 
 namespace BuildingBlocks.Application.Behaviors;
 
 /// <summary>
-/// Boundary input validation as a MediatR pipeline step: before a request reaches its handler, every
+/// Boundary input validation as a Mediator pipeline step: before a request reaches its handler, every
 /// <see cref="IValidator{T}"/> registered for that request type runs. On failure the behavior does NOT throw —
 /// it short-circuits by returning a failed <c>Result</c>/<c>Result&lt;T&gt;</c> carrying a <see cref="ValidationError"/>
 /// (field → messages), which the endpoint result mapper renders as one consistent RFC 9457 400. Requests without a
@@ -16,19 +16,19 @@ namespace BuildingBlocks.Application.Behaviors;
 /// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+    where TRequest : notnull, IMessage
 {
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
     {
         if (!validators.Any())
-            return await next();
+            return await next(request, cancellationToken);
 
         var context = new ValidationContext<TRequest>(request);
         var results = await Task.WhenAll(validators.Select(v => v.ValidateAsync(context, cancellationToken)));
         var failures = results.SelectMany(r => r.Errors).Where(f => f is not null).ToArray();
 
         if (failures.Length == 0)
-            return await next();
+            return await next(request, cancellationToken);
 
         var errors = failures
             .GroupBy(f => f.PropertyName)

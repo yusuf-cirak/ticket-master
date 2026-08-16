@@ -16,6 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Defines Mediator requests/handlers directly — Mediator.SourceGenerator (installed only in AppHost) needs
+         this visible here to compile them, not just transitively via Application's own reference. -->
+    <PackageReference Include="Mediator.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Not PrivateAssets=all: the generated ids reference Vogen.SharedTypes at runtime, so it must flow to output.
          ExcludeAssets=contentFiles: drops Vogen's redundant contentFiles-shipped Vogen.targets (the real one lives
          in buildTransitive/, unaffected) so IDEs stop showing a no-op "Vogen.targets" node under the dependency. -->

@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Module discovery registers MediatR/validators across module assemblies. -->
+    <!-- Module discovery registers validators across module assemblies (Mediator itself is registered in AppHost). -->
     <ProjectReference Include="..\..\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
   </ItemGroup>
 

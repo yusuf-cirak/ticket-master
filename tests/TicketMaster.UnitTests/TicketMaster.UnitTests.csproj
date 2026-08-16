@@ -4,12 +4,20 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
+    <!-- MSG0005: Mediator warns when a discovered notification (e.g. a domain event) has no registered handler.
+         This repo raises domain events for future extensibility before any subscriber exists — intentional, not a bug. -->
+    <NoWarn>$(NoWarn);MSG0005</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Mediator.Abstractions" />
+    <!-- SenderTests.cs builds its own ServiceCollection/ServiceProvider end-to-end (not via WebApplicationFactory),
+         so this compilation needs its own generated AddMediator() — same reasoning as the AppHost install.
+         PrivateAssets=all: don't let the generator flow to any future project that references this test assembly. -->
+    <PackageReference Include="Mediator.SourceGenerator" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="OpenTelemetry" />

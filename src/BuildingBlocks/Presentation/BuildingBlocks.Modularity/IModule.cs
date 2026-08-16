@@ -15,7 +15,7 @@ public interface IModule
     /// <summary>Short module name, for diagnostics/logging (discovery is by type, not by this name).</summary>
     string Name { get; }
 
-    /// <summary>The module assembly — scanned for MediatR handlers and FluentValidation validators.</summary>
+    /// <summary>The module assembly — scanned for Mediator handlers and FluentValidation validators.</summary>
     Assembly Assembly { get; }
 
     /// <summary>Register the module's services (DbContext, repositories, options, consumers, …).</summary>

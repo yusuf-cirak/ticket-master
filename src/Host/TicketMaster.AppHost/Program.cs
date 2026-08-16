@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using Mediator;
 using Scalar.AspNetCore;
+using BuildingBlocks.Application.Behaviors;
 using BuildingBlocks.Modularity;
 using BuildingBlocks.Configuration.Secrets;
 using BuildingBlocks.Caching.FusionCache;
@@ -29,12 +31,27 @@ builder.AddRedisLocking();
 builder.AddAppCache();
 builder.AddRateLimiting();
 
-// Named opt-in; each module's services + endpoints + MediatR/validators are auto-discovered (IModule).
+// Named opt-in; each module's services + endpoints + validators are auto-discovered (IModule).
 builder.AddModules(m => m
     .Add<PlatformModule>()
     .Add<IamModule>()
     .Add<EventsModule>());
 builder.Services.AddOpenApi();
+
+// Mediator (source-generated request/response dispatch) — registered here because Mediator.SourceGenerator can only
+// run in the outermost project; with Assemblies left unset it auto-discovers every handler across every referenced
+// assembly (Events/Iam/Application/…), no assembly list to maintain. Scoped, not the library default Singleton:
+// handlers take scoped EF DbContexts, and a Singleton handler holding one would be a captive-dependency bug.
+builder.Services.AddMediator(options =>
+{
+    options.ServiceLifetime = ServiceLifetime.Scoped;
+    options.PipelineBehaviors =
+    [
+        typeof(SensitiveRequestBehavior<,>), // re-verify caller (if ISensitiveRequest)
+        typeof(ValidationBehavior<,>), // then validate
+        typeof(LockBehavior<,>), // then acquire the distributed lock (if ILockRequest)
+    ];
+});
 
 // Source-gen JSON metadata first, reflection fallback second — precompiled metadata for the hot boundary DTOs
 // without losing the shared runtime JSON contract (AddJsonDefaults) or breaking on unlisted types.

@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Domain.Errors;
 using TicketMaster.Modules.Events.Domain;
@@ -16,7 +16,7 @@ public static class GetEventQuery
 
     public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, Result<Detail>>
     {
-        public async Task<Result<Detail>> Handle(Query request, CancellationToken cancellationToken)
+        public async ValueTask<Result<Detail>> Handle(Query request, CancellationToken cancellationToken)
         {
             var id = EventId.From(request.Id);
             var detail = await db.Events

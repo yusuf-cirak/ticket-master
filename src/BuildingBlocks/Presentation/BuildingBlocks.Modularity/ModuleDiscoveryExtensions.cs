@@ -25,8 +25,9 @@ public static class ModuleDiscoveryExtensions
 {
     /// <summary>
     /// Registers the given modules by type: instantiates each <see cref="IModule"/>, runs its <c>Add</c>, and registers
-    /// MediatR/validators across every module assembly in one pass (so pipeline behaviors are added exactly once). Type-safe
-    /// — no assembly-name magic strings or reflection; the host references each module project directly.
+    /// FluentValidation validators across every module assembly in one pass. Type-safe — no assembly-name magic strings
+    /// or reflection; the host references each module project directly. Mediator itself is registered separately in
+    /// the host's <c>Program.cs</c> (see <c>AddMediator</c>) — its source generator can only run in the outermost project.
     /// </summary>
     /// <example><code>
     /// builder.AddModules(m => m
@@ -48,8 +49,8 @@ public static class ModuleDiscoveryExtensions
             assemblies.Add(module.Assembly);
         }
 
-        // One MediatR/FluentValidation registration spanning every module assembly.
-        builder.Services.AddApplicationMessaging([.. assemblies]);
+        // One FluentValidation registration spanning every module assembly.
+        builder.Services.AddApplicationValidation([.. assemblies]);
         builder.Services.AddSingleton(registry);
         return builder;
     }

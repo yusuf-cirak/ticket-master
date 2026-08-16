@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Pagination;
 using BuildingBlocks.Persistence.EfCore;
 using TicketMaster.Modules.Events.Domain;
@@ -19,10 +19,10 @@ public static class ListEventsQuery
 
     public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, PagedResult<Item>>
     {
-        public Task<PagedResult<Item>> Handle(Query request, CancellationToken cancellationToken) =>
-            db.Events
+        public ValueTask<PagedResult<Item>> Handle(Query request, CancellationToken cancellationToken) =>
+            new(db.Events
                 .OrderByDescending(e => e.StartsOn)
                 .Select(e => new Item(e.Id, e.Name, e.Venue, e.StartsOn, e.Capacity, e.IsLargeVenue))
-                .ToPagedResultAsync(cancellationToken);
+                .ToPagedResultAsync(cancellationToken));
     }
 }

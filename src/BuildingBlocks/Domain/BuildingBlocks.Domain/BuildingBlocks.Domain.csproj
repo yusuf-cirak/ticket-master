@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="YC.Monad" />
-    <!-- Abstractions only (INotification/IRequest) — no MediatR runtime in the domain. -->
-    <PackageReference Include="MediatR.Contracts" />
+    <!-- Abstractions only (INotification/IRequest) — no Mediator runtime/dispatch machinery in the domain. -->
+    <PackageReference Include="Mediator.Abstractions" />
     <!-- Not PrivateAssets=all: generated value objects reference Vogen.SharedTypes at runtime.
          ExcludeAssets=contentFiles: Vogen ships its analyzer-versioning shim redundantly under contentFiles/
          (the load-bearing copy is buildTransitive/Vogen.targets, unaffected) — excluding it stops the IDE's

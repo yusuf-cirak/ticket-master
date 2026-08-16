@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using MediatR;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Auditing;
@@ -91,24 +91,26 @@ public class InterceptorTests
         public void RaisePost() => Raise(new PostEvent());
     }
 
-    private sealed record PreEvent : DomainEvent, IPreDomainEvent;
-    private sealed record PostEvent : DomainEvent, IPostDomainEvent;
+    // internal, not private: Mediator's source-generated dispatch code (same assembly, different top-level type)
+    // needs to see these to compile the "message without a handler" registration it generates for them.
+    internal sealed record PreEvent : DomainEvent, IPreDomainEvent;
+    internal sealed record PostEvent : DomainEvent, IPostDomainEvent;
 
     private sealed class CapturingPublisher : IPublisher
     {
         public List<object> Published { get; } = [];
 
-        public Task Publish(object notification, CancellationToken cancellationToken = default)
+        public ValueTask Publish(object notification, CancellationToken cancellationToken = default)
         {
             Published.Add(notification);
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
+        public ValueTask Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
             where TNotification : INotification
         {
             Published.Add(notification!);
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
     }
 

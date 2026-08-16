@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Abstractions.Security;
 using YC.Monad;
 
@@ -11,9 +11,9 @@ namespace BuildingBlocks.Application.Behaviors;
 /// </summary>
 public sealed class SensitiveRequestBehavior<TRequest, TResponse>(ICurrentUser currentUser, ITokenBlacklist blacklist)
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : ISensitiveRequest
+    where TRequest : notnull, ISensitiveRequest, IMessage
 {
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
     {
         if (!currentUser.IsAuthenticated)
             return ResultFailureFactory<TResponse>.Create(
@@ -23,6 +23,6 @@ public sealed class SensitiveRequestBehavior<TRequest, TResponse>(ICurrentUser c
             return ResultFailureFactory<TResponse>.Create(
                 Error.Create("auth.revoked", "Your session is no longer valid. Please sign in again.", 401));
 
-        return await next();
+        return await next(request, cancellationToken);
     }
 }

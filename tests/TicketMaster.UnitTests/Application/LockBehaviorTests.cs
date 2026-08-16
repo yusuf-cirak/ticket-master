@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Abstractions.Locking;
 using BuildingBlocks.Application.Behaviors;
 using Xunit;
@@ -12,11 +12,11 @@ namespace TicketMaster.UnitTests.Application;
 
 public class LockBehaviorTests
 {
-    private sealed record LockedCommand(string LockKey) : ILockRequest;
+    private sealed record LockedCommand(string LockKey) : ILockRequest, IMessage;
     private sealed record PlainCommand(string LockKey) : ILockRequest;
 
-    private static RequestHandlerDelegate<Result<string>> Handler(Action onCalled)
-        => () => { onCalled(); return Task.FromResult(Result.Success("ok")); };
+    private static MessageHandlerDelegate<LockedCommand, Result<string>> Handler(Action onCalled)
+        => (request, ct) => { onCalled(); return new ValueTask<Result<string>>(Result.Success("ok")); };
 
     [Fact]
     public async Task Lock_acquired_runs_handler()

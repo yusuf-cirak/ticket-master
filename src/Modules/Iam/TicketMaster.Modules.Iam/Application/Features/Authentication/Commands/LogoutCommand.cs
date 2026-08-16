@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Application.Abstractions.Security;
@@ -24,7 +24,7 @@ public static class LogoutCommand
         ITokenService tokenService,
         TimeProvider timeProvider) : IRequestHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var now = timeProvider.GetUtcNow();
 

@@ -1,5 +1,5 @@
 using FluentValidation;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Persistence.Outbox;
 using TicketMaster.Modules.Events.Contracts;
@@ -31,7 +31,7 @@ public static class ScheduleEventCommand
         EventsDbContext db,
         [FromKeyedServices(nameof(EventsDbContext))] IOutboxWriter outbox) : IRequestHandler<Command, Result<Response>>
     {
-        public async Task<Result<Response>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<Result<Response>> Handle(Command request, CancellationToken cancellationToken)
         {
             var scheduled = Event.Schedule(request.Name, request.Venue, request.StartsOn, request.Capacity);
             if (!scheduled.IsSuccess)

@@ -1,30 +1,21 @@
 using System.Reflection;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using BuildingBlocks.Application.Abstractions.Locking;
 using BuildingBlocks.Application.Abstractions.Security;
-using BuildingBlocks.Application.Behaviors;
 namespace BuildingBlocks.Application;
 
 public static class DependencyInjection
 {
-    // Registers MediatR (in-process request/response messaging) scanning the given assemblies for
-    // IRequestHandler<,> implementations, the validation pipeline behavior, and every FluentValidation
-    // IValidator<T> found in those same assemblies — so boundary validation runs automatically for any
-    // request that has a validator.
-    public static IServiceCollection AddApplicationMessaging(this IServiceCollection services,
+    // Registers every FluentValidation IValidator<T> found in the given assemblies — so boundary validation runs
+    // automatically for any request that has a validator, via ValidationBehavior.
+    // Mediator itself (the request/response dispatch + the SensitiveRequest/Validation/Lock pipeline) is registered
+    // separately in TicketMaster.AppHost/Program.cs: Mediator.SourceGenerator only generates AddMediator() in the
+    // outermost project, so it can't be called from this library.
+    public static IServiceCollection AddApplicationValidation(this IServiceCollection services,
         params Assembly[] handlerAssemblies)
     {
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblies(handlerAssemblies);
-            cfg.AddOpenBehavior(typeof(SensitiveRequestBehavior<,>)); // re-verify caller (if ISensitiveRequest)
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>)); // then validate
-            cfg.AddOpenBehavior(typeof(LockBehavior<,>)); // then acquire the distributed lock (if ILockRequest)
-        });
-
         services.AddValidatorsFromAssemblies(handlerAssemblies, includeInternalTypes: true);
 
         // Fail-loud default; the Redis infrastructure registration overrides it with the real lock.

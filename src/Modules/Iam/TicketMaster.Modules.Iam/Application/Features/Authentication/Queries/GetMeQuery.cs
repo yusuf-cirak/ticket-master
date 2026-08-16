@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using BuildingBlocks.Application.Abstractions.Security;
 using YC.Monad;
 
@@ -11,9 +11,9 @@ public static class GetMeQuery
 
     public sealed class Handler(ICurrentUser currentUser) : IRequestHandler<Query, Result<Response>>
     {
-        public Task<Result<Response>> Handle(Query request, CancellationToken cancellationToken)
+        public ValueTask<Result<Response>> Handle(Query request, CancellationToken cancellationToken)
             // /me is behind RequireAuthenticatedUser, so the subject is always present; fail loud if that invariant breaks.
-            => Task.FromResult(Result.Success(new Response(currentUser.UserId.GetValueOrFail())));
+            => new(Result.Success(new Response(currentUser.UserId.GetValueOrFail())));
     }
 
     public sealed record Response(string UserId);

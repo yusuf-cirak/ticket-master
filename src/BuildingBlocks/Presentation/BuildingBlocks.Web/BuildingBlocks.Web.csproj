@@ -11,7 +11,7 @@
   <ItemGroup>
     <!-- Shared kernel: cross-cutting telemetry/correlation constants. -->
     <ProjectReference Include="..\..\Domain\BuildingBlocks.Domain\BuildingBlocks.Domain.csproj" />
-    <!-- Module discovery wires MediatR/validators across module assemblies. -->
+    <!-- Module discovery wires validators across module assemblies (Mediator itself is registered in AppHost). -->
     <ProjectReference Include="..\..\Application\BuildingBlocks.Application\BuildingBlocks.Application.csproj" />
     <!-- Umbrella AddServiceDefaults wires JWT authN/authZ + current-user + audit. -->
     <ProjectReference Include="..\..\Presentation\BuildingBlocks.Security\BuildingBlocks.Security.csproj" />

@@ -1,5 +1,5 @@
 using FluentValidation;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Identity;
 using BuildingBlocks.Domain.Errors;
 using TicketMaster.Modules.Iam.Domain;
@@ -25,7 +25,7 @@ public static class RegisterCommand
 
     public sealed class Handler(UserManager<User> userManager) : IRequestHandler<Command, Result<Response>>
     {
-        public async Task<Result<Response>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<Result<Response>> Handle(Command request, CancellationToken cancellationToken)
         {
             var email = DomainEmail.Create(request.Email);
             if (!email.IsSuccess)

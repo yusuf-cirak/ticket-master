@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -9,7 +9,7 @@ using BuildingBlocks.Web;
 namespace TicketMaster.Modules.Iam.Host;
 
 /// <summary>
-/// Thin authentication endpoints: register / login / refresh / logout / me. Each binds its MediatR command from the
+/// Thin authentication endpoints: register / login / refresh / logout / me. Each binds its Mediator command from the
 /// request body and maps the returned <c>Result</c> to HTTP via <see cref="ResultEndpointExtensions"/>. All behavior
 /// (validation, lockout, rotation, blacklist) lives in the handlers.
 /// </summary>
