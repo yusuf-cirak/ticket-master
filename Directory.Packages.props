@@ -20,7 +20,7 @@
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageVersion Include="MassTransit" Version="8.5.10" />
+    <PackageVersion Include="MassTransit" Version="9.2.0" />
     <PackageVersion Include="MassTransit.Kafka" Version="8.5.10" />
     <!-- Result monad -->
     <PackageVersion Include="YC.Monad" Version="1.3.0" />
