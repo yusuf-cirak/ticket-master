@@ -32,12 +32,6 @@ public static class EventEndpoints
         group.MapGet("/", async (ISender sender) =>
             Results.Ok(await sender.Send(new ListEventsQuery.Query())));
 
-        // RFC 9865 cursor pagination: cursor/count are read from the query string by CursorRequest.FromQuery()
-        // — no COUNT, no OFFSET, no extra index (see ListEventsByCursorQuery). Declared before "/{id:guid}" so the
-        // literal segment is unambiguous, though the :guid constraint already makes routing order irrelevant here.
-        group.MapGet("/cursor", async (ISender sender) =>
-            Results.Ok(await sender.Send(new ListEventsByCursorQuery.Query())));
-
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
             (await sender.Send(new GetEventQuery.Query(id))).ToApiResult());
     }
