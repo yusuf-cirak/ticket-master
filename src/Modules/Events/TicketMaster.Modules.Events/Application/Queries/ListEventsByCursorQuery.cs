@@ -3,7 +3,6 @@ using BuildingBlocks.Application.Pagination;
 using BuildingBlocks.Persistence.EfCore;
 using TicketMaster.Modules.Events.Domain;
 using TicketMaster.Modules.Events.Infrastructure;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Application.Queries;
 
@@ -15,31 +14,26 @@ namespace TicketMaster.Modules.Events.Application.Queries;
 /// </summary>
 public static class ListEventsByCursorQuery
 {
-    public sealed record Query() : IRequest<Result<CursorResult<ListEventsQuery.Item>>>;
+    public sealed record Query() : IRequest<CursorResult<ListEventsQuery.Item>>;
 
-    public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, Result<CursorResult<ListEventsQuery.Item>>>
+    public sealed class Handler(EventsDbContext db) : IRequestHandler<Query, CursorResult<ListEventsQuery.Item>>
     {
-        public async ValueTask<Result<CursorResult<ListEventsQuery.Item>>> Handle(Query request, CancellationToken cancellationToken)
+        public async ValueTask<CursorResult<ListEventsQuery.Item>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var parsed = CursorRequest.Create();
-            if (!parsed.IsSuccess)
-                return parsed.Error;
-
-            var (count, boundary, forward) = parsed.Value;
+            var (count, boundary, forward) = CursorRequest.FromQuery();
+            var boundaryId = boundary is { } b ? Guid.Parse(b) : (Guid?)null;
 
             IQueryable<Event> events = db.Events;
-            if (boundary is { } b)
+            if (boundaryId is { } bid)
                 events = forward
-                    ? events.Where(e => e.Id.CompareTo(EventId.From(b)) > 0)
-                    : events.Where(e => e.Id.CompareTo(EventId.From(b)) < 0);
+                    ? events.Where(e => e.Id.CompareTo(EventId.From(bid)) > 0)
+                    : events.Where(e => e.Id.CompareTo(EventId.From(bid)) < 0);
 
             var ordered = forward ? events.OrderBy(e => e.Id) : events.OrderByDescending(e => e.Id);
 
-            var page = await ordered
+            return await ordered
                 .Select(e => new ListEventsQuery.Item(e.Id, e.Name, e.Venue, e.StartsOn, e.Capacity, e.IsLargeVenue))
-                .ToCursorResultAsync(boundary, forward, count, item => item.Id.Value, cancellationToken);
-
-            return Result.Success(page);
+                .ToCursorResultAsync(boundaryId, forward, count, item => item.Id.Value, cancellationToken);
         }
     }
 }

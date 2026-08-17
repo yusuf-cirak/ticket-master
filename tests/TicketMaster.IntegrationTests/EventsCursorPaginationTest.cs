@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using FluentAssertions;
 using Xunit;
 
@@ -89,27 +88,27 @@ public sealed class EventsCursorPaginationTest(SpineFixture fixture)
     }
 
     [Fact]
-    public async Task A_malformed_cursor_returns_400_invalid_cursor()
+    public async Task A_malformed_cursor_falls_back_to_the_first_page()
     {
         await fixture.ResetRedisAsync();
 
         var response = await fixture.Client.SendAsync(Request(HttpMethod.Get, "/api/events/cursor?cursor=not-a-real-cursor!!", TenantA));
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        body.RootElement.GetProperty("code").GetString().Should().Be("pagination.invalid_cursor");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var page = (await response.Content.ReadFromJsonAsync<CursorView>())!;
+        page.PreviousCursor.Should().BeNull("a malformed cursor is treated as if it were absent");
     }
 
     [Fact]
-    public async Task A_count_over_the_maximum_returns_400_invalid_count()
+    public async Task A_count_over_the_maximum_is_clamped_instead_of_rejected()
     {
         await fixture.ResetRedisAsync();
 
         var response = await fixture.Client.SendAsync(Request(HttpMethod.Get, "/api/events/cursor?count=99999", TenantA));
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        body.RootElement.GetProperty("code").GetString().Should().Be("pagination.invalid_count");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var page = (await response.Content.ReadFromJsonAsync<CursorView>())!;
+        page.ItemsPerPage.Should().BeLessThanOrEqualTo(200, "count is clamped to CursorRequest.MaxCount, not rejected");
     }
 
     [Fact]
