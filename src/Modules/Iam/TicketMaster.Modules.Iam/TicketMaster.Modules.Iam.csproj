@@ -25,6 +25,7 @@
     <!-- Not PrivateAssets=all: the generated ids reference Vogen.SharedTypes at runtime, so it must flow to output.
          ExcludeAssets=contentFiles: drops Vogen's redundant contentFiles-shipped Vogen.targets (the real one lives
          in buildTransitive/, unaffected) so IDEs stop showing a no-op "Vogen.targets" node under the dependency. -->
+    <PackageReference Include="OpenTelemetry" />
     <PackageReference Include="Vogen" ExcludeAssets="contentFiles" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
