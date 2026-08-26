@@ -1,6 +1,5 @@
 using Mediator;
 using BuildingBlocks.Application.Abstractions.Security;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Queries;
 

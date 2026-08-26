@@ -3,7 +3,6 @@ using BuildingBlocks.Domain.Errors;
 using BuildingBlocks.Domain.Tenancy;
 using EntityFrameworkCore.Projectables;
 using TicketMaster.Modules.Events.Domain.Events;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Domain;
 

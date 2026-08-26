@@ -5,7 +5,6 @@ using BuildingBlocks.Persistence.Outbox;
 using TicketMaster.Modules.Events.Contracts;
 using TicketMaster.Modules.Events.Domain;
 using TicketMaster.Modules.Events.Infrastructure;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Application.Commands;
 

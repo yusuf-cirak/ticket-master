@@ -1,6 +1,5 @@
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Auditing;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Domain;
 

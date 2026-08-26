@@ -1,6 +1,5 @@
 using Mediator;
 using BuildingBlocks.Application.Abstractions.Locking;
-using YC.Monad;
 
 namespace BuildingBlocks.Application.Behaviors;
 

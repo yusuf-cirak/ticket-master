@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Application.Abstractions.Security;
 using TicketMaster.Modules.Iam.Infrastructure;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;
 

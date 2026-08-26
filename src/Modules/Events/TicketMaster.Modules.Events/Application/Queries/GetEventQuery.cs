@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using BuildingBlocks.Domain.Errors;
 using TicketMaster.Modules.Events.Domain;
 using TicketMaster.Modules.Events.Infrastructure;
-using YC.Monad;
 
 namespace TicketMaster.Modules.Events.Application.Queries;
 

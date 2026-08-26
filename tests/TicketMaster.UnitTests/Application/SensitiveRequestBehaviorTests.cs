@@ -6,7 +6,6 @@ using FluentAssertions;
 using Mediator;
 using BuildingBlocks.Application.Abstractions.Security;
 using BuildingBlocks.Application.Behaviors;
-using YC.Monad;
 
 namespace TicketMaster.UnitTests.Application;
 

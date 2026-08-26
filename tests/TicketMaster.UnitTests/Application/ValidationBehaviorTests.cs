@@ -6,7 +6,6 @@ using Mediator;
 using BuildingBlocks.Application.Behaviors;
 using BuildingBlocks.Domain.Errors;
 using Xunit;
-using YC.Monad;
 
 namespace TicketMaster.UnitTests.Application;
 

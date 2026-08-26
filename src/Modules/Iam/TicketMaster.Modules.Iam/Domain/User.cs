@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using BuildingBlocks.Domain;
 using BuildingBlocks.Domain.Auditing;
 using TicketMaster.Modules.Iam.Domain.Events;
-using YC.Monad;
 using DomainEmail = BuildingBlocks.Domain.ValueObjects.Email;
 
 namespace TicketMaster.Modules.Iam.Domain;

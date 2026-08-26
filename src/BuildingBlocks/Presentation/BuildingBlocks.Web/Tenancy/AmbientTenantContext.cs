@@ -1,5 +1,4 @@
 using BuildingBlocks.Application.Abstractions.Tenancy;
-using YC.Monad;
 
 namespace BuildingBlocks.Web;
 

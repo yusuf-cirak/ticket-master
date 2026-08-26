@@ -8,7 +8,6 @@ using BuildingBlocks.Application.Abstractions.Tenancy;
 using BuildingBlocks.Domain.Tenancy;
 using BuildingBlocks.Persistence.EfCore.Interceptors;
 using BuildingBlocks.Web;
-using YC.Monad;
 using Xunit;
 
 namespace TicketMaster.UnitTests.Tenancy;

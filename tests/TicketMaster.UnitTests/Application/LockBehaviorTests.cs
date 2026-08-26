@@ -6,7 +6,6 @@ using Mediator;
 using BuildingBlocks.Application.Abstractions.Locking;
 using BuildingBlocks.Application.Behaviors;
 using Xunit;
-using YC.Monad;
 
 namespace TicketMaster.UnitTests.Application;
 

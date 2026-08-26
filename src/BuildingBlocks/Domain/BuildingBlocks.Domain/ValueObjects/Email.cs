@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
-using YC.Monad;
 
 namespace BuildingBlocks.Domain.ValueObjects;
 

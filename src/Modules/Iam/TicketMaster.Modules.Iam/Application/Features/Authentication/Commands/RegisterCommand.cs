@@ -3,7 +3,6 @@ using Mediator;
 using Microsoft.AspNetCore.Identity;
 using BuildingBlocks.Domain.Errors;
 using TicketMaster.Modules.Iam.Domain;
-using YC.Monad;
 using DomainEmail = BuildingBlocks.Domain.ValueObjects.Email;
 
 namespace TicketMaster.Modules.Iam.Application.Features.Authentication.Commands;

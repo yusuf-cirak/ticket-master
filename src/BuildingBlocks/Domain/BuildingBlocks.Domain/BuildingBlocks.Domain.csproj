@@ -5,14 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="YC.Monad" />
     <!-- Abstractions only (INotification/IRequest) — no Mediator runtime/dispatch machinery in the domain. -->
     <PackageReference Include="Mediator.Abstractions" />
-    <!-- Not PrivateAssets=all: generated value objects reference Vogen.SharedTypes at runtime.
+    <!-- PrivateAssets=analyzers (not "all"): the Vogen NuGet package bundles both the source generator
+         (analyzers/) and the Vogen.SharedTypes runtime lib (lib/) generated value objects reference at
+         runtime — there's no separate package to depend on for just the lib half. Excluding only the
+         "analyzers" asset stops the generator from re-running in every downstream consumer (it's only
+         needed here, where [ValueObject<T>] types are actually declared) while keeping the lib/runtime
+         reference flowing to them as before.
          ExcludeAssets=contentFiles: Vogen ships its analyzer-versioning shim redundantly under contentFiles/
          (the load-bearing copy is buildTransitive/Vogen.targets, unaffected) — excluding it stops the IDE's
          dependency tree from showing a "Vogen.targets" content node with nothing to actually open. -->
-    <PackageReference Include="Vogen" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Vogen" ExcludeAssets="contentFiles" PrivateAssets="analyzers" />
   </ItemGroup>
 
   <ItemGroup>

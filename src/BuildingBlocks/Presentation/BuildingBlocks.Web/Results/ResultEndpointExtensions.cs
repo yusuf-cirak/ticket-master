@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using BuildingBlocks.Domain.Errors;
-using YC.Monad;
 
 namespace BuildingBlocks.Web;
 

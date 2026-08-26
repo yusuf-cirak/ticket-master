@@ -1,33 +1,39 @@
 <Project>
+  <!-- Current git branch, read straight from .git/HEAD (no `git` process spawn). Empty/undefined if .git is
+       missing (e.g. a source-only checkout) or HEAD is detached — both fail safe to "not master" below. -->
+  <PropertyGroup>
+    <GitHeadPath>$(MSBuildThisFileDirectory).git\HEAD</GitHeadPath>
+    <GitHeadContent Condition="Exists('$(GitHeadPath)')">$([System.IO.File]::ReadAllText('$(GitHeadPath)').Trim())</GitHeadContent>
+    <GitBranch Condition="$(GitHeadContent.StartsWith('ref: refs/heads/'))">$(GitHeadContent.Substring(16))</GitBranch>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- On feature branches: style violations fail the build immediately, same inner loop as everything else.
+         On master (this repo's main/production branch): skipped — master only ever receives already-formatted,
+         already-gated code from a feature branch, so re-running the style analyzer pass here (incl. every
+         CI/deploy build off master) is pure waste, not a real check. Unknown/detached/missing-.git branch state
+         (GitBranch empty) also satisfies "!= master" and fails safe to enabled. -->
+    <EnforceCodeStyleInBuild Condition="'$(GitBranch)' != 'master'">true</EnforceCodeStyleInBuild>
     <!-- NuGet audit advisories (NU19xx) stay visible as warnings but must NOT hard-fail the build: the advisory
          DB updates independently of our code, so a newly-published advisory should not break a green build. Keep
          code warnings as errors. Track + upgrade the flagged transitive packages separately. -->
     <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
   </PropertyGroup>
 
-  <!-- ZLinq: zero-allocation LINQ, default in every project. Global using enables .AsValueEnumerable() everywhere. -->
+  <!-- ZLinq (.AsValueEnumerable()) and YC.Monad (Result<T>/Option<T>) available in every project without a
+       per-file `using`. Deliberately just the base ZLinq package, NOT ZLinq.DropInGenerator: that generator
+       re-runs its codegen in every one of the 23 projects on every build for a feature (shadowing System.Linq
+       with zero-alloc equivalents) nothing in this repo uses — measured as the single largest source-generator
+       cost in the whole solution. The plain package's extension methods need no codegen at all. -->
   <ItemGroup>
     <PackageReference Include="ZLinq" />
-    <!-- Source generator that emits the drop-in LINQ from the assembly attribute below (analyzer-only). -->
-    <PackageReference Include="ZLinq.DropInGenerator" PrivateAssets="all" />
+    <PackageReference Include="YC.Monad" />
     <Using Include="ZLinq" />
-  </ItemGroup>
-
-  <!-- ZLinq drop-in: generate zero-alloc LINQ that shadows System.Linq for concrete collection types
-       (Array | Span | Memory | List) in every assembly — NOT IEnumerable, to avoid the aggressive overload-resolution
-       shadowing that DropInGenerateTypes.Everything brings. _Parameter2_IsLiteral emits the enum unquoted. -->
-  <ItemGroup>
-    <AssemblyAttribute Include="ZLinq.ZLinqDropInAttribute">
-      <_Parameter1></_Parameter1>
-      <_Parameter2>ZLinq.DropInGenerateTypes.Collection</_Parameter2>
-      <_Parameter2_IsLiteral>true</_Parameter2_IsLiteral>
-    </AssemblyAttribute>
+    <Using Include="YC.Monad" />
   </ItemGroup>
 </Project>

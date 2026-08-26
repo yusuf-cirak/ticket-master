@@ -22,10 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Not PrivateAssets=all: the generated ids reference Vogen.SharedTypes at runtime, so it must flow to output.
+    <!-- PrivateAssets=analyzers (not "all"): Vogen bundles the generator (analyzers/) and the
+         Vogen.SharedTypes runtime lib (lib/) in one package — excluding only "analyzers" stops downstream
+         consumers from re-running the generator while the lib/runtime reference still flows to output.
          ExcludeAssets=contentFiles: drops Vogen's redundant contentFiles-shipped Vogen.targets (the real one lives
          in buildTransitive/, unaffected) so IDEs stop showing a no-op "Vogen.targets" node under the dependency. -->
-    <PackageReference Include="Vogen" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Vogen" ExcludeAssets="contentFiles" PrivateAssets="analyzers" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />
