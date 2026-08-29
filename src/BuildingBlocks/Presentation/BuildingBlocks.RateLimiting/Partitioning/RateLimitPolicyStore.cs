@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
@@ -33,4 +34,5 @@ public sealed class RateLimitPolicyStore(
     private static string OverrideKey(string policyName, string principalId) => $"ratelimit:override:{policyName}:{principalId}";
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly record struct ResolvedPolicy(int PermitLimit, TimeSpan Window, int SegmentsPerWindow, int QueueLimit);

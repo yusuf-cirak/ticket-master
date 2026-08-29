@@ -30,8 +30,8 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
             return await next(request, cancellationToken);
 
         var errors = failures
-            .GroupBy(f => f.PropertyName)
-            .ToDictionary(g => g.Key, g => g.Select(f => f.ErrorMessage).Distinct().ToArray());
+            .GroupBy(f => f.PropertyName, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Select(f => f.ErrorMessage).Distinct(StringComparer.Ordinal).ToArray(), StringComparer.Ordinal);
 
         return ResultFailureFactory<TResponse>.Create(new ValidationError(errors));
     }

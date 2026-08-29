@@ -54,7 +54,7 @@ public sealed class SpineFixture : IAsyncLifetime
             Expires = DateTime.UtcNow.AddMinutes(5),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSigningKey)), SecurityAlgorithms.HmacSha256),
-            Claims = new Dictionary<string, object> { ["sub"] = "test-user-1", ["jti"] = Guid.NewGuid().ToString("N") }
+            Claims = new Dictionary<string, object>(StringComparer.Ordinal) { ["sub"] = "test-user-1", ["jti"] = Guid.NewGuid().ToString("N") }
         };
         if (scopes.Length > 0)
             descriptor.Claims["scope"] = string.Join(' ', scopes);
@@ -257,8 +257,8 @@ public sealed class SpineFixture : IAsyncLifetime
                 .GetProperty("state")
                 .GetString();
 
-            if (state == "RUNNING") return;
-            if (state == "FAILED")
+            if (string.Equals(state, "RUNNING", StringComparison.Ordinal)) return;
+            if (string.Equals(state, "FAILED", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
                     $"Debezium connector entered FAILED state. Body: {body}");

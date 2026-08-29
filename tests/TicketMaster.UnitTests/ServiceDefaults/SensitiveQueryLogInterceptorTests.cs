@@ -11,7 +11,7 @@ public class SensitiveQueryLogInterceptorTests
 {
     private static IQueryCollection Query(params (string Key, string Value)[] pairs)
     {
-        var dict = new Dictionary<string, StringValues>();
+        var dict = new Dictionary<string, StringValues>(StringComparer.Ordinal);
         foreach (var (key, value) in pairs)
             dict[key] = value;
         return new QueryCollection(dict);

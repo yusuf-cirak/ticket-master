@@ -21,8 +21,13 @@
     <EnforceCodeStyleInBuild Condition="'$(GitBranch)' != 'master'">true</EnforceCodeStyleInBuild>
     <!-- NuGet audit advisories (NU19xx) stay visible as warnings but must NOT hard-fail the build: the advisory
          DB updates independently of our code, so a newly-published advisory should not break a green build. Keep
-         code warnings as errors. Track + upgrade the flagged transitive packages separately. -->
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+         code warnings as errors. Track + upgrade the flagged transitive packages separately.
+         Meziantou.Analyzer: MA0004 (ConfigureAwait), MA0048 (file name must match type name), MA0051 (method too
+         long), MA0026 (TODO/FIXME comments) stay warnings — 388 pre-existing hits across the codebase (mostly
+         ConfigureAwait and intentional multi-type files like IDomainEvent.cs), not worth a mechanical mass-rewrite
+         right now. Every other Meziantou rule is a real gate (error) — see the 46 call sites fixed alongside this
+         analyzer's introduction. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904;MA0004;MA0048;MA0051;MA0026</WarningsNotAsErrors>
   </PropertyGroup>
 
   <!-- ZLinq (.AsValueEnumerable()) and YC.Monad (Result<T>/Option<T>) available in every project without a
@@ -35,5 +40,11 @@
     <PackageReference Include="YC.Monad" />
     <Using Include="ZLinq" />
     <Using Include="YC.Monad" />
+  </ItemGroup>
+
+  <!-- PrivateAssets=all: pure Roslyn analyzer, no runtime lib — nothing for a downstream consumer to need,
+       so the generator-leak concern that applies to Vogen/Projectables doesn't apply here. -->
+  <ItemGroup>
+    <PackageReference Include="Meziantou.Analyzer" PrivateAssets="all" />
   </ItemGroup>
 </Project>

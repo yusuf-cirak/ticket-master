@@ -13,8 +13,8 @@ public class PrincipalPartitionerTests
         new(Options.Create(new RateLimitingOptions
         {
             KeyPrefix = "ticket.master",
-            Tiers = new(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 },
-            ApiKeys = ["super-secret"]
+            Tiers = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 },
+            ApiKeys = new HashSet<string>(StringComparer.Ordinal) { "super-secret" }
         }));
 
     private static DefaultHttpContext Authenticated(string scheme, params Claim[] claims)

@@ -101,7 +101,7 @@ public class IdempotencyTests
 
     private sealed class FakeCache : IDistributedCache
     {
-        private readonly Dictionary<string, byte[]> _store = new();
+        private readonly Dictionary<string, byte[]> _store = new(StringComparer.Ordinal);
         public byte[] Get(string key) => _store.TryGetValue(key, out var v) ? v : null;
         public Task<byte[]> GetAsync(string key, CancellationToken token = default) => Task.FromResult(Get(key));
         public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _store[key] = value;

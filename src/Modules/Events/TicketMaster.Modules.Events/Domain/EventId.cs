@@ -7,4 +7,9 @@ namespace TicketMaster.Modules.Events.Domain;
 public readonly partial struct EventId
 {
     public static EventId New() => From(Guid.CreateVersion7());
+
+    public static bool operator <(EventId left, EventId right) => left.CompareTo(right) < 0;
+    public static bool operator <=(EventId left, EventId right) => left.CompareTo(right) <= 0;
+    public static bool operator >(EventId left, EventId right) => left.CompareTo(right) > 0;
+    public static bool operator >=(EventId left, EventId right) => left.CompareTo(right) >= 0;
 }

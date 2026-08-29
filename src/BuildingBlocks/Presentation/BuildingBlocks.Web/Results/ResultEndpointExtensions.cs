@@ -27,12 +27,12 @@ public static class ResultEndpointExtensions
     private static IResult ToProblem(Error error)
     {
         if (error is ValidationError validation)
-            return TypedResults.ValidationProblem(validation.Errors.ToDictionary(e => e.Key, e => e.Value));
+            return TypedResults.ValidationProblem(validation.Errors.ToDictionary(e => e.Key, e => e.Value, StringComparer.Ordinal));
 
         var status = error.Status > 0 ? error.Status : StatusCodes.Status500InternalServerError;
         return TypedResults.Problem(
             detail: error.Message,
             statusCode: status,
-            extensions: string.IsNullOrEmpty(error.Code) ? null : new Dictionary<string, object> { ["code"] = error.Code });
+            extensions: string.IsNullOrEmpty(error.Code) ? null : new Dictionary<string, object>(StringComparer.Ordinal) { ["code"] = error.Code });
     }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using Mediator;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +40,7 @@ public static class LogoutCommand
             if (currentUser.TokenId.TryGetValue(out var jti))
             {
                 var principal = httpContextAccessor.HttpContext?.User;
-                var exp = long.TryParse(principal?.FindFirstValue("exp"), out var unix)
+                var exp = long.TryParse(principal?.FindFirstValue("exp"), NumberStyles.Integer, CultureInfo.InvariantCulture, out var unix)
                     ? DateTimeOffset.FromUnixTimeSeconds(unix)
                     : now;
                 await blacklist.RevokeAsync(jti, exp, cancellationToken);

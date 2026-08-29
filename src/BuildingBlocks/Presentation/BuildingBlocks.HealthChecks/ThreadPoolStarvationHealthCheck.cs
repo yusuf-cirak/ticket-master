@@ -21,7 +21,7 @@ internal sealed class ThreadPoolStarvationHealthCheck(IConfiguration config) : I
 
         ThreadPool.GetAvailableThreads(out var availableWorkers, out _);
         ThreadPool.GetMaxThreads(out var maxWorkers, out _);
-        var data = new Dictionary<string, object>
+        var data = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["availableWorkerThreads"] = availableWorkers,
             ["maxWorkerThreads"] = maxWorkers,

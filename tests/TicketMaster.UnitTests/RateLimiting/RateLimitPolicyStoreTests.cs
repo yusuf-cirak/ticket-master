@@ -14,11 +14,11 @@ public class RateLimitPolicyStoreTests
         var options = Options.Create(new RateLimitingOptions
         {
             KeyPrefix = "ticket.master",
-            Policies = new(StringComparer.OrdinalIgnoreCase)
+            Policies = new Dictionary<string, PolicyDefinition>(StringComparer.OrdinalIgnoreCase)
             {
                 ["burst"] = new PolicyDefinition { PermitLimit = 20, Window = TimeSpan.FromSeconds(5), SegmentsPerWindow = 5 }
             },
-            Tiers = new(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 }
+            Tiers = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase) { ["anon"] = 0.25, ["authenticated"] = 1, ["internal"] = 5 }
         });
         var cache = new FusionCache(new FusionCacheOptions());
         var store = new RateLimitPolicyStore(cache, options, new PrincipalPartitioner(options));

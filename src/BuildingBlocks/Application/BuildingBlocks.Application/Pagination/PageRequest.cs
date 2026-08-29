@@ -1,3 +1,4 @@
+using System.Globalization;
 using BuildingBlocks.Application.Http;
 
 namespace BuildingBlocks.Application.Pagination;
@@ -31,8 +32,8 @@ public sealed record PageRequest(int Page = 1, int PageSize = 20)
         if (query is null)
             return new PageRequest();
 
-        var page = int.TryParse(query["page"], out var p) ? p : 1;
-        var pageSize = int.TryParse(query["pageSize"], out var s) ? s : DefaultPageSize;
+        var page = int.TryParse(query["page"], NumberStyles.Integer, CultureInfo.InvariantCulture, out var p) ? p : 1;
+        var pageSize = int.TryParse(query["pageSize"], NumberStyles.Integer, CultureInfo.InvariantCulture, out var s) ? s : DefaultPageSize;
         return new PageRequest(page, pageSize);
     }
 }

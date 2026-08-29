@@ -35,13 +35,13 @@ public sealed class RateLimitingOptions
     /// to the per-IP anonymous bucket. <b>Empty (default) means no key elevates</b> — otherwise any attacker could mint
     /// unlimited fresh high-tier buckets by rotating arbitrary keys and evade rate limiting entirely.
     /// </summary>
-    public HashSet<string> ApiKeys { get; set; } = [];
+    public ISet<string> ApiKeys { get; set; } = new HashSet<string>(StringComparer.Ordinal);
 
     /// <summary>Named policies. Only <c>burst</c> is used now.</summary>
-    public Dictionary<string, PolicyDefinition> Policies { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public IDictionary<string, PolicyDefinition> Policies { get; set; } = new Dictionary<string, PolicyDefinition>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Per-tier permit multipliers (e.g. anon 0.25, authenticated 1, internal 5).</summary>
-    public Dictionary<string, double> Tiers { get; set; } = new(StringComparer.OrdinalIgnoreCase)
+    public IDictionary<string, double> Tiers { get; set; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
     {
         ["anon"] = 0.25,
         ["authenticated"] = 1.0,

@@ -30,7 +30,7 @@ public sealed class JwtTokenService(
         var jti = Guid.CreateVersion7().ToString("N");
 
         // MapInboundClaims=false on the validator, so claim types stay raw ("sub"/"jti"/"role"/"scope").
-        var claims = new Dictionary<string, object>
+        var claims = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["sub"] = user.Id.Value.ToString(),
             ["jti"] = jti,

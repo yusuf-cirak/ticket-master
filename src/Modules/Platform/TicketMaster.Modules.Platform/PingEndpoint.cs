@@ -20,12 +20,12 @@ public static class PingEndpoint
             {
                 // Validate at the boundary before anything reaches the outbox payload.
                 if (string.IsNullOrWhiteSpace(body.Note))
-                    return Results.ValidationProblem(new Dictionary<string, string[]>
+                    return Results.ValidationProblem(new Dictionary<string, string[]>(StringComparer.Ordinal)
                     {
                         ["note"] = ["Note is required."]
                     });
                 if (body.Note.Length > MaxNoteLength)
-                    return Results.ValidationProblem(new Dictionary<string, string[]>
+                    return Results.ValidationProblem(new Dictionary<string, string[]>(StringComparer.Ordinal)
                     {
                         ["note"] = [$"Note must be at most {MaxNoteLength} characters."]
                     });

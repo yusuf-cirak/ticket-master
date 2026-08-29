@@ -29,7 +29,7 @@ internal sealed class SnakeCaseLogRecordProcessor : BaseProcessor<LogRecord>
                 ? attribute.Key
                 : SnakeCase.Convert(attribute.Key);
 
-            if (key == attribute.Key)
+            if (string.Equals(key, attribute.Key, StringComparison.Ordinal))
             {
                 rewritten?.Add(attribute);
                 continue;

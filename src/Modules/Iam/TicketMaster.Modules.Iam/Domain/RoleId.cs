@@ -7,4 +7,8 @@ namespace TicketMaster.Modules.Iam.Domain;
 [ValueObject<int>(conversions: Conversions.EfCoreValueConverter | Conversions.SystemTextJson)]
 public readonly partial struct RoleId
 {
+    public static bool operator <(RoleId left, RoleId right) => left.CompareTo(right) < 0;
+    public static bool operator <=(RoleId left, RoleId right) => left.CompareTo(right) <= 0;
+    public static bool operator >(RoleId left, RoleId right) => left.CompareTo(right) > 0;
+    public static bool operator >=(RoleId left, RoleId right) => left.CompareTo(right) >= 0;
 }

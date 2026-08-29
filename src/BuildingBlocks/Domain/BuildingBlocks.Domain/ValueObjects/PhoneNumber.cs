@@ -19,9 +19,14 @@ public readonly partial struct PhoneNumber
             ? Validation.Ok
             : Validation.Invalid("Phone number must be in E.164 format, e.g. +14155552671.");
 
-    [GeneratedRegex(@"^\+[1-9]\d{1,14}$")]
+    public static bool operator <(PhoneNumber left, PhoneNumber right) => left.CompareTo(right) < 0;
+    public static bool operator <=(PhoneNumber left, PhoneNumber right) => left.CompareTo(right) <= 0;
+    public static bool operator >(PhoneNumber left, PhoneNumber right) => left.CompareTo(right) > 0;
+    public static bool operator >=(PhoneNumber left, PhoneNumber right) => left.CompareTo(right) >= 0;
+
+    [GeneratedRegex(@"^\+[1-9]\d{1,14}$", RegexOptions.None, matchTimeoutMilliseconds: 100)]
     private static partial Regex E164();
 
-    [GeneratedRegex(@"[\s\-().]")]
+    [GeneratedRegex(@"[\s\-().]", RegexOptions.None, matchTimeoutMilliseconds: 100)]
     private static partial Regex FormattingChars();
 }

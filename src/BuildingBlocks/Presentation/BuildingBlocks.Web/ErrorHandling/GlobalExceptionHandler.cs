@@ -44,7 +44,7 @@ internal sealed class GlobalExceptionHandler(
             logger.LogWarning("Validation failed: {Count} error(s).", validation.Errors.Count());
             var errors = validation.Errors
                 .GroupBy(failure => failure.PropertyName, StringComparer.Ordinal)
-                .ToDictionary(group => group.Key, group => group.Select(f => f.ErrorMessage).Distinct().ToArray());
+                .ToDictionary(group => group.Key, group => group.Select(f => f.ErrorMessage).Distinct(StringComparer.Ordinal).ToArray(), StringComparer.Ordinal);
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             return await problemDetails.TryWriteAsync(new ProblemDetailsContext

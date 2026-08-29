@@ -11,4 +11,9 @@ public readonly partial struct UserId
 
     private static Validation Validate(Guid value) =>
         value == Guid.Empty ? Validation.Invalid("UserId cannot be empty.") : Validation.Ok;
+
+    public static bool operator <(UserId left, UserId right) => left.CompareTo(right) < 0;
+    public static bool operator <=(UserId left, UserId right) => left.CompareTo(right) <= 0;
+    public static bool operator >(UserId left, UserId right) => left.CompareTo(right) > 0;
+    public static bool operator >=(UserId left, UserId right) => left.CompareTo(right) >= 0;
 }

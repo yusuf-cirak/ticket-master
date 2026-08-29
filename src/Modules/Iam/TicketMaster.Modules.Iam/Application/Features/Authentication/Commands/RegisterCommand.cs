@@ -40,8 +40,8 @@ public static class RegisterCommand
             {
                 // Preserve the old field→messages 400 shape (e.g. duplicate email → the unique-email code).
                 var errors = create.Errors
-                    .GroupBy(e => e.Code)
-                    .ToDictionary(g => g.Key, g => g.Select(e => e.Description).ToArray());
+                    .GroupBy(e => e.Code, StringComparer.Ordinal)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.Description).ToArray(), StringComparer.Ordinal);
                 return new ValidationError(errors);
             }
 

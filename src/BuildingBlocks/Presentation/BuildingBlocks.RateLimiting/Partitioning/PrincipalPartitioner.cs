@@ -58,7 +58,7 @@ public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
         (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? string.Empty;
 
     public double TierMultiplier(PrincipalTier tier) =>
-        options.Value.Tiers.GetValueOrDefault(TierKey(tier), 1.0);
+        options.Value.Tiers.TryGetValue(TierKey(tier), out var multiplier) ? multiplier : 1.0;
 
     internal string Prefix => options.Value.KeyPrefix ?? "app";
 
@@ -74,7 +74,7 @@ public sealed class PrincipalPartitioner(IOptions<RateLimitingOptions> options)
     private PrincipalTier ResolveTier(HttpContext context)
     {
         var trustedScheme = string.Equals(context.User.Identity?.AuthenticationType, InternalAuthScheme, StringComparison.Ordinal);
-        var asserted = context.User.FindFirst(options.Value.TierClaim)?.Value == InternalTierValue;
+        var asserted = string.Equals(context.User.FindFirst(options.Value.TierClaim)?.Value, InternalTierValue, StringComparison.Ordinal);
         return trustedScheme && asserted ? PrincipalTier.Internal : PrincipalTier.Authenticated;
     }
 

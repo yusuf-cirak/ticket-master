@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -7,6 +8,7 @@ using StackExchange.Redis;
 namespace BuildingBlocks.RateLimiting;
 
 /// <summary>Composite load in [0..1] (0 = idle, 1 = saturated) plus the components that produced it, for observability.</summary>
+[StructLayout(LayoutKind.Auto)]
 internal readonly record struct LoadSample(double Score, double Cpu, double ThreadPool, double Latency, double Error);
 
 /// <summary>Composite process/fleet load signal in [0..1]; 0 = idle, 1 = fully saturated.</summary>
@@ -65,7 +67,7 @@ internal sealed class LocalLoadSignal(
     IOptions<RateLimitingOptions> options,
     TimeProvider clock) : ILoadSignal
 {
-    private readonly object _cpuLock = new();
+    private readonly Lock _cpuLock = new();
     private long _lastTimestamp = clock.GetTimestamp();
     private TimeSpan _lastCpu = Process.GetCurrentProcess().TotalProcessorTime;
 
@@ -177,8 +179,8 @@ internal sealed class DistributedLoadSignal(
         var scorePart = sep < 0 ? raw : raw[..sep];
         if (!double.TryParse(scorePart, NumberStyles.Float, CultureInfo.InvariantCulture, out score))
             return false;
-        if (sep >= 0)
-            long.TryParse(raw.AsSpan(sep + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out tsMs);
+        if (sep >= 0 && !long.TryParse(raw.AsSpan(sep + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out tsMs))
+            tsMs = long.MaxValue; // malformed timestamp segment — treat like the bare/legacy case, never stale
         return true;
     }
 }
@@ -192,7 +194,7 @@ internal sealed class RequestMetricsCollector
     private const int WindowSize = 1000;
     private const double Alpha = 0.2; // EWMA smoothing
 
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
     private readonly byte[] _errorRing = new byte[WindowSize]; // 1 = 5xx, 0 = ok
     private int _ringIndex;
     private int _filled;

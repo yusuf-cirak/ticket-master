@@ -22,7 +22,7 @@ internal sealed class SnakeCaseMaskingEnricher : ILogEventEnricher
             var snakeKey = SnakeCase.Convert(key);
             var sensitive = SensitiveDataLogRecordProcessor.IsSensitive(snakeKey);
 
-            if (snakeKey == key && !sensitive)
+            if (string.Equals(snakeKey, key, StringComparison.Ordinal) && !sensitive)
                 continue; // already snake_case and not sensitive — leave it
 
             logEvent.RemovePropertyIfPresent(key);

@@ -93,7 +93,7 @@ api.MapGet("/whoami", (ClaimsPrincipal user) =>
 {
     var scopes = user.FindAll("scope").Concat(user.FindAll("scp"))
         .SelectMany(c => c.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-        .Distinct()
+        .Distinct(StringComparer.Ordinal)
         .ToArray();
     
     return Results.Ok(new { sub = user.FindFirst("sub")?.Value, scopes });

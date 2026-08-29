@@ -10,7 +10,7 @@ namespace BuildingBlocks.Observability;
 /// </summary>
 internal static class SnakeCase
 {
-    private static readonly ConcurrentDictionary<string, string> Cache = new();
+    private static readonly ConcurrentDictionary<string, string> Cache = new(StringComparer.Ordinal);
 
     public static string Convert(string name) =>
         string.IsNullOrEmpty(name) ? name : Cache.GetOrAdd(name, Transform);

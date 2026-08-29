@@ -18,7 +18,7 @@ public class JwtAuthenticationTests
     private static JwtBearerOptions ResolveBearerOptions()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["Authentication:Mode"] = "Symmetric",
             ["Authentication:Issuer"] = "ticketmaster",

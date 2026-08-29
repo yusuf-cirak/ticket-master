@@ -48,7 +48,7 @@ public class SecretConfigurationTests
     {
         var crypto = NewProvider();
         var config = new ConfigurationManager();
-        config.AddInMemoryCollection(new Dictionary<string, string>
+        config.AddInMemoryCollection(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["Db:Password"] = SecretConfigurationExtensions.SecretPrefix + crypto.Encrypt("p@ss"),
             ["Db:Host"] = "localhost",
@@ -64,7 +64,7 @@ public class SecretConfigurationTests
     public void AddSecretDecryption_is_a_noop_without_secrets()
     {
         var config = new ConfigurationManager();
-        config.AddInMemoryCollection(new Dictionary<string, string> { ["Db:Host"] = "localhost" });
+        config.AddInMemoryCollection(new Dictionary<string, string>(StringComparer.Ordinal) { ["Db:Host"] = "localhost" });
 
         // No key set, no secret: values → must not throw.
         config.AddSecretConfiguration(NewProvider);

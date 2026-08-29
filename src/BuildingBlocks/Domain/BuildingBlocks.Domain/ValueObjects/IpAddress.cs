@@ -16,4 +16,9 @@ public readonly partial struct IpAddress
 
     private static Validation Validate(string value) =>
         IPAddress.TryParse(value, out _) ? Validation.Ok : Validation.Invalid("Not a valid IP address.");
+
+    public static bool operator <(IpAddress left, IpAddress right) => left.CompareTo(right) < 0;
+    public static bool operator <=(IpAddress left, IpAddress right) => left.CompareTo(right) <= 0;
+    public static bool operator >(IpAddress left, IpAddress right) => left.CompareTo(right) > 0;
+    public static bool operator >=(IpAddress left, IpAddress right) => left.CompareTo(right) >= 0;
 }

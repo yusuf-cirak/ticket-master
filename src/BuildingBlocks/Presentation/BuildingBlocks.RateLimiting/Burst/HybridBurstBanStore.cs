@@ -1,4 +1,5 @@
 #nullable enable
+using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -84,7 +85,7 @@ internal sealed class HybridBurstBanStore(
         var nl = s.IndexOf('\n');
         if (nl <= 0 || nl == s.Length - 1)
             return false;
-        if (!long.TryParse(s.AsSpan(0, nl), out var ticks))
+        if (!long.TryParse(s.AsSpan(0, nl), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ticks))
             return false;
 
         key = s[(nl + 1)..];
