@@ -10,11 +10,11 @@
          Not exploitable here — we generate the OpenAPI doc, we don't parse untrusted specs — but keep the audit clean. -->
     <PackageVersion Include="Microsoft.OpenApi" Version="2.12.0" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.16.20" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.5.0" />
+    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.7.0" />
     <PackageVersion Include="NetEscapades.AspNetCore.SecurityHeaders" Version="1.3.1" />
     <!-- Auth -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
     <!-- Messaging / mediator / validation -->
     <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.2" />
@@ -29,7 +29,7 @@
     <!-- Roslyn analyzer, no runtime lib — safe to mark PrivateAssets=all everywhere -->
     <PackageVersion Include="Meziantou.Analyzer" Version="3.0.191" />
     <!-- Strongly-typed ids (source generator) -->
-    <PackageVersion Include="Vogen" Version="8.0.5" />
+    <PackageVersion Include="Vogen" Version="8.0.7" />
     <!--    Ardalis packages-->
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <!-- Persistence -->
@@ -37,7 +37,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.11" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
-    <PackageVersion Include="EntityFrameworkCore.Projectables" Version="6.0.5" />
+    <PackageVersion Include="EntityFrameworkCore.Projectables" Version="6.0.6" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <!-- Caching / Redis / rate limiting -->
@@ -81,11 +81,11 @@
     <!-- Testing -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
     <PackageVersion Include="Testcontainers" Version="4.14.0" />
     <PackageVersion Include="Testcontainers.Kafka" Version="4.14.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.14.0" />
