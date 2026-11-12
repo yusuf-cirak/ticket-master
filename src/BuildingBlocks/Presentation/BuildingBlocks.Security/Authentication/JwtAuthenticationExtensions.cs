@@ -60,7 +60,12 @@ public static class JwtAuthenticationExtensions
                     NameClaimType = "sub",
                     RoleClaimType = "role",
                     IssuerSigningKey = opts.Mode == JwtMode.Symmetric && !string.IsNullOrWhiteSpace(opts.SigningKey)
-                        ? new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SigningKey))
+                        ? new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SigningKey)) { KeyId = opts.CurrentKeyId }
+                        : null,
+                    // Current key + every still-valid previous one, so a token signed just before a rotation keeps
+                    // validating through its remaining lifetime instead of being rejected outright.
+                    IssuerSigningKeys = opts.Mode == JwtMode.Symmetric && !string.IsNullOrWhiteSpace(opts.SigningKey)
+                        ? SymmetricSigningKeys(opts)
                         : null
                 };
 
@@ -82,6 +87,16 @@ public static class JwtAuthenticationExtensions
         builder.Services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
 
         return builder;
+    }
+
+    // Current key first, then every previous key still in its rotation grace window — each tagged with its own kid
+    // so a token signed before rotation is matched to the key that actually signed it.
+    private static IEnumerable<SecurityKey> SymmetricSigningKeys(JwtOptions opts)
+    {
+        yield return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SigningKey)) { KeyId = opts.CurrentKeyId };
+
+        foreach (var (keyId, secret) in opts.PreviousKeys)
+            yield return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)) { KeyId = keyId };
     }
 
     // The default challenge writes a bare 401; replace it with problem+json (the ProblemDetails customizer stamps

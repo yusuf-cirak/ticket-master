@@ -33,6 +33,19 @@ public sealed class JwtOptions
     /// <summary>HMAC secret for <see cref="JwtMode.Symmetric"/>. Dev/test only — never a production secret in config.</summary>
     public string SigningKey { get; set; }
 
+    /// <summary>
+    /// Identifies <see cref="SigningKey"/> in a token's <c>kid</c> header. Change this alongside <see cref="SigningKey"/>
+    /// when rotating; move the outgoing key/id pair into <see cref="PreviousKeys"/> first so tokens already issued
+    /// with it keep validating through their remaining lifetime.
+    /// </summary>
+    public string CurrentKeyId { get; set; } = "default";
+
+    /// <summary>
+    /// Retired signing keys (<c>kid</c> → secret) kept validation-only during a rotation grace period — never used to
+    /// sign new tokens. Drop an entry once every token it could have signed has expired.
+    /// </summary>
+    public IDictionary<string, string> PreviousKeys { get; set; } = new Dictionary<string, string>(StringComparer.Ordinal);
+
     /// <summary>OIDC issuer base URL for <see cref="JwtMode.Authority"/> (JWKS auto-discovered).</summary>
     public string Authority { get; set; }
 

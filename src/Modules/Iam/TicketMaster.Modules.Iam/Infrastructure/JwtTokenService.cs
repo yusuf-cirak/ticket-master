@@ -52,7 +52,7 @@ public sealed class JwtTokenService(
             Expires = expires.UtcDateTime,
             Claims = claims,
             SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)) { KeyId = jwt.CurrentKeyId },
                 SecurityAlgorithms.HmacSha256)
         };
 
