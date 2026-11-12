@@ -10,6 +10,16 @@ namespace BuildingBlocks.Persistence.EfCore;
 /// Applies a module's EF Core migrations once at startup (before the app serves traffic). Registered
 /// per module via <see cref="MigrationExtensions.AddDbContextMigration{TContext}"/>, so each module
 /// auto-applies its own migrations and reports completion to the shared <see cref="MigrationReadinessTracker"/>.
+/// <para>
+/// Runs at boot on every instance, so a rolling multi-instance deploy briefly runs old and new code against the
+/// post-migration schema — safety comes only from how each migration is written, not from anything here. Follow
+/// expand/contract for any breaking schema change: (1) an additive, backward-compatible migration (new column
+/// nullable or defaulted, new table) that ships and runs first; (2) a deploy of code that writes the new shape
+/// while still reading/writing the old one; (3) only once every old-code instance is gone, a later migration that
+/// contracts (drops the old column, adds the <c>NOT NULL</c>). Never rename or drop a column and add its
+/// replacement in the same migration — that instant is exactly when an old-code instance still expects the old
+/// shape.
+/// </para>
 /// </summary>
 public sealed class DbContextMigrator<TContext>(
     IServiceProvider services,

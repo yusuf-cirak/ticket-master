@@ -68,9 +68,9 @@ Presentation/    Web · Security · Observability · HealthChecks · RateLimitin
 | **Strongly-typed ids** | **Vogen** value objects — reflection-free EF + JSON converters ([ADR-0002](docs/adr/0002-vogen-strongly-typed-ids.md)). Mixing id types is a compile error. |
 | **Computed columns** | **EF Core Projectables** — a `[Projectable]` domain expression runs in memory *and* translated to SQL, no duplicated predicate. |
 | **Rate limiting** | Native `UseRateLimiter` + per-endpoint opt-ins: per-caller **burst-ban** and system-wide **adaptive admission** (AIMD), tiered per principal, Redis or local. |
-| **Caching / locking** | **FusionCache** L1 (memory) + L2 (Redis, MessagePack) with stampede protection; Redis distributed lock behind a MediatR behavior. |
+| **Caching / locking** | **FusionCache** L1 (memory) + L2 (Redis, MessagePack) with stampede protection; Redis distributed lock (`Medallion.Threading` RedLock, background TTL renewal) behind a Mediator pipeline behavior. |
 | **Idempotency** | `RequireIdempotency()` endpoint filter — a retry with the same `Idempotency-Key` replays the first response. |
-| **Auth** | JWT with a hardened claim layout; refresh-token support; scope-based authorization; append-only audit log. |
+| **Auth** | JWT with a hardened claim layout and `kid`-based **signing-key rotation** (current + previous keys validate through a grace window); refresh-token support; scope-based authorization; append-only audit log. |
 | **Persistence** | EF Core, **schema + outbox per module**, snake_case by convention, auditing/soft-delete/domain-event interceptors, self-applying migrations. |
 | **Config secrets** | AES-GCM-encrypted config values decrypted at load from `CONFIG_SECRET_KEY`. |
 | **Architecture guardrails** | `NetArchTest` rules: inward-only layer dependencies + module isolation (no reaching into another module's internals). |
@@ -95,7 +95,7 @@ infra/                       docker-compose for Postgres/Kafka/Debezium/Redis + 
 docs/adr/                    architecture decision records
 ```
 
-Each module is a vertical slice: `Domain/` (aggregates, Vogen ids) → `Application/` (MediatR CQRS) → `Infrastructure/`
+Each module is a vertical slice: `Domain/` (aggregates, Vogen ids) → `Application/` (Mediator CQRS) → `Infrastructure/`
 (its DbContext) → `Host/` (thin endpoints). **`Modules/Events` is the reference** — copy it to start a new bounded context.
 
 ---
@@ -166,4 +166,4 @@ three suites plus a vulnerable-package audit that fails on any High/Critical adv
 ## Design decisions
 
 The non-obvious *why* is recorded as [ADRs](docs/adr/): Result-over-exceptions, Vogen ids, the per-module
-DbContext + outbox (including the keyed-writer rule), the layered building blocks, and the OSS library pins.
+DbContext + outbox (including the keyed-writer rule), the layered building blocks, and the OSS library pins (Mediator source generator + MassTransit 8).

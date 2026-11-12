@@ -22,11 +22,11 @@ Presentation/    Web · Security · Observability · HealthChecks · RateLimitin
 | Block | Layer | Purpose |
 |-------|-------|---------|
 | **Domain** | Domain | Shared kernel: `AggregateRoot`/`Entity`, domain events, `Error`/`ValidationError`, common value objects. No EF, no framework. |
-| **Application** | Application | Cross-cutting app concerns: MediatR pipeline behaviors (validation, locking, sensitive-request), `Result`-based abstractions, `PageRequest`/`PagedResult` streaming pagination, `IntegrationEvent`, `ICurrentUser` abstraction. |
+| **Application** | Application | Cross-cutting app concerns: Mediator pipeline behaviors (validation, locking, sensitive-request), `Result`-based abstractions, `PageRequest`/`PagedResult` streaming pagination, `IntegrationEvent`, `ICurrentUser` abstraction. |
 | **Persistence** | Infrastructure | EF Core plumbing: `UseModuleConventions()` (snake_case + **no-tracking by default**; load-to-mutate opts back in with `.AsTracking()`) + `ApplyAppConventions()` (Vogen + null→empty string), auditing/soft-delete/domain-event interceptors, transactional **outbox** + **inbox** (idempotent consume), `ToPagedResultAsync`, startup migration runner. |
 | **Messaging.Kafka** | Infrastructure | MassTransit 8 Kafka rider: publish/consume integration events, message headers, OTel trace propagation + correlation/causation baggage. |
 | **Caching** | Infrastructure | FusionCache (L1 in-memory + L2 Redis, MessagePack) on a sentinel-aware connection; health check. |
-| **Locking** | Infrastructure | Distributed lock over Redis (`IDistributedLock`), consumed by the Application `LockBehavior`. |
+| **Locking** | Infrastructure | Distributed lock over Redis (`IDistributedLock`, `Medallion.Threading` RedLock with auto-renewing lease), consumed by the Application `LockBehavior`. |
 | **Configuration.Secrets** | Infrastructure | AES-GCM-encrypted configuration values decrypted at load from a `CONFIG_SECRET_KEY`. |
 | **Web** | Presentation | Minimal-API helpers: `Result` → RFC9457 `ToApiResult`/`ToCreatedResult`, **idempotency** endpoint filter (`RequireIdempotency`), request logging opt-ins. |
 | **Security** | Presentation | JWT auth (hardened claim layout), `HttpContext`-backed `ICurrentUser`, scope/permission authorization, audit logging. |
