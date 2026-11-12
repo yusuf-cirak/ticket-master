@@ -45,6 +45,7 @@
     <PackageVersion Include="StackExchange.Redis" Version="3.1.13" />
     <PackageVersion Include="RedisRateLimiting" Version="1.2.1" />
     <PackageVersion Include="RedisRateLimiting.AspNetCore" Version="1.2.1" />
+    <PackageVersion Include="DistributedLock.Redis" Version="1.1.1" />
     <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.6.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.6.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" Version="2.6.0" />
