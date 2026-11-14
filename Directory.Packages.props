@@ -41,7 +41,7 @@
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <!-- Caching / Redis / rate limiting -->
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
     <PackageVersion Include="StackExchange.Redis" Version="3.1.13" />
     <PackageVersion Include="RedisRateLimiting" Version="1.2.1" />
     <PackageVersion Include="RedisRateLimiting.AspNetCore" Version="1.2.1" />
