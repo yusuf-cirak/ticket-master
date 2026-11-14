@@ -27,6 +27,7 @@
          consumers from re-running the generator while the lib/runtime reference still flows to output.
          ExcludeAssets=contentFiles: drops Vogen's redundant contentFiles-shipped Vogen.targets (the real one lives
          in buildTransitive/, unaffected) so IDEs stop showing a no-op "Vogen.targets" node under the dependency. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Vogen" ExcludeAssets="contentFiles" PrivateAssets="analyzers" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
